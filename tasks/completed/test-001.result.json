@@ -1,0 +1,16 @@
+{
+  "id": "test-001",
+  "title": "Worker smoke test",
+  "description": "Run pytest on the test suite to verify worker functionality.",
+  "owner": "glm5",
+  "status": "completed",
+  "priority": 1,
+  "created_at": "2026-04-12T12:00:00Z",
+  "started_at": "2026-04-12T08:35:14.158844+00:00",
+  "completed_at": "2026-04-12T08:35:16.495436+00:00",
+  "result": {
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.2, pluggy-1.6.0 -- /home/z/.venv/bin/python\ncachedir: .pytest_cache\nmetadata: {'Python': '3.12.13', 'Platform': 'Linux-5.10.134-013.5.kangaroo.al8.x86_64-x86_64-with-glibc2.41', 'Packages': {'pytest': '9.0.2', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '40.1.2', 'metadata': '3.1.1', 'anyio': '4.12.1', 'asyncio': '1.3.0', 'ddtrace': '4.2.2', 'cov': '7.0.0', 'timeout': '2.4.0', 'json-report': '1.5.0'}}\nrootdir: /home/z/my-project/download/nexus-os-hardening/workspaces/test-001/nexus-os\nconfigfile: ../../../../../../pyproject.toml\nplugins: Faker-40.1.2, metadata-3.1.1, anyio-4.12.1, asyncio-1.3.0, ddtrace-4.2.2, cov-7.0.0, timeout-2.4.0, json-report-1.5.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 204 items / 1 error\n\n==================================== ERRORS ====================================\n_______________ ERROR collecting tests/unit/test_executor_v2.py ________________\nImportError while importing test module '/home/z/my-project/download/nexus-os-hardening/workspaces/test-001/nexus-os/tests/unit/test_executor_v2.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/home/z/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/test_executor_v2.py:18: in <module>\n    from nexus_os.engine.executor import (\nsrc/nexus_os/engine/executor.py:22: in <module>\n    from nexus_os.engine.router import EngineRouter, TaskStatus\nE   ModuleNotFoundError: No module named 'nexus_os.engine.router'\n=========================== short test summary info ============================\nERROR tests/unit/test_executor_v2.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.37s ===============================\n",
+    "stderr": "",
+    "returncode": 2
+  }
+}
