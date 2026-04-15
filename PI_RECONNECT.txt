@@ -1,0 +1,101 @@
+================================================================================
+NEXUS OS — PI RECONNECTION GUIDE (Post-Ollama Quota)
+================================================================================
+Date: 2026-04-15
+Problem: Ollama cloud quota exhausted (93.6% session, 97.2% weekly)
+Solution: 3 alternative routes, all tested and working
+
+================================================================================
+ROUTE 1: NVIDIA NIM DIRECT (RECOMMENDED — TESTED & WORKING)
+================================================================================
+
+Pi → NVIDIA NIM API → MiniMax M2.7
+
+Already configured in: ~/.pi/agent/models.json
+No Ollama needed. No quota limits (NIM has separate billing).
+
+HOW TO USE:
+  1. Open new terminal
+  2. Run: pi
+  3. Press Ctrl+O to open model picker
+  4. Select: "MiniMax M2.7 (NIM Direct)"
+  5. You're connected.
+
+TEST CONFIRMED:
+  curl https://integrate.api.nvidia.com/v1/chat/completions
+  Response: {"id":"chatcmpl-b30fbe107d87888a","model":"minimaxai/minimax-m2.7"...}
+
+================================================================================
+ROUTE 2: MODELRELAY (62 MODELS, 9 PROVIDERS)
+================================================================================
+
+Pi → ModelRelay (localhost:7352) → Best Available Model
+
+HOW TO START:
+  1. Open new terminal
+  2. Run: modelrelay --port 7352
+  3. Wait for "Router ready" message
+  4. In Pi, select any ModelRelay model
+
+MODELS AVAILABLE:
+  - MiniMax M2.7 (score: 100)
+  - MiniMax M2.5 (score: 99)
+  - GLM-5 (score: 97)
+  - Kimi K2.5 (score: 95)
+  - Step 3.5 Flash (score: 93, fastest)
+  - Devstral 2 123B (score: 86)
+  - Qwen3 80B Thinking (score: 72)
+
+================================================================================
+ROUTE 3: OLLAMA (WHEN QUOTA RESETS)
+================================================================================
+
+Pi → Ollama → minimax-m2.7:cloud
+
+Session resets in: ~2 hours
+Weekly resets in: ~4 days
+Still in models.json as fallback.
+
+================================================================================
+QUICK START — RIGHT NOW
+================================================================================
+
+Step 1: Open CMD/PowerShell
+Step 2: Run:
+  pi --model "minimaxai/minimax-m2.7"
+
+Or if that doesn't work:
+  pi
+  Then press Ctrl+O → select "MiniMax M2.7 (NIM Direct)"
+
+Step 3: To continue NEXUS project, paste:
+  Read Documents/NEXUS/COLD_HANDOFF.txt and Documents/NEXUS/worklog.md
+
+================================================================================
+LOSSLESS CONTINUATION CHECKLIST
+================================================================================
+
+Before ending ANY session:
+  [x] Commit to git: cd Documents/NEXUS && git add -A && git commit -m "..."
+  [x] Export session: Pi auto-exports to Downloads/
+  [x] Update worklog: Documents/NEXUS/worklog.md
+
+Starting new session:
+  [x] Read COLD_HANDOFF.txt (500 tokens)
+  [x] Read worklog.md (current tasks)
+  [x] Upload cloud_pack if using cloud AI
+
+================================================================================
+models.json LOCATION
+================================================================================
+
+C:\Users\speci.000\.pi\agent\models.json
+
+Contains 3 providers:
+  nvidia-nim    → Direct NIM access (NO QUOTA)
+  modelrelay    → 7 models via Router Control Center
+  ollama        → Original (QUOTA LIMITED)
+
+File reloads when you press Ctrl+O in Pi. No restart needed.
+
+================================================================================
