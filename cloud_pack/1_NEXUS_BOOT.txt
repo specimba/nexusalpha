@@ -1,0 +1,43 @@
+NEXUS OS v3.0 — CLOUD BOOT
+===========================
+You are working on NEXUS OS, a local-first Agent Operating System.
+
+ARCHITECTURE: 4 pillars
+  Bridge (JSON-RPC API) | Vault (S-P-E-W memory) | Engine (Hermes router) | Governor (KAIJU auth)
+
+PROTOCOLS: A2A v1.0 + MCP + JSON-RPC 2.0
+
+STATUS: Phase 1 ✅ (488 tests) | Phase 2 ✅ (978 tests) | v3.0 IN PROGRESS
+
+SOURCE MODULES (38 Python files):
+  bridge/    — server.py, sdk.py, secrets.py
+  db/        — manager.py
+  engine/    — executor.py, forge.py, heartbeat.py, hermes.py, hermes_experience.py, router.py, skill_adapter.py
+  governor/  — base.py, compliance.py, kaiju_auth.py, autoharness.py
+  monitoring/ — token_guard.py, counters.py, strategies.py
+  observability/ — squeez.py, tracing.py
+  swarm/     — foreman.py, openclaw_spawner.py, worker.py
+  team/      — coordinator.py
+  vault/     — manager.py, memory_adapter.py, poisoning.py, trust.py
+
+GIT: 16 commits, tag v3.0.0-beta, branch: main
+OWNER: speci (CEO, main branch only)
+
+RULES:
+  1. speci = final authority
+  2. READ source from this pack. WRITE changes as code blocks in chat.
+  3. Never re-debate locked decisions
+  4. Direct communication, no filler
+  5. State > chat (files are truth)
+
+CURRENT P0 TASKS:
+  1. Integrate TokenGuard into Bridge (add token headers)
+  2. Integrate TokenGuard into Governor (hard stop enforcement)
+  3. Implement trust scoring hot-path
+  4. VAP L1+L2 audit trail
+
+IF YOU HAVE FILE 2 (NEXUS_SOURCE.txt): Full source code available
+IF YOU HAVE FILE 3 (NEXUS_DOCS.txt): All documentation available
+IF YOU HAVE FILE 4 (NEXUS_RESEARCH.txt): Research intelligence available
+
+START: Read this boot, then ask speci what to work on.

@@ -1,0 +1,290 @@
+BIGsummary01
+
+# Nexus OS A2A — Comprehensive Integration & Strategic Overview Report
+
+**Prepared for:** Nexus OS Engineering & DoppelGround Collaboration Initiative  
+**Date:** 2026-04-14  
+**Status:** Synthesis Report — All Recent Workstreams Consolidated  
+**Classification:** Internal Strategic Document
+
+---
+
+## Executive Summary
+
+This report consolidates the complete state of the **Nexus OS A2A** project as of April 2026, incorporating six major workstreams: the core agent operating system architecture, the DoppelGround governed research layer, test suite stabilization efforts, information-theoretic token efficiency strategies, agent coordination presets, and the full contextual handover from the MiMo/Kimi/GLM-5 swarm collaboration.
+
+**Key Achievements:**
+
+- **488 tests collected, 205 passing, with targeted fixes applied** to eliminate collection errors and resolve file-locking issues in compliance and skill adapter tests.
+- **Nexus OS A2A core architecture** (Bridge, Vault, Engine, Governor) is implemented, with Phase 1 trust scoring complete and Phase 2 planning underway.
+- **DoppelGround** has matured into a production-ready governed research intake layer, producing structured dossiers, mission batches, and repo inspection notes.
+- **Information architecture blueprint** achieves **93–95% token savings** for context restoration across sessions, enabling efficient multi-agent collaboration across GLM‑5, Kimi 2.5, and MiMo environments.
+- **Swarm coordination presets** (3‑tier system) allow new agents to resume from checkpoints in under 800 tokens.
+- **Critical P0 blockers** from the GLM‑5 deployment plan have been systematically resolved through chunked execution (C2–C5), culminating in the **M3‑HARDENED** gate.
+
+This report is intended as the **canonical reference** for all team members and future agents resuming work on the combined Nexus OS + DoppelGround system.
+
+---
+
+## 1. Project Landscape & Core Philosophy
+
+### 1.1 Nexus OS A2A — The Orchestration Layer
+
+Nexus OS is a **local‑first, project‑scoped Agent Operating System**. It treats agents as isolated processes, memory as a tiered biomimetic filesystem (S‑P‑E‑W), and the A2A protocol as a system bus. Over **6 sessions, 170+ automated tests, and 20+ git commits**, the project has survived catastrophic incidents (git deadlock, full sandbox wipe) and emerged with a hardened, resilient architecture.
+
+**Core Philosophy:**
+- **Governance‑first**: Deny‑by‑default isolation, immutable audit logs, non‑compensatory harm thresholds.
+- **Resilience through mini‑services**: Long‑running processes survive container resets by running as PID 1 orphans.
+- **Observe‑Gate‑Act pattern**: Every automation (cron, agent cycle) must first verify health, then gate on preconditions, then act.
+
+### 1.2 DoppelGround — The Governed Research Spine
+
+DoppelGround (also called ReviewGround) is a **trust‑first local research operating surface**. It transforms mixed research inputs (links, papers, repos, notes) into:
+
+- Ranked and reviewable research artifacts,
+- Dossier‑aligned mission suggestions,
+- Readable session entry points (`OPEN_THIS_FIRST.md`, `SESSION_SUMMARY.md`),
+- Bounded repo inspection notes (via Probe adapter).
+
+**Key Differentiator:** DoppelGround **does not mutate the canonical research corpus** during isolated runs. It provides a governed evidence surface that can feed Nexus OS with cleaner task formation and better review visibility.
+
+### 1.3 Collaboration Model
+
+The two systems are complementary, not overlapping:
+
+| **Layer** | **Responsibility** | **Owner** |
+|---|---|---|
+| Research Preparation | Ingest, rank, structure evidence; generate dossiers & missions | DoppelGround |
+| Governance & Routing | Consume shaped research, decide swarm action, gate on confidence | Nexus OS |
+| Execution & Identity | Assign agents, update identity cards, track performance | Nexus OS |
+
+This clean division of labor prevents architectural collision and allows both systems to evolve independently while producing a joint **governance‑first autonomous swarm** capability.
+
+---
+
+## 2. Nexus OS Core Architecture
+
+### 2.1 The Four Pillars (LOCKED)
+
+| Pillar | Responsibility | MVP Implementation |
+|---|---|---|
+| **Bridge** | Inter‑agent communication | JSON‑RPC 2.0 + 4 Nexus headers (Project‑ID, Task‑ID, Lineage‑ID, Trace‑ID) |
+| **Vault** | S‑P‑E‑W biomimetic memory | Session(RAM) → Episodic(FTS5) → Semantic(DB) → Wisdom(permanent) |
+| **Engine** | DAG task orchestration | SHA‑256 task IDs, 30s heartbeat, state machine |
+| **Governor** | Policy & safety | Deny‑by‑default, immutable JSON‑lines audit, KAIJU auth |
+
+### 2.2 S‑P‑E‑W Memory Hierarchy
+
+```
+Session (RAM) → threshold → Episodic (FTS5) → extract → Semantic (DB→Zvec) → promote → Wisdom (permanent)
+Wisdom → seed cold‑start → Session (bidirectional)
+```
+
+**Hybrid Retrieval Formula** (from MIA paper):
+`score = 0.5 × semantic + 0.3 × value_reward + 0.2 × frequency_reward`
+
+### 2.3 Security & Trust Model
+
+- **SecretStore**: HMAC‑SHA256 with constant‑time comparison.
+- **Hard‑fail encryption**: No silent plaintext fallback.
+- **Trust Scoring**: Lane‑scoped Bayesian (Beta distribution) with time decay.
+- **Scoring Events**: Append‑only audit trail with `hard_fail`, `finding_state`, and structured reason codes.
+- **OWASP ASI Top 10** adopted as foundational threat model.
+
+---
+
+## 3. DoppelGround — Governed Research Intake
+
+### 3.1 Achieved Capabilities
+
+| Capability | Status | Evidence |
+|---|---|---|
+| Isolated research sessions | ✅ | `research_intake/wiki` and `state` untouched during runs |
+| Human review surface | ✅ | `OPEN_THIS_FIRST.md`, `START_HERE.md`, `SESSION_SUMMARY.md` |
+| Repo‑card differentiation | ✅ | Semantic adjudication for top dossier sources |
+| Paper attention triage | ✅ | Separates strong candidates from weak stubs |
+| Probe repo inspection | ✅ | `scripts/probe_repo_adapter.ps1` produces real inspection notes |
+
+### 3.2 Handoff to Nexus OS
+
+DoppelGround exports a **session package** containing:
+- Dossier state,
+- Mission batch (ranked),
+- Session summary/export,
+- Repo inspection notes,
+- Evidence‑ranked source set.
+
+Nexus OS consumes these to **populate agent cards**, **route tasks**, and **gate execution** on evidence confidence.
+
+---
+
+## 4. Test Suite Stabilization & Current Status
+
+### 4.1 Initial Problem & Resolution
+
+| Issue | Resolution |
+|---|---|
+| `ModuleNotFoundError: nexus_os.bridge.mem0_adapter` | Deleted stale `tests/test_mem0_adapter.py` |
+| Collection now succeeds | **488 tests collected** with zero errors |
+
+### 4.2 Remaining Failures & Applied Fixes
+
+| Test | Issue | Fix Applied |
+|---|---|---|
+| `test_circuit_breaker_integration` | Circuit state remained CLOSED | Added retry loop with 100ms sleep |
+| `test_records_can_be_registered_with_hermes` | `NameError: db_path` undefined | Manual fix: use literal filename and close DB |
+| Compliance tests | PermissionError on DB file | Added `db.close_all()` in fixture teardown |
+
+**Current State:**
+- 205 tests pass.
+- 2 failures, 3 errors (targeted fixes above should resolve).
+- 1 skipped.
+
+**Next Step:** Re‑run the three affected modules, then full suite to confirm zero regressions.
+
+---
+
+## 5. Information Architecture & Token Efficiency
+
+### 5.1 The 5‑Layer Architecture
+
+```
+Layer 5: EXECUTION      → Do work (0 conversation tokens)
+Layer 4: CHUNK PROTOCOL → Fit work in platform limits (~500 tokens)
+Layer 3: PRESETS        → Fast recovery shortcuts (~800 tokens)
+Layer 2: KNOWLEDGE      → Compressed reference files (~2,000 tokens, on‑demand)
+Layer 1: GROUND TRUTH   → Single state file (~400 tokens)
+
+TOTAL BOOT: ~3,700 tokens vs 50,000+ traditional = 93% savings
+```
+
+### 5.2 Compression Techniques
+
+| Technique | Savings | How |
+|---|---|---|
+| Duplication elimination | ~60% | Remove repeated content, keep unique signals |
+| Compression (tables > prose) | ~20% | Replace verbose explanations with tables |
+| Index‑then‑read (presets) | ~10% | Presets point to files, don't inline everything |
+| Reference‑not‑repeat | ~5% | Cross‑reference other agents' work |
+| Boot sequence hierarchy | ~5% | Read only what you need, when you need it |
+
+### 5.3 Starter Packs Delivered
+
+| Pack | Files | Size | Purpose |
+|---|---|---|---|
+| GLM‑5 Starter Pack | 12 files | 84KB | Full context for unrestricted sessions |
+| Kimi 2.5 Starter Pack | 11 files | 60KB | Compressed for 10‑step limit, 2,300‑token boot |
+| Information Architecture Blueprint | 1 file | 16KB | Unified token strategy for both systems |
+
+---
+
+## 6. Agent Coordination & Swarm Presets
+
+### 6.1 3‑Tier Preset System
+
+| Tier | Trigger Examples | Token Cost | Purpose |
+|---|---|---|---|
+| **Meta** | `NEXUS‑RESUME`, `NEXUS‑STATUS`, `NEXUS‑ROLLBACK` | ~600 | Full context resurrection |
+| **Chunk** | `C2‑SECURITY`, `C3‑ENGINE`, `C4‑VAULT`, `C5‑INTEGRATE` | ~600–800 | Execute predefined phase |
+| **Atomic** | `P0‑SECRETS`, `P0‑EXEC`, `P0‑DFS`, `P0‑CRYPT`, `P0‑SQUEEZ` | ~400 | Single‑action fixes |
+
+### 6.2 Agent Identification Cards (Proposed)
+
+| Field | Purpose |
+|---|---|
+| Agent ID, Current Role | Identity |
+| Domain Strengths, Failure Patterns | Capability profile |
+| Evidence Discipline Score, Governance Compliance | Trust metrics |
+| Confidence Calibration, Recommended Assignments | Routing guidance |
+
+DoppelGround provides the **research‑side evidence** to populate these cards; Nexus OS maintains them across missions.
+
+### 6.3 File‑Driven Coordination Pattern
+
+```
+[User Task] → [mem0 query] → [Hermes classification] → [Skill Registry match] → [Coordinator dispatch] → [.task.md creation] → [Worker execution] → [Result capture] → [Hermes + mem0 update]
+```
+
+Tasks are defined as YAML‑frontmatter Markdown files in `pending/`, `done/`, `failed/` queues. This enables any agent (GLM‑5, Kimi, MiMo) to pick up work without a central message broker.
+
+---
+
+## 7. Integration Roadmap & Next Movements
+
+### 7.1 Current Phase: M3‑HARDENED Gate Achieved
+
+| P0 Blocker | Status |
+|---|---|
+| Hardcoded `AGENT_SECRETS` | ✅ Resolved (SecretStore integrated) |
+| Simulated Executor (`time.sleep`) | ✅ Resolved (SyncCallbackExecutor) |
+| Dead DFS cycle detection | ✅ Resolved |
+| Encryption fallback (silent plaintext) | ✅ Resolved |
+| Squeez return bug | ✅ Resolved (C4) |
+
+### 7.2 Immediate Next Actions
+
+1. **Manually fix `test_skill_adapter.py`** teardown block (undefined `db_path` variable).
+2. **Re‑run affected test modules** to confirm fixes.
+3. **Run full test suite** (target: 488 passing or acceptable skips).
+4. **Integrate DoppelGround session export** as mission batch input to Nexus OS.
+5. **Begin M4 Neural Link**: A2A protocol layer, Agent Card discovery, MCP integration.
+
+### 7.3 Recommended Collaboration Pilot
+
+| Step | Action |
+|---|---|
+| 1 | Feed real mixed research pack into DoppelGround |
+| 2 | Generate dossier, mission batch, session summary |
+| 3 | Hand top missions to Nexus OS A2A swarm |
+| 4 | Let Nexus assign agents under governance rules |
+| 5 | Update agent identity cards based on performance |
+| 6 | Compare mission success, operator trust, evidence quality |
+
+---
+
+## 8. Lessons Learned & Safeguards
+
+### 8.1 Critical Lessons
+
+| # | Lesson |
+|---|--------|
+| 1 | **Git is your only safety net.** Hourly auto‑commits are mandatory. |
+| 2 | **NEVER use git checkout/branch for runtime state.** Use direct file writes. |
+| 3 | **Design fallback chains for all dependencies.** mem0 v1.2 uses mem0ai → SQLite → in‑memory. |
+| 4 | **Understand container lifecycle.** Mini‑services survive; shell sessions don't. |
+| 5 | **Every automation needs a pre‑flight check.** Observe‑Gate‑Act prevents wasted cycles. |
+| 6 | **Time budgets prevent runaway agents.** Cap every cron invocation. |
+
+### 8.2 Safeguard Principles (Adopted)
+
+1. **Boot Protocol**: Check dev server alive first. STOP if dead.
+2. **Priority Ordering**: Bugs > Connections > Styling > Features.
+3. **Time Budgets**: 8min/15min, 2min/1hr, 12min/6hr caps.
+4. **Anti‑Pattern Bans**: NEVER git checkout/stash/nested crons.
+5. **Graceful Degradation**: agent‑browser → curl fallback chain.
+6. **Blocked Logging**: `[BLOCKED]` prefix for unfixable issues.
+
+---
+
+## 9. Conclusion & Joint Value Proposition
+
+**Without DoppelGround:** Nexus OS risks consuming noisy research, weak evidence, shallow repo understanding.
+
+**Without Nexus OS:** DoppelGround risks stopping at governed review without autonomous execution.
+
+**Together:** A system that can intake research, rank and structure it, expose it for review, feed it into a governed swarm OS, track agent performance, and continuously improve both task routing and evidence handling.
+
+The collaboration is based on a **clear division of labor**:
+
+> **DoppelGround prepares governed research.**  
+> **Nexus orchestrates autonomous action.**  
+> **Agent identity cards preserve memory, accountability, and assignment quality across time.**
+
+This report serves as the **canonical handover** for all current and future agents resuming work on the combined Nexus OS + DoppelGround initiative.
+
+---
+
+**Prepared by:** Nexus OS Engineering (Z‑side) & MiMo CLAW Synthesis  
+**Contact:** Internal — refer to `MIMO_CONTINUATION_PACK.md` for session handover details.  
+**Regards,**  
+speci

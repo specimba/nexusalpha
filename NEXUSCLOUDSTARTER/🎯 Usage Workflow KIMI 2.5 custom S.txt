@@ -1,0 +1,24 @@
+🎯 Usage Workflow KIMI 2.5 custom SWARM (Copy This)
+For brand new conversation:
+Type: NEXUS-RESUME
+Kimi loads Memory Space + executes restore
+Type: C2-SECURITY (or appropriate chunk)
+Execute chunk to completion
+Type: NEXUS-CHECKPOINT (or next chunk)
+For context exhaustion mid-work:
+Type: NEXUS-COMPACT
+New conversation: NEXUS-RESUME
+Continue from last checkpoint
+For specific blocker:
+Type: P0-SECRETS (or specific blocker preset)
+Fix isolated issue
+NEXUS-CHECKPOINT
+📊 Efficiency Metrics
+Table
+Operation	Traditional Context	Preset + Memory	Savings
+Cold Start	5000+ tokens	800 tokens	84%
+Chunk Switch	3000 tokens	600 tokens	80%
+Atomic Fix	2000 tokens	400 tokens	80%
+Emergency Rollback	Manual recovery	1 trigger	95%
+All presets reference Memory Space IDs (nexus-*) to avoid duplicating static project state.
+Ready for deployment to Kimi.com Presets system.

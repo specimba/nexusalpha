@@ -1,0 +1,81 @@
+================================================================================
+NEXUS OS — CANONICAL MAIN STRUCTURE
+================================================================================
+Date: 2026-04-15
+Location: Documents/NEXUS/
+Branch: main (PROTECTED)
+
+================================================================================
+BRANCH STRUCTURE
+================================================================================
+
+main                    ← CANONICAL (SPECI only)
+  ├── codex/specimba/*  ← CODEX experimental (merged)
+  ├── codex/experimental ← CODEX new experiments
+  ├── openclaw/experimental ← OPENCLAW experiments
+  ├── pi/experimental   ← PI experiments
+  └── research/experimental ← RESEARCH experiments
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+src/nexus_os/           ← Production code (READ-ONLY for agents)
+  ├── bridge/           ← JSON-RPC server, SDK, secrets
+  ├── db/               ← Database manager
+  ├── engine/           ← Executor, forge, heartbeat, hermes, hermes_experience, router
+  ├── governor/         ← Compliance, kaiju_auth, autoharness
+  ├── monitoring/       ← TokenGuard (token_guard.py, counters, strategies)
+  ├── observability/    ← Squeez, tracing
+  ├── swarm/            ← Foreman, worker, openclaw_spawner
+  ├── team/             ← Coordinator
+  └── vault/            ← Manager, memory, poisoning, trust
+
+NEXUSCLOUDSTARTER/      ← Reference packs (READ-ONLY)
+
+skills/                ← Skill definitions (READ-ONLY)
+
+AGENTS.md              ← Agent roster
+MISSION_REPORT.md      ← Mission documentation
+worklog.md            ← Current work log
+
+GIT_WORKFLOW.txt       ← Git rules
+AGENT_WORKSPACES.txt   ← Workspace structure
+
+================================================================================
+EXPERIMENTAL WORKSPACES
+================================================================================
+
+.codex/                ← CODEX agent (codex/experimental branch)
+  ├── README.md
+  └── [experimental code]
+
+.openclaw/             ← OPENCLAW agent (openclaw/experimental branch)
+  ├── agents/
+  └── [experimental code]
+
+.pi/                   ← PI agent (pi/experimental branch)
+  └── README.md
+
+research/              ← RESEARCH (research/experimental branch)
+  └── [research files]
+
+================================================================================
+GIT WORKFLOW
+================================================================================
+
+1. All agents READ from src/nexus_os/
+2. All agents WRITE to own workspace (.codex/, .openclaw/, etc.)
+3. Commit to own experimental branch
+4. Create PR to merge to main
+5. SPECI reviews and merges
+
+COMMIT after:
+  - New feature implemented
+  - Bug fixed
+  - Test passing
+  - Documentation updated
+
+TAG: v3.0.0-beta (current)
+
+================================================================================

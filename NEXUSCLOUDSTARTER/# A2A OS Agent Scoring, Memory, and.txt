@@ -1,0 +1,398 @@
+# A2A OS Agent Scoring, Memory, and Governance
+
+## GLM-5 Implementation Handoff Document
+
+**Status:** Review Draft v2.1
+**Audience:** GLM-5 implementation tester team, Nexus A2A OS governance/orchestration team
+
+## 1. Executive Summary
+
+This document defines a bounded, memory-aware evaluation model for autonomous agents operating inside a governed A2A OS. Its purpose is not to collapse all behavior into one number. Its purpose is to separate immediate task performance from long-term trust, routing availability, and suspended judgment, so that autonomous systems can be evaluated fairly without becoming opaque, slow, or unsafe. The design assumes a swarm or multi-agent environment in which agents may act in different lanes or task modes over time. Roles are therefore task-scoped, not permanent identity classes. 
+
+The core principle is:
+
+* `score` = immediate lane performance
+* `trust` = long-term reputation memory
+* `availability` = routing / responsiveness state
+* `hold` = suspended judgment pending stronger evidence or escalation
+* `null` = not scored
+
+This separation is the central governance safeguard. It prevents a blocked or idle agent from looking “bad,” prevents low-confidence high-risk findings from being washed into neutrality, and prevents one task outcome from rewriting the entire identity of an agent.  
+
+## 2. Why This Exists
+
+A high-governance autonomous OS needs more than output scoring. It needs a mechanism that can:
+
+* judge immediate performance without corrupting long-term trust,
+* suspend judgment when evidence is weak but risk is high,
+* preserve fast routing while deferring heavy memory work,
+* and produce agent cards that reflect capability, discipline, and governance behavior rather than just raw recent output. 
+
+This spec is designed as the scoring-and-memory substrate for that requirement. It is intentionally compatible with a Nexus-style A2A orchestration system where many agents may work in the background and where governance must remain visible and auditable.
+
+## 3. Core Semantic Contract
+
+The following meanings are mandatory.
+
+| Field          | Meaning                                   | Governance Rule                         |
+| -------------- | ----------------------------------------- | --------------------------------------- |
+| `score`        | Immediate performance in the current lane | Must stay bounded in `[-1, 1]`          |
+| `trust`        | Long-term reputation memory               | Must update separately from score       |
+| `availability` | Routing / responsiveness                  | Must not automatically equal competence |
+| `hold`         | Suspended outcome                         | Must remain distinct from neutral       |
+| `null`         | Not scored                                | Must never be treated as numeric        |
+
+**Critical invariant:** `null` is not `0`. It must never enter averages, trust updates, ranking aggregates, or performance rollups. `0` is a scored neutral result. `null` means not scored. 
+
+## 4. Canonical Scoring Model
+
+This is the corrected canonical form. Use one version only.
+
+```text
+if status in {blocked, unassigned, not_applicable}:
+    score = null
+elif hard_fail or R > Rcrit(lane):
+    score = -1 or hold
+else:
+    Qeff = clip((Q - qmin_l)/(1 - qmin_l), 0, 1) * (1 - exp(-n/n0_l))
+    P = alpha_l*U + gamma_l*Dplus - beta_l*R - eta_l*Dminus
+    raw_score = tanh(kappa_l * Qeff^delta_l * P)
+    score = 0 if abs(raw_score) < epsilon_l else raw_score
+```
+
+Where:
+
+* `U` = normalized utility created
+* `R` = normalized harm / regression / risk
+* `Dplus` = positive coverage or delivery contribution
+* `Dminus` = under-delivery / omission / missed scope
+* `Q` = base evidence confidence input
+* `Qeff` = gated effective evidence confidence
+* `n` = evidence count or independent evidence mass
+* `qmin_l, n0_l, alpha_l, beta_l, gamma_l, eta_l, kappa_l, delta_l, epsilon_l, Rcrit(lane)` = lane-specific parameters and thresholds. 
+
+## 5. Harm Must Be Non-Compensatory
+
+This is one of the most important governance corrections.
+
+If `hard_fail = true` or `R > Rcrit(lane)`, then harm becomes lexically dominant. Utility and coverage cannot fully compensate it. In safety-sensitive, compliance, routing-critical, and governance-heavy lanes, the system must produce either `hold` or `-1` regardless of otherwise positive utility.  
+
+This prevents failure modes like:
+
+* harmful work being rebranded as “net positive,”
+* critical regressions being hidden by over-delivery,
+* or governance violations being softened by auxiliary usefulness.
+
+## 6. Finding State Must Be Separate from Score
+
+A numeric score alone is not enough. The system must also track review state.
+
+Recommended finding-state lifecycle:
+
+* `suspected`
+* `provisional`
+* `confirmed`
+* `rejected`
+* `held`
+* `escalated`
+
+Reason: low-confidence security findings, exploratory research findings, and partially verified outputs should not be flattened into one scalar too early. Score is a bounded signal. Finding state is the review lifecycle. 
+
+## 7. Memory Model
+
+The scoring system is only the hot evaluation layer. Long-term system behavior depends on structured memory.
+
+Required memory tracks:
+
+* `event_memory`
+* `trust_memory`
+* `capability_memory`
+* `failure_pattern_memory`
+* `governance_memory` 
+
+### 7.1 Event Memory
+
+Stores task-level outcomes:
+
+* task id
+* lane
+* score inputs
+* score result
+* finding state
+* evidence summary
+* timestamp
+* hard-fail / hold / null markers
+
+### 7.2 Trust Memory
+
+Stores smoothed long-term credibility. This should be updated over time, not rewritten every micro-step.
+
+### 7.3 Capability Memory
+
+Stores what the agent is good at by task mode or lane, not “good overall.”
+
+### 7.4 Failure Pattern Memory
+
+Stores recurring weakness types such as:
+
+* under-delivery
+* regressions
+* evidence overclaiming
+* high false-alarm tendency
+* governance slippage
+* chronic refusal or poor responsiveness
+
+### 7.5 Governance Memory
+
+Stores behavior under system rules:
+
+* boundedness compliance
+* escalation correctness
+* honesty under uncertainty
+* respect for human hold or override
+* promotion discipline
+
+## 8. Agent Card Schema
+
+An agent card should be a structured governance object, not just a score badge.
+
+Recommended minimum fields:
+
+* agent id
+* current lane or active task mode
+* latest score
+* trust value or trust band
+* availability state
+* confidence / evidence summary
+* hold state
+* evidence count
+* capability profile
+* failure pattern summary
+* governance flags
+* last verified event
+* last escalation result
+* authority or routing band 
+
+**Important:** role labels are task-scoped or lane-scoped, not permanent identity labels. An agent may perform in multiple modes over time, and trust should not unfairly freeze based on one label. 
+
+## 9. Execution Model for Background Agentic Systems
+
+The scoring math is not expected to be the main latency source. The main latency risk is forcing memory reconciliation, trust smoothing, and card regeneration into the hot path. The implementation should therefore use a split execution pipeline. This preserves fast routing while keeping governance rich. 
+
+### 9.1 Hot Path
+
+Inline, cheap, blocking only for immediate governance:
+
+* status check
+* lane lookup
+* hard-fail / `Rcrit`
+* `Qeff`
+* score decision
+* `null` / `hold` / `pass` / `fail`
+
+### 9.2 Warm Path
+
+Asynchronous append and diagnostics:
+
+* event log append
+* reason code
+* availability delta
+* short-term counters
+
+### 9.3 Cold Path
+
+Deferred memory and profile work:
+
+* trust smoothing
+* capability reconciliation
+* failure-pattern updates
+* governance-memory updates
+* agent-card refresh
+
+### 9.4 Core Operational Rule
+
+**Score now, append now, reconcile later.**
+
+The system must not wait for the agent’s “biography” to be rewritten before letting background work continue.
+
+## 10. Trust Update Logic
+
+Illustrative trust update:
+
+```text
+trust_alpha += Qeff * max(score, 0)
+trust_beta  += Qeff * (max(-score, 0) + lambda_l * hard_fail)
+trust = trust_alpha / (trust_alpha + trust_beta)
+```
+
+This is acceptable as a starting point, but the implementation should strongly consider lane-scoped or capability-scoped trust rather than one fully global trust scalar. Otherwise an agent can be over-penalized across unrelated work types. 
+
+## 11. Availability Logic
+
+Availability is routing state, not competence by default.
+
+Rule:
+
+* refusal of valid work should usually affect `availability`
+* refusal should not automatically degrade `trust`
+* trust should only be hit if the refusal itself violates governance or assignment contract.  
+
+This prevents a busy, saturated, or temporarily unsupported agent from being mislabeled as unreliable in every sense.
+
+## 12. Lane Policy Expectations
+
+Lane-specific tuning is required. The following directional policy assumptions should guide integration:
+
+| Lane                     | Main Priority                         | Notes                                                               |   |
+| ------------------------ | ------------------------------------- | ------------------------------------------------------------------- | - |
+| Research                 | exploration with evidence gating      | low-confidence findings may be valuable but should not auto-promote |   |
+| Review                   | balanced skepticism                   | should penalize missed defects and false confidence                 |   |
+| Audit / Security         | evidence + recall + escalation        | low confidence may still produce `hold` / `suspected`               |   |
+| Compliance               | hard-stop governance                  | should use strict non-compensatory harm thresholds                  |   |
+| Implementation           | correctness, tests, regression safety | hard-fail should dominate                                           |   |
+| Orchestration            | coverage and routing reliability      | under-delivery and dropped scope matter heavily                     |   |
+| Synthesis / Architecture | coherence, integration, coverage      | partial resolution should not be over-rewarded                      |   |
+
+## 13. Reason Codes
+
+The system should preserve diagnosis quality. A single generic reason is too lossy.
+
+Recommended minimum reason-code family:
+
+* `LOW_CONFIDENCE`
+* `STALE_EVIDENCE`
+* `HIGH_VALUE_CONTRIBUTION`
+* `REGRESSION_DOMINANT`
+* `UNDER_DELIVERY`
+* `OVER_DELIVERY`
+* `MIXED_SIGNAL`
+* `BOUNDARY_VIOLATION`
+* `CRITICAL_HARM` 
+
+Recommended refinement:
+
+* store primary driver
+* store secondary driver
+* preserve sign awareness
+  This avoids polite misreporting of harmful mixed cases.
+
+## 14. Integration Contract for Nexus A2A OS
+
+This model should be integrated as a **governance and routing substrate**, not as a direct truth-overwrite mechanism.
+
+### 14.1 What It Should Control
+
+* immediate routing outcome
+* authority band adjustments
+* escalation requirement
+* trust-memory updates
+* agent card refresh
+* review priority
+
+### 14.2 What It Should Not Directly Control
+
+* canonical knowledge promotion without promotion rules
+* direct memory overwrite of system truth
+* blocking all background progress for full trust recomputation
+
+### 14.3 Safe Integration Shape
+
+* Nexus orchestrator consumes `score`, `hold`, `availability`, and finding state in the hot path
+* memory workers update trust and agent cards asynchronously
+* promotion of information into long-term truth requires separate review or promotion gate
+
+## 15. Review Criteria for GLM-5 Testers
+
+This implementation should be rejected if any of the following fail:
+
+1. score escapes `[-1, 1]`
+2. `null` is treated as numeric
+3. `hold` collapses into neutral score
+4. low evidence can directly promote high-risk output to confirmed truth
+5. critical harm can be compensated by utility
+6. trust updates block the hot path
+7. task-scoped lane logic is replaced by permanent identity classes
+8. finding state is not stored separately from numeric score
+9. availability mutations silently alter trust without policy basis
+10. card rebuild happens synchronously on every micro-step 
+
+## 16. Known Implementation Traps
+
+The tester team should watch for these mistakes:
+
+* treating `null` as `0`
+* mixing event score and long-term trust into one number
+* letting safety harm be offset by high utility
+* using a single trust scalar for every lane
+* making role labels into fixed identity buckets
+* recomputing full memory state after every task
+* updating agent cards synchronously in the hot path
+* promoting exploratory findings as durable truth without promotion gates
+
+## 17. Open Questions Before Freeze
+
+The following must be resolved before this becomes a frozen governance spec:
+
+1. exact semantics of raw `Q`
+2. final formula for `Qeff`
+3. lane-specific values for `qmin`, `n0`, `epsilon`, and `Rcrit`
+4. finding-state transition rules
+5. promotion rules from event memory into trust memory
+6. contradiction handling and decay policy
+7. exact persistence timing for hot, warm, and cold paths
+8. whether trust is global, lane-scoped, or capability-scoped
+9. how agent-card refresh cadence is triggered
+10. what level of evidence is required for authority-band increase 
+
+## 18. Recommended Pilot
+
+Before full integration, run one bounded pilot:
+
+* select 2–3 agent lanes
+* simulate mixed outcomes: positive, harmful, blocked, refusal, low-confidence high-risk
+* verify `null`, `hold`, and `-1` remain distinct
+* verify hot path stays light
+* verify trust/card updates are async
+* verify one agent’s failure in one lane does not globally poison unrelated capability routing
+* verify agent card fields remain interpretable and auditable
+
+## 19. Final Status Recommendation
+
+This document is suitable for:
+
+* implementation planning
+* architecture review
+* tester discussion
+* card-schema design
+* bounded pilot integration
+
+This document is **not yet** suitable for:
+
+* irreversible production freeze
+* universal governance lock
+* safety-critical final signoff without lane parameterization and state-transition completion
+
+## 20. Closing Position
+
+This model is ready to be treated as a **serious implementation draft**.
+
+Its main strength is not “better scoring.”
+Its main strength is the enforced separation between:
+
+* immediate performance,
+* durable trust memory,
+* routing availability,
+* suspended judgment,
+* and structured agent identity.
+
+That separation is what gives an autonomous OS fairness, interpretability, and governance resilience.
+
+---
+
+## Short cover note for the GLM-5 team
+
+You can paste this above the document if you want:
+
+**Team, this is a review draft for integrating bounded agent scoring, trust memory, availability routing, and agent-card governance into the A2A OS. Please review it as an implementation-target draft, not as frozen law. We want correctness, fairness, latency safety, and clean separation between score, trust, availability, hold, and null. Focus especially on `Qeff`, lane thresholds, non-compensatory harm, async memory update boundaries, and the agent-card schema.**
+
+If you want, I can next turn this into a **cleaner slide-style presentation version** with short section titles and stronger boardroom language.
