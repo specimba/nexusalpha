@@ -1,0 +1,149 @@
+================================================================================
+NEXUS OS — GIT WORKFLOW & BRANCH STRATEGY
+================================================================================
+Date: 2026-04-15
+Purpose: One main implementer, read-only access for others
+
+================================================================================
+CURRENT SITUATION
+================================================================================
+
+Documents/NEXUS/         ← MAIN (has .git)
+├── src/nexus_os/       ← Production source code (canonical)
+├── .openclaw/          ← OpenClaw agents
+├── .codex/            ← Codex workspace
+├── nexus_os/           ← Older/secondary
+├── NEXUSCLOUDSTARTER/ ← Starter pack
+├── skills/             ← Skill definitions
+├── workspaces/         ← Workspace configs
+├── cron/               ← Cron jobs
+├── research/           ← Research files
+├── tasks/              ← Task tracking
+└── .git               ← ✓ Git initialized
+
+Documents/NEO agent/    ← OLDER (partial)
+├── nexus_os/          ← Incomplete
+└── nexus_os_full/     ← Full copy
+
+Documents/NEXUS_OS_CLEANUP/ ← REFERENCE ONLY
+├── contexts/           ← Read-only project references
+├── models/             ← Read-only model packs
+├── tokens/            ← Read-only TokenGuard
+└── archives/          ← Read-only archives
+
+================================================================================
+PROPOSED BRANCH STRATEGY
+================================================================================
+
+Git repo: Documents/NEXUS/
+Main branch: main (canonical, production-ready)
+Main implementer: SPECI (push to main)
+
+BRANCHES:
+  main                    ← Canonical (SPECI only)
+  ├── codex/             ← Codex experimental (read-only, PR to main)
+  ├── openclaw/          ← OpenClaw experimental (read-only, PR to main)
+  ├── pi/                ← Pi experimental (read-only, PR to main)
+  ├── research/          ← Research branch (read-only, merge to main)
+  └── doppelground/      ← DoppelGround integration (read-only)
+
+RULES:
+  1. main = only SPECI or designated main implementer pushes
+  2. Experimental branches = read + copy, write to own branch only
+  3. Pull requests from branches → main (reviewed by main implementer)
+  4. Commit after every meaningful change
+  5. Tag releases: v3.0.0, v3.1.0, etc.
+
+================================================================================
+CANONICAL PATH DEFINITIONS
+================================================================================
+
+CANONICAL_MAIN = Documents/NEXUS/src/nexus_os/
+  - Production code only
+  - Git-tracked
+  - One main implementer (SPECI)
+  - All agents: READ + COPY ONLY
+
+CANONICAL_WORKSPACE = Documents/NEXUS/workspaces/
+  - Agent workspace configs
+  - Shared read-only
+
+CANONICAL_SKILLS = Documents/NEXUS/skills/
+  - Skill definitions
+  - Main implementer maintains
+
+CANONICAL_DOCS = Documents/NEXUS/
+  - AGENTS.md, MISSION_REPORT.md, worklog.md
+  - Git-tracked
+
+CANONICAL_RESEARCH = Documents/NEXUS/research/
+  - Research files
+  - Git-tracked
+
+AGENT_LOCAL = Documents/NEXUS/.openclaw/
+  - OpenClaw agents (workspace-local)
+  - Each agent: READ + COPY from CANONICAL_MAIN
+
+AGENT_CODEX = Documents/NEXUS/.codex/
+  - Codex workspace
+  - READ + COPY from CANONICAL_MAIN
+  - Can experiment, PR changes to main
+
+AGENT_PI = Documents/NEXUS/.pi/
+  - Pi agent workspace (if used)
+  - READ + COPY from CANONICAL_MAIN
+
+================================================================================
+PROTECTION RULES
+================================================================================
+
+main branch:
+  ✗ No force push
+  ✗ No direct commit from other agents
+  ✓ PR required from experimental branches
+  ✓ Main implementer (SPECI) direct push allowed
+
+Experimental branches:
+  ✓ Direct commit allowed (agent experiments)
+  ✓ PR required to merge to main
+  ✓ Rebase before PR
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Commit after every meaningful change:
+  - New feature implemented
+  - Bug fixed
+  - Test passing
+  - Documentation updated
+  - v3.0 integration step completed
+
+Commit message format:
+  feat|fix|docs|style|refactor|test: [short description]
+  
+  Example:
+  feat: Add TokenGuard monitoring module
+  fix: Resolve Bridge is_registered context bug
+  docs: Update AGENTS.md with new roster
+
+Tags:
+  - v3.0.0: Initial v3.0 baseline
+  - v3.0.1: TokenGuard added
+  - v3.0.2: KAIJU IGX integrated
+
+================================================================================
+CURRENT STATUS
+================================================================================
+
+Branch: codex/specimba/nexus-baseline-backup-20260413
+Status: Has staged changes (needs commit)
+Main implementer: SPECI (not yet merged to main)
+
+TODO:
+  1. SPECI commits staged changes to main
+  2. Create experimental branches (codex, openclaw, pi)
+  3. Set up branch protection for main
+  4. Define read-only access for other agents
+
+================================================================================

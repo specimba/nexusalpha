@@ -1,0 +1,142 @@
+================================================================================
+NEXUS OS — COLD HANDOFF DOCUMENT
+================================================================================
+Version: 3.0 | Date: 2026-04-15
+Purpose: Zero-context agent bootstrap, ~500 tokens
+
+================================================================================
+WHAT IS NEXUS OS
+================================================================================
+
+Local-first Agent Operating System with 4 pillars:
+  Bridge    — JSON-RPC API, SDK, secrets
+  Vault     — Memory (S-P-E-W), trust, poisoning
+  Engine    — Executor, Hermes router, skill adapter
+  Governor  — Compliance, KAIJU auth, governance
+
+Protocols: A2A v1.0 + MCP + JSON-RPC 2.0
+Memory: S-P-E-W (Static/Processed/Embedded/Working)
+Token: Nexus-TokenGuard (monitoring + savings)
+
+================================================================================
+WHERE IS EVERYTHING
+================================================================================
+
+DOCUMENTS/
+├── NEXUS/                    ← GIT REPO (main branch)
+│   ├── src/nexus_os/         ← CANONICAL SOURCE (READ ONLY)
+│   ├── .codex/               ← CODEX workspace
+│   ├── .openclaw/            ← OPENCLAW workspace
+│   ├── .pi/                  ← PI workspace
+│   ├── research/              ← RESEARCH workspace
+│   ├── worklog.md            ← CURRENT WORK
+│   └── AGENTS.md             ← AGENT ROSTER
+│
+└── NEXUS_OS_CLEANUP/         ← REFERENCE ARCHIVE
+    ├── contexts/             ← Project references
+    ├── models/               ← Model packs
+    ├── quickstarts/          ← Templates
+    └── tokens/               ← TokenGuard module
+
+================================================================================
+GIT WORKFLOW
+================================================================================
+
+BRANCHES:
+  main                    ← PROTECTED (SPECI only)
+  codex/experimental      ← CODEX experiments
+  openclaw/experimental   ← OPENCLAW experiments
+  pi/experimental         ← PI experiments
+  research/experimental    ← RESEARCH experiments
+
+RULES:
+  1. READ from src/nexus_os/
+  2. WRITE to own workspace (.codex/, .openclaw/, etc.)
+  3. COMMIT to own experimental branch
+  4. PR to main
+  5. SPECI reviews and merges
+
+================================================================================
+TOKEN BUDGET
+================================================================================
+
+~500 tokens for bootstrap (Ultra-Compact v2.0)
+  - 50 tokens: File paths
+  - 200 tokens: Core rules
+  - 150 tokens: Current priority
+  - 100 tokens: Workspace setup
+
+Track: from src.nexus_os.monitoring.token_guard import TokenGuard
+Check: guard.check('agent-id', required_tokens)
+
+================================================================================
+QUICK-START WORKSPACES
+================================================================================
+
+CODEX (.codex/):
+  - Bounded code work
+  - Read: src/nexus_os/bridge/, engine/, vault/
+  - Write: .codex/*.py
+  - Test: pytest tests/
+
+OPENCLAW (.openclaw/):
+  - Swarm coordination
+  - Read: src/nexus_os/swarm/, engine/hermes.py
+  - Write: .openclaw/swarm/
+  - Trigger: todo_count > 3
+
+PI (.pi/):
+  - General coding
+  - Read: src/nexus_os/
+  - Write: .pi/*.py
+  - All patterns
+
+================================================================================
+P0 PRIORITIES (Today)
+================================================================================
+
+1. Run TokenGuard tests: pytest tests/monitoring/test_token_guard.py -v
+2. Integrate TokenGuard into Bridge (token headers)
+3. Integrate TokenGuard into Governor (hard stop)
+4. Read worklog.md for current tasks
+
+================================================================================
+MEMORY FIRST
+================================================================================
+
+Before task:
+  1. Read Documents/NEXUS/worklog.md
+  2. Read Documents/NEXUS/src/nexus_os/CANONICAL_STRUCTURE.txt
+  3. Read relevant *_QUICKSTART.txt for workspace
+
+After task:
+  1. Update worklog.md
+  2. Commit to branch
+  3. Report status
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/ (canonical)
+2. WRITE to own workspace (branch)
+3. COMMIT after every meaningful change
+4. PR to main (SPECI reviews)
+5. SPECI = main branch owner
+6. Update worklog.md
+7. Token budget: ~500 for bootstrap
+
+================================================================================
+START
+================================================================================
+
+cd Documents/NEXUS
+git checkout [workspace]/experimental
+git status
+
+# READ: worklog.md, CANONICAL_STRUCTURE.txt
+# WORK: in .codex/, .openclaw/, or .pi/
+# COMMIT: after each task
+# REPORT: status, blockers, next
+
+================================================================================

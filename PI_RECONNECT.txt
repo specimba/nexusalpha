@@ -1,0 +1,145 @@
+================================================================================
+NEXUS OS — COMPLETE PI MODEL SETUP (2026-04-15)
+================================================================================
+Author: Pi + Speci | Status: TESTED & VALIDATED
+
+================================================================================
+THE SETUP — BATTLE-TESTED RESULTS
+================================================================================
+
+All models tested for: speed, tool-calling (read/write/edit/bash), and quality.
+Every model below has CONFIRMED native tool_calls support.
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TIER 1 — MASTER CHEF (Complex thinking, architecture, deep planning)      │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ Model                     │ Speed  │ Score │ Use Case                       │
+├───────────────────────────┼────────┼───────┼────────────────────────────────┤
+│ NIM-Kimi-K2.5 ★ PRIMARY   │ 2.8s   │ 77    │ Deep reasoning + tool use      │
+│ NIM-GLM5                  │ 2.5s   │ 78    │ Highest quality NIM model       │
+│ NIM-Qwen3.5-400B          │ 17s    │ 68    │ Largest brain, slow but deep    │
+│ OC-MiniMax-M2.5           │ 1.8s   │ 80    │ Highest quality score overall   │
+│ OC-Trinity-Large          │ 1.5s   │ 78    │ Fast + high quality             │
+├───────────────────────────┴────────┴───────┴────────────────────────────────┤
+│ TIER 2 — IMPLEMENTATION (Coding, testing, git operations, fast edits)     │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ NIM-Qwen3-Coder-480B      │ 1.0s   │ 71    │ Code-specialized, blazing fast  │
+│ NIM-Kimi-K2-Thinking      │ 2.0s   │ 71    │ Fast thinking for code review   │
+│ NIM-GLM4.7                │ 1.5s   │ 74    │ Solid general + coding          │
+├───────────────────────────┴────────┴───────┴────────────────────────────────┤
+│ TIER 3 — SPEED (Quick tasks, searches, small edits, scaffolding)          │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ NIM-Step-Flash             │ 0.6s   │ 74    │ Fastest. Quick tasks.           │
+│ NIM-GLM4.7                │ 1.1s   │ 74    │ Fast general purpose            │
+└───────────────────────────┴────────┴───────┴────────────────────────────────┘
+
+================================================================================
+ROTATION STRATEGY — TASK-BASED MODEL SWITCHING
+================================================================================
+
+ARCHITECTURE/PLANNING SESSION:
+  pi --model "NIM-Kimi-K2.5"
+  WHY: Best reasoning + reliable tool use at reasonable speed.
+       Thinks deeply before acting. Handles complex multi-file refactors.
+
+CODING/IMPLEMENTATION SESSION:
+  pi --model "NIM-Qwen3-Coder"
+  WHY: Purpose-built for code. 1 second response. Handles tests, edits, git.
+
+QUICK FIX / SMALL TASK:
+  pi --model "NIM-Step-Flash"
+  WHY: 600ms response. For "just fix this typo" or "add this import".
+
+DEEP RESEARCH / COMPLEX DESIGN:
+  pi --model "NIM-GLM5"
+  WHY: Highest quality thinking on NIM. Use when you need the best answer,
+       not the fastest answer.
+
+INSIDE PI — SWITCH ON THE FLY:
+  Ctrl+L → pick model from list
+  Ctrl+P → cycle to next model
+  Shift+Ctrl+P → cycle to previous model
+
+================================================================================
+PROVIDERS (3 active, 10 models)
+================================================================================
+
+NVIDIA NIM (7 models)
+  Endpoint: https://integrate.api.nvidia.com/v1
+  Auth: NVIDIA API key (configured)
+  Cost: FREE (NIM developer tier)
+  Limits: Generous, separate from Ollama
+
+OPENCODE (2 models)  
+  Endpoint: https://opencode.ai/zen/v1
+  Auth: OpenCode API key (configured)
+  Cost: FREE tier models (-free suffix)
+  Limits: Rate-limited but functional
+
+OLLAMA (1 model — QUOTA LIMITED)
+  Endpoint: http://127.0.0.1:11434/v1
+  Auth: Local
+  Status: Cloud quota exhausted. Resets weekly.
+
+================================================================================
+PI EXTENSIONS INSTALLED
+================================================================================
+
+1. nexus-git-guardian.ts
+   - Auto-commits NEXUS repo on session exit
+   - Shows dirty repo warnings in footer
+   - /nexus-status command (branch, changes, recent commits)
+
+2. nexus-context-optimizer.ts  
+   - Shows token usage in footer (🟢 30K/131K (23%))
+   - Auto-injects COLD_HANDOFF on new sessions
+   - Warns at 80% context usage
+   - /nexus-bootstrap — loads full project context
+   - /nexus-save — triggers worklog update + git commit
+
+3. @ollama/pi-web-search (package)
+   - Web search capability for research tasks
+
+CUSTOM COMMANDS:
+  /nexus-bootstrap  — Load project context into session
+  /nexus-save        — Update worklog + commit
+  /nexus-status      — Git status of NEXUS repo
+
+================================================================================
+SKILLS INSTALLED
+================================================================================
+
+  find-skills                        — Discover installable skills
+  microsoft-foundry                  — Azure Foundry agent deployment
+  supabase-postgres-best-practices   — Postgres optimization
+
+================================================================================
+QUICK START COMMANDS
+================================================================================
+
+FOR NEXUS OS DEVELOPMENT (recommended):
+  pi --model "NIM-Kimi-K2.5"
+  Then: /nexus-bootstrap
+
+FOR FAST CODING:
+  pi --model "NIM-Qwen3-Coder"
+
+FOR QUICK TASKS:
+  pi --model "NIM-Step-Flash"
+
+FOR DEEP THINKING:
+  pi --model "NIM-GLM5"
+
+================================================================================
+FILE LOCATIONS
+================================================================================
+
+  ~/.pi/agent/models.json                           — Model config (10 models)
+  ~/.pi/agent/settings.json                         — Pi settings
+  ~/.pi/agent/extensions/nexus-git-guardian.ts       — Git auto-commit
+  ~/.pi/agent/extensions/nexus-context-optimizer.ts  — Token tracking
+  ~/Documents/NEXUS/COLD_HANDOFF.txt                — Project bootstrap
+  ~/Documents/NEXUS/worklog.md                      — Work tracking
+  ~/Documents/NEXUS/PI_RECONNECT.txt                — This document
+
+================================================================================

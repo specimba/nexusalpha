@@ -1,0 +1,100 @@
+================================================================================
+NEXUS OS — AGENT WORKSPACE STRUCTURE
+================================================================================
+Date: 2026-04-15
+Purpose: Define read-only access for experimental agents
+
+================================================================================
+CANONICAL PATHS (Source of Truth)
+================================================================================
+
+CANONICAL_SOURCE = src/nexus_os/
+  - Main production code
+  - Git-tracked on main branch
+  - Read-only for experimental agents
+  - All code must PR to main to be canonical
+
+CANONICAL_SKILLS = skills/
+  - Skill definitions
+  - Read-only for experimental agents
+  - PR to main for new skills
+
+CANONICAL_DOCS = *.md (root)
+  - AGENTS.md, MISSION_REPORT.md, worklog.md
+  - Read-only for experimental agents
+  - PR to main for documentation changes
+
+CANONICAL_STARTER = NEXUSCLOUDSTARTER/
+  - Reference packs
+  - Read-only for experimental agents
+
+================================================================================
+EXPERIMENTAL WORKSPACES (Each agent gets own)
+================================================================================
+
+CODEX WORKSPACE = .codex/
+  Branch: codex/experimental
+  Purpose: Bounded code work, syntax fixes
+  Access: READ CANONICAL_SOURCE, WRITE to .codex/
+  PR: Required before merging to main
+
+OPENCLAW WORKSPACE = .openclaw/
+  Branch: openclaw/experimental
+  Purpose: Swarm coordination work
+  Access: READ CANONICAL_SOURCE, WRITE to .openclaw/
+  PR: Required before merging to main
+
+PI WORKSPACE = .pi/
+  Branch: pi/experimental
+  Purpose: Pi agent experimentation
+  Access: READ CANONICAL_SOURCE, WRITE to .pi/
+  PR: Required before merging to main
+
+RESEARCH WORKSPACE = research/
+  Branch: research/experimental
+  Purpose: Architecture research, benchmarking
+  Access: READ CANONICAL_SOURCE, WRITE to research/
+  PR: Required before merging to main
+
+================================================================================
+WORKFLOW RULES
+================================================================================
+
+1. CHECKOUT:
+   git checkout [branch]  # codex/experimental, openclaw/experimental, etc.
+
+2. READ (from canonical):
+   # Always read from src/nexus_os/ for source code
+   cat src/nexus_os/bridge/server.py
+
+3. WRITE (own branch only):
+   # Code changes go to your workspace
+   vim .codex/my_feature.py
+   git add .codex/my_feature.py
+   git commit -m "codex: Add my_feature experimental"
+
+4. COPY (from canonical):
+   # Copy canonical files to experiment locally
+   cp src/nexus_os/bridge/server.py .codex/server_experiment.py
+
+5. PR (merge to main):
+   # When ready, create PR from your branch to main
+   # Review by main implementer (SPECI)
+   # Merge after approval
+
+================================================================================
+BRANCH PROTECTION (Main)
+================================================================================
+
+Main branch rules:
+  ✗ No direct push from experimental agents
+  ✗ No force push
+  ✓ PR required
+  ✓ Review by main implementer
+
+Experimental branches:
+  ✓ Direct commit allowed
+  ✓ Full read access to canonical
+  ✗ Cannot modify src/nexus_os/ directly
+
+================================================================================
