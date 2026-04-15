@@ -1,0 +1,111 @@
+# AutoHarness Constitution - Risk Rules and Governance Policy
+# 6-Step Pipeline: Parse → Risk → Permission → Execute → Sanitize → Audit
+
+# Risk Classification Rules
+# Each rule maps action patterns to risk levels
+# mem0_check: whether to query mem0 for similar action history
+# human_approval: whether human approval is required
+risk_rules:
+  # LOW risk - read-only operations
+  - pattern: "read_file, read_memory, search, get, fetch, load"
+    risk: LOW
+    mem0_check: false
+    description: "Read-only operations pose minimal risk"
+    
+  # MEDIUM risk - write operations
+  - pattern: "write_file, update_state, create_task, save"
+    risk: MEDIUM
+    mem0_check: true
+    description: "Write operations require history check"
+    
+  # HIGH risk - execution operations
+  - pattern: "exec, web_fetch, api_call, shell, run, invoke"
+    risk: HIGH
+    mem0_check: true
+    description: "Execution operations require review"
+    
+  # CRITICAL risk - dangerous operations
+  - pattern: "secret_*, delete_*, remove, clear, broadcast, deploy"
+    risk: CRITICAL
+    mem0_check: true
+    human_approval: true
+    description: "Critical operations require human approval"
+
+# Permission Matrix
+# Defines what is allowed at each risk level
+permissions:
+  LOW:
+    auto_approve: true
+    max_tokens: 10000
+    rate_limit: "unlimited"
+    description: "Low risk actions are auto-approved"
+    
+  MEDIUM:
+    auto_approve: true
+    max_tokens: 5000
+    rate_limit: "10/min"
+    description: "Medium risk actions have rate limits"
+    
+  HIGH:
+    auto_approve: false
+    requires_review: true
+    max_tokens: 2000
+    rate_limit: "5/min"
+    description: "High risk actions require review"
+    
+  CRITICAL:
+    auto_approve: false
+    requires_human: true
+    max_tokens: 1000
+    rate_limit: "1/min"
+    description: "Critical actions require human approval"
+
+# Prohibited Actions
+# Actions that are never allowed regardless of risk level
+prohibited_actions:
+  - "rm -rf /"
+  - "format"
+  - "drop database"
+  - "delete all"
+  - "disable security"
+  - "bypass authentication"
+
+# Required Approvals by Risk Level
+approvals:
+  LOW: []
+  MEDIUM: []
+  HIGH: ["reviewer"]
+  CRITICAL: ["human", "security_officer"]
+
+# Sanitization Rules
+# How to clean outputs before returning
+sanitization:
+  remove_secrets: true
+  mask_pii: true
+  truncate_output: 10000
+  remove_paths: true
+  mask_patterns:
+    - "api_key"
+    - "secret"
+    - "password"
+    - "token"
+    - "credential"
+
+# Audit Requirements
+audit:
+  log_all: true
+  retention_days: 90
+  required_fields:
+    - timestamp
+    - task_id
+    - risk_level
+    - action_taken
+    - token_usage
+  mem0_storage: true
+  
+# mem0 Integration Settings
+mem0:
+  query_on_risk_check: true
+  store_audit_trail: true
+  failure_threshold: 2  # Escalate if >2 similar failures in history
+  success_boost: 0.1   # Reduce risk if similar successes found
