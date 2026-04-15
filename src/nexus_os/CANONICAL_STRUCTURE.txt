@@ -23,16 +23,17 @@ CANONICAL PATHS
 src/nexus_os/           ← Production code (READ-ONLY for agents)
   ├── bridge/           ← JSON-RPC server, SDK, secrets
   ├── db/               ← Database manager
-  ├── engine/           ← Executor, forge, heartbeat, hermes, router
-  ├── governor/         ← Compliance, kaiju_auth
+  ├── engine/           ← Executor, forge, heartbeat, hermes, hermes_experience, router
+  ├── governor/         ← Compliance, kaiju_auth, autoharness
+  ├── monitoring/       ← TokenGuard (token_guard.py, counters, strategies)
   ├── observability/    ← Squeez, tracing
+  ├── swarm/            ← Foreman, worker, openclaw_spawner
   ├── team/             ← Coordinator
   └── vault/            ← Manager, memory, poisoning, trust
 
 NEXUSCLOUDSTARTER/      ← Reference packs (READ-ONLY)
 
 skills/                ← Skill definitions (READ-ONLY)
-skarnocro
 
 AGENTS.md              ← Agent roster
 MISSION_REPORT.md      ← Mission documentation
