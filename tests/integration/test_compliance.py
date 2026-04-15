@@ -18,13 +18,14 @@ from nexus_os.governor.compliance import (
 
 @pytest.fixture
 def db():
-    config = DBConfig(db_path="test_compliance.db", passphrase="x", encrypted=False)
-    db_mgr = DatabaseManager(config)
-    db_mgr.setup_schema()
-    yield db_mgr
-    db_mgr.close()
-    if os.path.exists("test_compliance.db"):
-        os.remove("test_compliance.db")
+    db_path = "test_compliance.db"
+    db = DatabaseManager(db_path)
+    yield db
+    db.close_all()
+    import time
+    time.sleep(0.1)
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 
 @pytest.fixture
@@ -236,3 +237,5 @@ class TestComplianceBadge:
         ))
         badge = engine.generate_badge()
         assert badge["nexus_os_compliance"]["rules_loaded"] > 12
+
+

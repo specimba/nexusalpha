@@ -160,7 +160,11 @@ class BridgeServer:
             impact=kaiju.get("impact", "low"),
             clearance=kaiju.get("clearance", "contributor"),
             trace_id=request.trace_id,
-            context={"signature_verified": True, "has_secret": True},
+            context={
+                "signature_verified": True,
+                "has_secret": True,
+                "is_registered": True,
+            },
         )
 
         if result.decision == Decision.DENY:

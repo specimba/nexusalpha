@@ -117,6 +117,7 @@ class DatabaseManager:
     def __init__(self, config: DBConfig):
         self.config = config
         self._local = threading.local()
+        self._adapters: List[DBAdapter] = []
         self._connection_count = 0
         self._max_connections = 100
         self._lock = threading.Lock()
@@ -132,22 +133,29 @@ class DatabaseManager:
                     "Possible connection leak — check that close() is called."
                 )
 
-        if self.config.encrypted:
-            try:
-                adapter = EncryptedAdapter(
-                    self.config.db_path, self.config.passphrase
-                )
-            except ImportError as e:
-                if not self.config.allow_unencrypted:
-                    raise e
-                logger.warning(
-                    "pysqlcipher3 missing. Falling back to StandardAdapter (UNENCRYPTED). "
-                    "This is a SECURITY RISK in production."
-                )
+        try:
+            if self.config.encrypted:
+                try:
+                    adapter = EncryptedAdapter(
+                        self.config.db_path, self.config.passphrase
+                    )
+                except ImportError as e:
+                    if not self.config.allow_unencrypted:
+                        raise e
+                    logger.warning(
+                        "pysqlcipher3 missing. Falling back to StandardAdapter (UNENCRYPTED). "
+                        "This is a SECURITY RISK in production."
+                    )
+                    adapter = StandardAdapter(self.config.db_path)
+            else:
                 adapter = StandardAdapter(self.config.db_path)
-        else:
-            adapter = StandardAdapter(self.config.db_path)
+        except Exception:
+            with self._lock:
+                self._connection_count -= 1
+            raise
 
+        with self._lock:
+            self._adapters.append(adapter)
         return adapter
 
     def get_connection(self) -> DBAdapter:
@@ -246,9 +254,13 @@ class DatabaseManager:
 
     def close(self):
         """Close the current thread's connection."""
-        adapter = getattr(self._local, "adapter", None)
-        if adapter:
-            adapter.close()
-            self._local.adapter = None
-            with self._lock:
-                self._connection_count -= 1
+        with self._lock:
+            adapters = list(self._adapters)
+            self._adapters.clear()
+            self._connection_count = 0
+
+        for adapter in adapters:
+            try:
+                adapter.close()
+            except Exception:
+                logger.exception("Failed to close database adapter")

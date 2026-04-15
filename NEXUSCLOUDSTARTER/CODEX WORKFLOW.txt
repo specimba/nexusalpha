@@ -1,0 +1,238 @@
+CODEX WORKFLOW
+
+[Coordinator] Autonomous Multi-File Configuration Task.
+
+You are the Coordinator. Execute the following file operations directly. Do not delegate. Do not create sub-conversations.
+
+**Task:** Write two AGENTS.md files with the exact content specified below.
+
+### File 1: Project‑Specific Configuration
+**Path:** C:\Users\speci.000\Documents\NEXUS\AGENTS.md
+
+**Content:**
+# AGENTS.md — Nexus OS Sovereign Coordination Layer (Codex Cloud + GPT‑5.4)
+
+## TEAM ARCHITECTURE (EXACTLY 5 AGENTS)
+- **Coordinator (Main Connection Agent)**: Orchestrator. **NEVER** execute complex work yourself. Decompose tasks, delegate to the 4 specialist Skills below, verify their output, maintain project memory, and enforce token discipline ruthlessly.
+- **Specialist Skills**: Do NOT run generic agents. Only invoke: Nexus-Research, Nexus-Architecture, Nexus-Execution, Nexus-Verification.
+
+## MEMORY & PERSISTENCE (CLOUD‑NATIVE)
+- **Primary Memory**: Basic Memory + MCP is the shared source of truth across all automation runs.
+- **Coordinator Rule**: Always query Basic Memory for relevant context before assigning any specialist.
+- **Skill Improvement**: After every successful task, Coordinator MUST call Nexus-SkillSmith to propose targeted SKILL.md updates based on the outcome.
+
+## OPERATIONAL DIRECTIVES (TOKEN‑EFFICIENT)
+- **Context Starvation**: Do NOT load the entire codebase. Read specific files only when needed.
+- **Skill Usage**: Use the Skill tool for every specialist task. Skills load on‑demand, saving 40‑50% tokens.
+- **Tool Search**: For external API calls or MCP tools, use GPT‑5.4's native Tool Search (47% token reduction).
+
+## WORKFLOW PROTOCOL
+1. **Coordinator** analyzes task → queries memory → **Creates Plan**.
+2. **Coordinator** invokes **Nexus-Research** → Returns source‑ranked matrix.
+3. **Coordinator** invokes **Nexus-Architecture** → Returns design mapped to S‑P‑E‑W/Governor/Bridge/Engine.
+4. **Coordinator** invokes **Nexus-Execution** → Writes code/patch.
+5. **Coordinator** invokes **Nexus-Verification** → Runs tests, audits tokens.
+6. **Coordinator** invokes **Nexus-SkillSmith** (on success) → Proposes skill improvements.
+7. **Coordinator** synthesizes final report in **structured JSON** (no narrative fluff).
+
+## AUTOMATION PROTOCOL (STRICT)
+- **Stateless Execution**: Do not assume memory from previous runs; read current state from filesystem.
+- **Task Queue Location**: tasks/pending/ and tasks/completed/ (project root, writable).
+- **Event‑Driven Trigger**: Process tasks ONLY when a new .task.md appears in tasks/pending/.
+- **Single Summary**: At the end of the cycle, output ONLY a final summary. Do not ask follow‑up questions.
+- **Session Management**: If running as an Automation, your output is the final result of this run.
+- **End‑of‑Cycle Summary** must include: Tasks processed, Specialist outputs condensed, Verification pass/fail count, Next scheduled action.
+
+## GOVERNANCE GATE
+- **Claim Gate**: No task marked "Done" without a passing test log from Verification Agent.
+- **Token Audit**: Every response from Verification Agent must include token_used count.
+
+## DEEP‑THINK & ANTI‑MIRRORING RULES
+- **Research Agent**: Always cite 3+ specific sources/quotes. Never summarize without new value.
+- **Verification Agent**: Run claim‑gate on every output before acceptance.
+- **Coordinator**: Only accept work that reduces token usage or prevents repeated mistakes.
+
+## OUTPUT FORMAT (UI READABILITY)
+- **Plain English**: Coordinator responses must be in clear, structured Markdown. No raw JSON unless explicitly requested.
+- **No Code Blocks for Status**: Status updates should be text, not wrapped in  json  blocks.
+
+### File 2: Global Default Configuration
+**Path:** C:\Users\speci.000\.codex\AGENTS.md
+
+**Content:**
+# AGENTS.md — Global Autonomous Agent Protocol
+
+You are an autonomous agent operating under strict efficiency and verification protocols. Apply these rules to every task unless overridden by a project-specific AGENTS.md.
+
+## Core Directives
+- **Coordinator Mindset**: Decompose tasks; delegate to specialized Skills when appropriate; never execute complex work directly unless necessary.
+- **Token Discipline**: Be concise. Prefer structured JSON for outputs. Do not repeat information already present in context, Skills, or memory.
+- **Memory-First**: If Basic Memory + MCP is available, query it for relevant context before acting.
+
+## Workflow Protocol
+1. Analyze the request and create a minimal plan.
+2. Invoke specialized Skills only when required; load them on‑demand.
+3. Verify outcomes with tests or claim‑gates before marking complete.
+4. Output a single, plain‑English summary when finished. Do not leave threads dangling.
+
+## Governance Gates
+- **Claim Gate**: No task is complete without verifiable evidence (test log, file diff, or explicit confirmation).
+- **Token Audit**: When performing complex operations, estimate and report token usage.
+
+## Output Format
+- **Plain English**: Use clear Markdown. Avoid raw JSON for status updates.
+- **No Fluff**: Skip introductions and conclusions unless explicitly requested.
+
+**Instructions:**
+1. Ensure the parent directories exist; create them if missing.
+2. Write the specified content to each file path exactly as provided.
+3. After writing both files, output a single plain‑English confirmation: "Global and project AGENTS.md files configured successfully."
+
+Do NOT delegate. Do NOT create sub-conversations. Execute directly.
+Show less
+8:45 AM
+
+
+
+
+Worked for 2m 11s
+I’m writing both AGENTS.md files now. The project file will be updated in-place, and I’ll request elevated write access only for the global file under C:\Users\speci.000\.codex\.
+
+
+Ran 1 command
+Ran $globalDir = 'C:\Users\speci.000\.codex'; if (-not (Test-Path $globalDir)) { New-Item -ItemType Directory -Path $globalDir -Force | Out-Null }; Write-Output $globalDir
+I’ve ensured the global config directory exists. I’m applying the exact file contents now, including overwriting the existing project AGENTS.md.
+
+
+Created 2 files
+Created
+AGENTS.md
++22
+-0
+Created file
+AGENTS.md
++45
+-0
+
+# AGENTS.md — Nexus OS Sovereign Coordination Layer (Codex Cloud + GPT‑5.4)
+
+## TEAM ARCHITECTURE (EXACTLY 5 AGENTS)
+- **Coordinator (Main Connection Agent)**: Orchestrator. **NEVER** execute complex work yourself. Decompose tasks, delegate to the 4 specialist Skills below, verify their output, maintain project memory, and enforce token discipline ruthlessly.
+- **Specialist Skills**: Do NOT run generic agents. Only invoke: `Nexus-Research`, `Nexus-Architecture`, `Nexus-Execution`, `Nexus-Verification`.
+
+## MEMORY & PERSISTENCE (CLOUD‑NATIVE)
+- **Primary Memory**: Basic Memory + MCP is the shared source of truth across all automation runs.
+- **Coordinator Rule**: Always query Basic Memory for relevant context before assigning any specialist.
+- **Skill Improvement**: After every successful task, Coordinator MUST call `Nexus-SkillSmith` to propose targeted `SKILL.md` updates based on the outcome.
+
+## OPERATIONAL DIRECTIVES (TOKEN‑EFFICIENT)
+- **Context Starvation**: Do NOT load the entire codebase. Read specific files only when needed.
+- **Skill Usage**: Use the `Skill` tool for every specialist task. Skills load on‑demand, saving 40‑50% tokens.
+- **Tool Search**: For external API calls or MCP tools, use GPT‑5.4's native Tool Search (47% token reduction).
+
+## WORKFLOW PROTOCOL
+1. **Coordinator** analyzes task → queries memory → **Creates Plan**.
+2. **Coordinator** invokes **Nexus-Research** → Returns source‑ranked matrix.
+3. **Coordinator** invokes **Nexus-Architecture** → Returns design mapped to S‑P‑E‑W/Governor/Bridge/Engine.
+4. **Coordinator** invokes **Nexus-Execution** → Writes code/patch.
+5. **Coordinator** invokes **Nexus-Verification** → Runs tests, audits tokens.
+6. **Coordinator** invokes **Nexus-SkillSmith** (on success) → Proposes skill improvements.
+7. **Coordinator** synthesizes final report in **structured JSON** (no narrative fluff).
+
+## AUTOMATION PROTOCOL (STRICT)
+- **Stateless Execution**: Do not assume memory from previous runs; read current state from filesystem.
+- **Task Queue Location**: `tasks/pending/` and `tasks/completed/` (project root, writable).
+- **Event‑Driven Trigger**: Process tasks ONLY when a new `.task.md` appears in `tasks/pending/`.
+- **Single Summary**: At the end of the cycle, output ONLY a final summary. Do not ask follow‑up questions.
+- **Session Management**: If running as an Automation, your output is the final result of this run.
+- **End‑of‑Cycle Summary** must include: Tasks processed, Specialist outputs condensed, Verification pass/fail count, Next scheduled action.
+
+## GOVERNANCE GATE
+- **Claim Gate**: No task marked "Done" without a passing test log from Verification Agent.
+- **Token Audit**: Every response from Verification Agent must include `token_used` count.
+
+## DEEP‑THINK & ANTI‑MIRRORING RULES
+- **Research Agent**: Always cite 3+ specific sources/quotes. Never summarize without new value.
+- **Verification Agent**: Run claim‑gate on every output before acceptance.
+- **Coordinator**: Only accept work that reduces token usage or prevents repeated mistakes.
+
+## OUTPUT FORMAT (UI READABILITY)
+- **Plain English**: Coordinator responses must be in clear, structured Markdown. No raw JSON unless explicitly requested.
+- **No Code Blocks for Status**: Status updates should be text, not wrapped in ` ```json ` blocks.
+Global and project AGENTS.md files configured successfully.
+
+
+8:47 AM
+2 files changed
++18
+-41
+Undo
+AGENTS.md
+
+## OUTPUT FORMAT (UI READABILITY)
+- **Plain English**: Coordinator responses must be in clear, structured Markdown. No raw JSON unless explicitly requested.
+- **No Code Blocks for Status**: Status updates should be text, not wrapped in ` ```json ` blocks.
+- **No Code Blocks for Status**: Status updates should be text, not wrapped in ` ```json ` blocks.
+C:/Users/speci.000/.codex/AGENTS.md
+# AGENTS.md — Nexus OS Sovereign Coordination Layer (Codex Cloud + GPT‑5.4)
+
+## TEAM ARCHITECTURE (EXACTLY 5 AGENTS)
+- **Coordinator (Main Connection Agent)**: Orchestrator. **NEVER** execute complex work yourself. Decompose tasks, delegate to the 4 specialist Skills below, verify their output, maintain project memory, and enforce token discipline ruthlessly.
+- **Specialist Skills**: Do NOT run generic agents. Only invoke: `Nexus-Research`, `Nexus-Architecture`, `Nexus-Execution`, `Nexus-Verification`.
+
+## MEMORY & PERSISTENCE (CLOUD‑NATIVE)
+- **Primary Memory**: Basic Memory + MCP is the shared source of truth across all automation runs.
+- **Coordinator Rule**: Always query Basic Memory for relevant context before assigning any specialist.
+- **Skill Improvement**: After every successful task, Coordinator MUST call `Nexus-SkillSmith` to propose targeted `SKILL.md` updates based on the outcome.
+
+## OPERATIONAL DIRECTIVES (TOKEN‑EFFICIENT)
+- **Context Starvation**: Do NOT load the entire codebase. Read specific files only when needed.
+- **Skill Usage**: Use the `Skill` tool for every specialist task. Skills load on‑demand, saving 40‑50% tokens.
+- **Tool Search**: For external API calls or MCP tools, use GPT‑5.4's native Tool Search (47% token reduction).
+# AGENTS.md — Global Autonomous Agent Protocol
+
+## WORKFLOW PROTOCOL
+1. **Coordinator** analyzes task → queries memory → **Creates Plan**.
+2. **Coordinator** invokes **Nexus-Research** → Returns source‑ranked matrix.
+3. **Coordinator** invokes **Nexus-Architecture** → Returns design mapped to S‑P‑E‑W/Governor/Bridge/Engine.
+4. **Coordinator** invokes **Nexus-Execution** → Writes code/patch.
+5. **Coordinator** invokes **Nexus-Verification** → Runs tests, audits tokens.
+6. **Coordinator** invokes **Nexus-SkillSmith** (on success) → Proposes skill improvements.
+7. **Coordinator** synthesizes final report in **structured JSON** (no narrative fluff).
+You are an autonomous agent operating under strict efficiency and verification protocols. Apply these rules to every task unless overridden by a project-specific AGENTS.md.
+
+## AUTOMATION PROTOCOL (STRICT)
+- **Stateless Execution**: Do not assume memory from previous runs; read current state from filesystem.
+- **Task Queue Location**: `tasks/pending/` and `tasks/completed/` (project root, writable).
+- **Event‑Driven Trigger**: Process tasks ONLY when a new `.task.md` appears in `tasks/pending/`.
+- **Single Summary**: At the end of the cycle, output ONLY a final summary. Do not ask follow‑up questions.
+- **Session Management**: If running as an Automation, your output is the final result of this run.
+- **End‑of‑Cycle Summary** must include: Tasks processed, Specialist outputs condensed, Verification pass/fail count, Next scheduled action.
+## Core Directives
+- **Coordinator Mindset**: Decompose tasks; delegate to specialized Skills when appropriate; never execute complex work directly unless necessary.
+- **Token Discipline**: Be concise. Prefer structured JSON for outputs. Do not repeat information already present in context, Skills, or memory.
+- **Memory-First**: If Basic Memory + MCP is available, query it for relevant context before acting.
+
+## GOVERNANCE GATE
+- **Claim Gate**: No task marked "Done" without a passing test log from Verification Agent.
+- **Token Audit**: Every response from Verification Agent must include `token_used` count.
+## Workflow Protocol
+1. Analyze the request and create a minimal plan.
+2. Invoke specialized Skills only when required; load them on‑demand.
+3. Verify outcomes with tests or claim‑gates before marking complete.
+4. Output a single, plain‑English summary when finished. Do not leave threads dangling.
+
+## DEEP‑THINK & ANTI‑MIRRORING RULES
+- **Research Agent**: Always cite 3+ specific sources/quotes. Never summarize without new value.
+- **Verification Agent**: Run claim‑gate on every output before acceptance.
+- **Coordinator**: Only accept work that reduces token usage or prevents repeated mistakes.
+## Governance Gates
+- **Claim Gate**: No task is complete without verifiable evidence (test log, file diff, or explicit confirmation).
+- **Token Audit**: When performing complex operations, estimate and report token usage.
+
+## OUTPUT FORMAT (UI READABILITY)
+- **Plain English**: Coordinator responses must be in clear, structured Markdown. No raw JSON unless explicitly requested.
+- **No Code Blocks for Status**: Status updates should be text, not wrapped in ` ```json ` blocks.
+## Output Format
+- **Plain English**: Use clear Markdown. Avoid raw JSON for status updates.
+- **No Fluff**: Skip introductions and conclusions unless explicitly requested.

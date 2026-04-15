@@ -1,0 +1,289 @@
+# DoppelGround × Nexus A2A OS
+
+## Governance-first research operating surface for autonomous swarm systems
+
+### 1. Executive position
+
+DoppelGround is no longer just a rough intake or dossier experiment. It has matured into a **usable isolated research session system** that can safely run research sessions, generate dossiers and missions, expose session review outputs such as `OPEN_THIS_FIRST.md`, `START_HERE.md`, `SESSION_SUMMARY.md`, and `SESSION_EXPORT.md`, and preserve canonical research surfaces during isolated runs. Its core design philosophy is trust-first: prefer inspectable outputs over speed theater, keep isolated runs from mutating canonical corpus, and improve human review clarity before adding more autonomy. 
+
+This matters to Nexus A2A OS because Nexus appears to want a **high-governance, swarm-controlled orchestration layer with autonomous research capability**, while DoppelGround already solves a different but complementary problem: how to structure, score, summarize, and review research safely before it becomes swarm fuel. The continuation material is explicit that A2A belongs to the separate Nexus A2A project and should **not** be rebuilt inside this lane, which makes collaboration cleaner: DoppelGround should serve as a governed research and evidence surface, while Nexus remains the orchestration and inter-agent operating system.
+
+---
+
+### 2. What DoppelGround is
+
+DoppelGround / ReviewGround is a **trust-first local research operating surface** built around isolated runs, dossier generation, mission generation, review UX, semantic adjudication, and structured separation between high-value sources, paper attention candidates, and weak residual stubs. Over time it progressed through isolated output mode, mission grounding, repo-card differentiation, isolated workflow runner, session review layer, semantic adjudication, launcher/export improvements, review consistency, and paper attention triage. 
+
+In practical terms, it is a system for turning mixed research inputs into:
+
+* ranked and reviewable research artifacts,
+* dossier-aligned mission suggestions,
+* readable session entry points,
+* bounded repo inspection notes,
+* and a preserved canonical knowledge surface.
+
+This means DoppelGround is not trying to be the whole autonomous OS. It is a **governed research spine** that can feed a larger autonomous or semi-autonomous system with cleaner evidence, cleaner task formation, and better review visibility. That separation is exactly why it can collaborate with Nexus A2A without role confusion.
+
+---
+
+### 3. What DoppelGround has achieved already
+
+The important achieved points are concrete.
+
+First, the system can run **isolated research sessions safely** and keep `research_intake/wiki`, `state`, and `runs/latest` untouched during isolated runs. That isolation and canonical non-mutation discipline are central trust assets.
+
+Second, it can now generate a much more usable **human review surface** through `OPEN_THIS_FIRST.md`, `START_HERE.md`, `SESSION_SUMMARY.md`, and `SESSION_EXPORT.md`, instead of forcing raw folder browsing.
+
+Third, it improved **repo-card differentiation**, **mission relevance**, and **semantic adjudication** for top dossier sources, making the research outputs less random and more decision-ready. 
+
+Fourth, it introduced **paper attention queue and residual stub triage**, which fixed an important control problem: not every paper should be a top source, but some still deserve next-read attention.
+
+Fifth, the formerly missing Probe integration has now been turned into a **real bounded repo-inspection path**. The validated 04K work created `scripts/probe_repo_adapter.ps1`, patched suffix-based dispatch in the isolated-session runner, and produced actual repo inspection artifacts under `review/repo_inspections` while preserving `canonical_hash_unchanged: true`. Validation showed real repo inspection notes for `bytedance-deer-flow`, `langchain-ai-deepagents`, and `666ghj-mirofish`, and the session review layer no longer showed Probe as skipped for that run.
+
+So the current position is not “idea stage.” It is **working governed research infrastructure with a new repo-semantic deepening layer**.
+
+---
+
+### 4. Main purpose of DoppelGround
+
+The main purpose of DoppelGround is not generic automation. It is to create a **reliable research operating surface** that can:
+
+* ingest messy mixed-source inputs,
+* transform them into structured dossiers and mission options,
+* expose what matters now,
+* keep weak evidence visibly weak,
+* and let human operators or upstream systems work from inspectable research instead of prompt theater.
+
+That purpose is highly relevant to any autonomous OS project. Autonomous orchestration without disciplined research intake tends to drift into noisy loops, shallow memory, weak evidence, and inflated confidence. DoppelGround exists to reduce exactly that failure mode. Its orientation is governance-first in practice, even if its surface is research-oriented.
+
+---
+
+### 5. Why this fits Nexus A2A OS
+
+Nexus A2A OS, as you describe it, wants a **high-governance, swarm-controlled orchestration system** with strong autonomy. That type of system needs more than agent-to-agent messaging. It needs:
+
+* bounded research intake,
+* evidence ranking,
+* source durability signals,
+* explicit weak/strong distinction,
+* review surfaces for operator trust,
+* and clean task formation from research results.
+
+DoppelGround already provides much of that substrate. At the same time, the continuation pack is explicit that A2A should **remain separate** and not be rebuilt inside this lane. That is actually a strength, not a limitation. It means the collaboration can be done as **interface alignment** rather than architectural collision. Nexus keeps autonomy and orchestration. DoppelGround provides governed research preparation, review, and traceable evidence shaping.
+
+In other words:
+
+**Nexus A2A OS = swarm execution and autonomous coordination layer**
+**DoppelGround = governed research intake, evidence shaping, and review layer**
+
+That division is clean, strategic, and scalable.
+
+---
+
+### 6. What DoppelGround can give Nexus
+
+DoppelGround can help Nexus in five major ways.
+
+**A. Research intake discipline**
+Nexus agents can receive already-structured research sessions instead of raw link dumps. DoppelGround can transform mixed inputs into dossiers, mission batches, and reviewable source sets.
+
+**B. Evidence hierarchy**
+Not all sources should be equal. DoppelGround already distinguishes stronger source cards, weaker stubs, web references, and now paper attention vs residual lanes. That is useful for swarm planning because it gives the orchestration layer a more honest confidence map.
+
+**C. Repo semantic deepening**
+With 04K, repo inspection is no longer a placeholder-only surface. Nexus can benefit from bounded repo understanding before routing agents into code or architecture exploration.
+
+**D. Review and export UX**
+Nexus likely needs traceable handoff surfaces for operator review, escalation, and replay. DoppelGround already produces open-first and summary/export notes that can become ingestion or checkpoint artifacts for Nexus governance.
+
+**E. Safety against autonomy theater**
+The lane philosophy is explicit: prefer trust over speed theater, inspectable outputs over flashy autonomy, and reopen development only when real usage shows real friction. That is a very good cultural fit for a governance-heavy autonomous OS. 
+
+---
+
+### 7. What Nexus can give DoppelGround
+
+The value flow should go both ways.
+
+Nexus can give DoppelGround:
+
+* a real downstream execution environment for research-derived missions,
+* multi-agent routing and swarm coordination,
+* autonomous research continuation once governed inputs are ready,
+* agent registry and lifecycle orchestration,
+* and potentially the regular “agent identification card” layer you described.
+
+This is important because DoppelGround is strong at **research shaping and review**, but not intended to become the whole swarm OS. Nexus can become the environment where those shaped research packets are turned into coordinated agent operations. That lets DoppelGround stay bounded and trustworthy while still increasing system-wide autonomy through collaboration. This also respects the explicit separation that A2A belongs to Nexus rather than being reimplemented here.
+
+---
+
+### 8. Proposed collaboration model
+
+The cleanest collaboration is a **three-layer contract**.
+
+#### Layer 1 — Research preparation layer
+
+DoppelGround ingests links, papers, repos, notes, and mixed packs. It outputs:
+
+* dossier state,
+* mission batch,
+* session summary/export,
+* repo inspection notes,
+* and an evidence-ranked session package.
+
+#### Layer 2 — Governance and routing layer
+
+Nexus A2A OS consumes these outputs and decides:
+
+* which agents should act,
+* whether research is strong enough to proceed,
+* whether the swarm should parallelize or gate,
+* and which execution lanes require human approval.
+
+#### Layer 3 — Agent identity and performance layer
+
+Nexus maintains **agent identification cards** that update over time based on:
+
+* role,
+* domain fit,
+* recent tasks,
+* success rate,
+* review reliability,
+* failure modes,
+* confidence discipline,
+* and collaboration behavior.
+
+DoppelGround can contribute the research-side evidence that helps populate those cards. For example, if an agent repeatedly performs well on repo-triage missions based on source-card inputs, that becomes a governed signal in its identity record. If it overuses weak stubs or ignores bounded evidence, that also becomes part of the card.
+
+---
+
+### 9. Agent identification card concept
+
+Because you specifically mentioned regularly updated identification cards, this could become one of the strongest crossover features.
+
+A useful agent card should not be decorative. It should be operational.
+
+#### Suggested fields
+
+* Agent ID
+* Current role
+* Authorized capability band
+* Domain strengths
+* Recent mission count
+* Completion quality trend
+* Evidence discipline score
+* Failure / retry profile
+* Governance compliance score
+* Collaboration reliability
+* Human override frequency
+* Last validated successful task types
+* Confidence calibration notes
+* Known weak zones
+* Recommended future assignments
+
+#### Why this matters
+
+A swarm system without visible agent identity history becomes opaque quickly. Agent cards create:
+
+* assignment clarity,
+* accountability,
+* routing quality,
+* and historical memory about which agent is actually good at what.
+
+DoppelGround can support this by supplying governed evidence on the research side, while Nexus owns the broader lifecycle and orchestration side.
+
+---
+
+### 10. Joint value proposition
+
+If these two projects collaborate correctly, the combined system becomes much stronger than either alone.
+
+**Without DoppelGround:**
+Nexus risks consuming noisy research, weak evidence, shallow repo understanding, and overly raw inputs.
+
+**Without Nexus:**
+DoppelGround risks stopping at governed review without a fully autonomous swarm environment to operationalize its outputs.
+
+**Together:**
+You get a system that can:
+
+* intake research,
+* rank and structure it,
+* expose it for review,
+* feed it into a governed swarm OS,
+* track which agents do well with which research patterns,
+* and continuously improve both task routing and evidence handling.
+
+That is a strong story for a brother project presentation because it is not based on vague synergy. It is based on a **clear division of labor**.
+
+---
+
+### 11. What remains imperfect
+
+The presentation should stay honest.
+
+DoppelGround is stronger now, but not finished. The continuation pack makes clear that repo understanding was a weak spot, and 04K addressed the missing Probe adapter, but the larger remaining issue is still **semantic depth quality**, especially around some candidate sources and paper stubs. The pack explicitly says the next follow-up after 04K should only happen if real usage proves it is needed, especially for paper candidate quality.
+
+So the honest message to Nexus is:
+
+* the system is real,
+* the governance and isolation discipline are strong,
+* repo inspection is now alive,
+* but semantic depth should continue to be improved through real usage, not speculative rebuilds.
+
+That honesty actually strengthens the proposal.
+
+---
+
+### 12. Suggested concrete collaboration pilot
+
+The easiest pilot is a **bounded research-to-swarm handoff trial**.
+
+#### Pilot shape
+
+1. Feed one real mixed research pack into DoppelGround.
+2. Generate dossier, mission batch, session summary, and repo inspection notes.
+3. Hand the top missions and repo notes into Nexus A2A OS.
+4. Let Nexus assign agents under governance rules.
+5. Record which agents performed well and update their identity cards.
+6. Compare:
+
+   * mission success,
+   * operator trust,
+   * retry waste,
+   * and evidence quality before vs after the handoff model.
+
+#### Success criteria
+
+* cleaner task assignment,
+* better governed autonomy,
+* lower research noise,
+* higher explainability,
+* and visible agent-role fit over time.
+
+---
+
+### 13. Presentation closing
+
+**DoppelGround is not competing with Nexus A2A OS.**
+It is a complementary governed research layer that can make Nexus stronger.
+
+**Nexus A2A OS is not replacing DoppelGround.**
+It is the orchestration and autonomous execution environment that can operationalize DoppelGround’s structured outputs.
+
+The collaboration opportunity is simple:
+
+**DoppelGround prepares governed research.**
+**Nexus orchestrates autonomous action.**
+**Agent identity cards preserve memory, accountability, and assignment quality across time.**
+
+That is the joint system story.
+
+---
+
+## Recommended final title
+
+**DoppelGround × Nexus A2A OS**
+**A governance-first research and swarm orchestration collaboration proposal**
+
+If you want, I can turn this into a **cleaner boardroom-style version** with short slide-like sections and punchier headlines.

@@ -365,8 +365,11 @@ class TestHermesIntegration:
         assert stats["total_decisions"] == 1
 
         db.close()
-        if os.path.exists("test_skill_adapter.db"):
-            os.remove("test_skill_adapter.db")
+        if os.path.exists(db_path):
+            db.close_all()
+            import time
+            time.sleep(0.1)
+            db.close_all(); import time; time.sleep(0.1); os.remove("test_skill_adapter.db")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -576,3 +579,7 @@ class TestEndToEndWorkflow:
         chart_record = next(r for r in records if r.skill_id == "charts")
         assert chart_record is not None
         assert chart_record.execution_count >= 3
+
+
+
+
