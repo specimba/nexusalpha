@@ -1,103 +1,145 @@
 ================================================================================
-NEXUS OS — PI RECONNECTION GUIDE (Post-Ollama Quota)
+NEXUS OS — COMPLETE PI MODEL SETUP (2026-04-15)
 ================================================================================
-Date: 2026-04-15
-Problem: Ollama cloud quota exhausted (93.6% session, 97.2% weekly)
-Solution: 3 alternative routes, all tested and working
+Author: Pi + Speci | Status: TESTED & VALIDATED
 
 ================================================================================
-ROUTE 1: NVIDIA NIM DIRECT (RECOMMENDED — 7 MODELS, ALL TESTED)
+THE SETUP — BATTLE-TESTED RESULTS
 ================================================================================
 
-Pi → NVIDIA NIM API → Multiple Models (NO Ollama, NO quota)
+All models tested for: speed, tool-calling (read/write/edit/bash), and quality.
+Every model below has CONFIRMED native tool_calls support.
 
-Already configured in: ~/.pi/agent/models.json
-
-SPEED TEST RESULTS (2026-04-15, coding task):
-  ✅ NIM-Qwen3-Coder-480B      1,043ms  ← PRIMARY (coding-specialized)
-  ✅ NIM-Step-3.5-Flash         1,047ms  ← FASTEST
-  ✅ NIM-GLM4.7                 1,464ms  ← fast general
-  ✅ NIM-Kimi-K2-Thinking       2,021ms  ← thinking model
-  ✅ NIM-GLM5                   2,468ms  ← highest quality
-  ✅ NIM-Kimi-K2.5              4,018ms  ← deep reasoning
-  ⚠️ NIM-MiniMax-M2.7-SLOW    41,108ms  ← 40x slower, avoid
-
-HOW TO USE:
-  pi --model "NIM-Qwen3"          ← coding (RECOMMENDED)
-  pi --model "NIM-Step"           ← speed priority
-  pi --model "NIM-GLM5"           ← quality priority
-  pi --model "NIM-Kimi-K2.5"      ← deep reasoning
-
-Or inside Pi: Ctrl+L → pick any NIM-* model
-
-================================================================================
-ROUTE 2: MODELRELAY (62 MODELS, 9 PROVIDERS)
-================================================================================
-
-Pi → ModelRelay (localhost:7352) → Best Available Model
-
-HOW TO START:
-  1. Open new terminal
-  2. Run: modelrelay --port 7352
-  3. Wait for "Router ready" message
-  4. In Pi, select any ModelRelay model
-
-MODELS AVAILABLE:
-  - MiniMax M2.7 (score: 100)
-  - MiniMax M2.5 (score: 99)
-  - GLM-5 (score: 97)
-  - Kimi K2.5 (score: 95)
-  - Step 3.5 Flash (score: 93, fastest)
-  - Devstral 2 123B (score: 86)
-  - Qwen3 80B Thinking (score: 72)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TIER 1 — MASTER CHEF (Complex thinking, architecture, deep planning)      │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ Model                     │ Speed  │ Score │ Use Case                       │
+├───────────────────────────┼────────┼───────┼────────────────────────────────┤
+│ NIM-Kimi-K2.5 ★ PRIMARY   │ 2.8s   │ 77    │ Deep reasoning + tool use      │
+│ NIM-GLM5                  │ 2.5s   │ 78    │ Highest quality NIM model       │
+│ NIM-Qwen3.5-400B          │ 17s    │ 68    │ Largest brain, slow but deep    │
+│ OC-MiniMax-M2.5           │ 1.8s   │ 80    │ Highest quality score overall   │
+│ OC-Trinity-Large          │ 1.5s   │ 78    │ Fast + high quality             │
+├───────────────────────────┴────────┴───────┴────────────────────────────────┤
+│ TIER 2 — IMPLEMENTATION (Coding, testing, git operations, fast edits)     │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ NIM-Qwen3-Coder-480B      │ 1.0s   │ 71    │ Code-specialized, blazing fast  │
+│ NIM-Kimi-K2-Thinking      │ 2.0s   │ 71    │ Fast thinking for code review   │
+│ NIM-GLM4.7                │ 1.5s   │ 74    │ Solid general + coding          │
+├───────────────────────────┴────────┴───────┴────────────────────────────────┤
+│ TIER 3 — SPEED (Quick tasks, searches, small edits, scaffolding)          │
+├───────────────────────────┬────────┬───────┬────────────────────────────────┤
+│ NIM-Step-Flash             │ 0.6s   │ 74    │ Fastest. Quick tasks.           │
+│ NIM-GLM4.7                │ 1.1s   │ 74    │ Fast general purpose            │
+└───────────────────────────┴────────┴───────┴────────────────────────────────┘
 
 ================================================================================
-ROUTE 3: OLLAMA (WHEN QUOTA RESETS)
+ROTATION STRATEGY — TASK-BASED MODEL SWITCHING
 ================================================================================
 
-Pi → Ollama → minimax-m2.7:cloud
+ARCHITECTURE/PLANNING SESSION:
+  pi --model "NIM-Kimi-K2.5"
+  WHY: Best reasoning + reliable tool use at reasonable speed.
+       Thinks deeply before acting. Handles complex multi-file refactors.
 
-Session resets in: ~2 hours
-Weekly resets in: ~4 days
-Still in models.json as fallback.
+CODING/IMPLEMENTATION SESSION:
+  pi --model "NIM-Qwen3-Coder"
+  WHY: Purpose-built for code. 1 second response. Handles tests, edits, git.
 
-================================================================================
-QUICK START — RIGHT NOW
-================================================================================
+QUICK FIX / SMALL TASK:
+  pi --model "NIM-Step-Flash"
+  WHY: 600ms response. For "just fix this typo" or "add this import".
 
-Step 1: Open CMD/PowerShell
-Step 2: Run:
-  pi --model "NIM-Qwen3"       ← coding (1 second response)
-  pi --model "NIM-Step"        ← fastest (1 second response)
-  pi --model "NIM-GLM5"        ← quality (2.5 second response)
+DEEP RESEARCH / COMPLEX DESIGN:
+  pi --model "NIM-GLM5"
+  WHY: Highest quality thinking on NIM. Use when you need the best answer,
+       not the fastest answer.
 
-Step 3: To continue NEXUS project, paste:
-  Read Documents/NEXUS/COLD_HANDOFF.txt and Documents/NEXUS/worklog.md
-
-================================================================================
-LOSSLESS CONTINUATION CHECKLIST
-================================================================================
-
-Before ending ANY session:
-  [x] Commit to git: cd Documents/NEXUS && git add -A && git commit -m "..."
-  [x] Export session: Pi auto-exports to Downloads/
-  [x] Update worklog: Documents/NEXUS/worklog.md
-
-Starting new session:
-  [x] Read COLD_HANDOFF.txt (500 tokens)
-  [x] Read worklog.md (current tasks)
-  [x] Upload cloud_pack if using cloud AI
+INSIDE PI — SWITCH ON THE FLY:
+  Ctrl+L → pick model from list
+  Ctrl+P → cycle to next model
+  Shift+Ctrl+P → cycle to previous model
 
 ================================================================================
-models.json LOCATION
+PROVIDERS (3 active, 10 models)
 ================================================================================
 
-C:\Users\speci.000\.pi\agent\models.json
+NVIDIA NIM (7 models)
+  Endpoint: https://integrate.api.nvidia.com/v1
+  Auth: NVIDIA API key (configured)
+  Cost: FREE (NIM developer tier)
+  Limits: Generous, separate from Ollama
 
-Contains 2 providers:
-  nvidia-nim    → 7 models, all tested, 1-4 second response (NO QUOTA)
-  ollama        → Original (QUOTA LIMITED, fallback only)
+OPENCODE (2 models)  
+  Endpoint: https://opencode.ai/zen/v1
+  Auth: OpenCode API key (configured)
+  Cost: FREE tier models (-free suffix)
+  Limits: Rate-limited but functional
 
-File reloads when you press Ctrl+O in Pi. No restart needed.
+OLLAMA (1 model — QUOTA LIMITED)
+  Endpoint: http://127.0.0.1:11434/v1
+  Auth: Local
+  Status: Cloud quota exhausted. Resets weekly.
+
+================================================================================
+PI EXTENSIONS INSTALLED
+================================================================================
+
+1. nexus-git-guardian.ts
+   - Auto-commits NEXUS repo on session exit
+   - Shows dirty repo warnings in footer
+   - /nexus-status command (branch, changes, recent commits)
+
+2. nexus-context-optimizer.ts  
+   - Shows token usage in footer (🟢 30K/131K (23%))
+   - Auto-injects COLD_HANDOFF on new sessions
+   - Warns at 80% context usage
+   - /nexus-bootstrap — loads full project context
+   - /nexus-save — triggers worklog update + git commit
+
+3. @ollama/pi-web-search (package)
+   - Web search capability for research tasks
+
+CUSTOM COMMANDS:
+  /nexus-bootstrap  — Load project context into session
+  /nexus-save        — Update worklog + commit
+  /nexus-status      — Git status of NEXUS repo
+
+================================================================================
+SKILLS INSTALLED
+================================================================================
+
+  find-skills                        — Discover installable skills
+  microsoft-foundry                  — Azure Foundry agent deployment
+  supabase-postgres-best-practices   — Postgres optimization
+
+================================================================================
+QUICK START COMMANDS
+================================================================================
+
+FOR NEXUS OS DEVELOPMENT (recommended):
+  pi --model "NIM-Kimi-K2.5"
+  Then: /nexus-bootstrap
+
+FOR FAST CODING:
+  pi --model "NIM-Qwen3-Coder"
+
+FOR QUICK TASKS:
+  pi --model "NIM-Step-Flash"
+
+FOR DEEP THINKING:
+  pi --model "NIM-GLM5"
+
+================================================================================
+FILE LOCATIONS
+================================================================================
+
+  ~/.pi/agent/models.json                           — Model config (10 models)
+  ~/.pi/agent/settings.json                         — Pi settings
+  ~/.pi/agent/extensions/nexus-git-guardian.ts       — Git auto-commit
+  ~/.pi/agent/extensions/nexus-context-optimizer.ts  — Token tracking
+  ~/Documents/NEXUS/COLD_HANDOFF.txt                — Project bootstrap
+  ~/Documents/NEXUS/worklog.md                      — Work tracking
+  ~/Documents/NEXUS/PI_RECONNECT.txt                — This document
 
 ================================================================================
