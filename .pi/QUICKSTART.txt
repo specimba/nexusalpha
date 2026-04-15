@@ -1,0 +1,132 @@
+================================================================================
+PI AGENT — QUICK-START BOOT
+================================================================================
+Version: 3.0 | Token Budget: ~500 | Date: 2026-04-15
+
+================================================================================
+FIRST: READ CONTEXT
+================================================================================
+
+1. Documents/NEXUS_OS_CLEANUP/00_MASTER_INDEX.txt
+2. Documents/NEXUS_OS_CLEANUP/NEXUS_MASTER_CONTEXT.txt
+3. Documents/NEXUS/worklog.md
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+CANONICAL SOURCE (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+
+YOUR WORKSPACE:
+  Documents/NEXUS/.pi/
+
+EXPERIMENTAL BRANCH:
+  pi/experimental
+
+MAIN (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+  → READ from here
+  → COPY to .pi/ before editing
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. CHECKOUT branch:
+   cd Documents/NEXUS
+   git checkout pi/experimental
+
+2. READ canonical:
+   cat Documents/NEXUS/src/nexus_os/bridge/server.py
+
+3. COPY to workspace:
+   cp Documents/NEXUS/src/nexus_os/bridge/server.py Documents/NEXUS/.pi/
+
+4. EDIT workspace copy:
+   vim Documents/NEXUS/.pi/server_experiment.py
+
+5. COMMIT to branch:
+   cd Documents/NEXUS
+   git add .pi/
+   git commit -m "pi: Add server experiment"
+
+6. PR to main:
+   git push origin pi/experimental
+   # Create PR on GitHub/Gitea
+
+================================================================================
+MEMORY FIRST
+================================================================================
+
+Before task:
+  1. Read worklog.md
+  2. Read NEXUS_MASTER_CONTEXT.txt
+  3. Check tasks/pending/
+
+After task:
+  1. Update worklog.md
+  2. Update relevant docs
+  3. Commit to branch
+
+================================================================================
+TOKENGUARD (Hot Path)
+================================================================================
+
+Track tokens:
+  from src.nexus_os.monitoring.token_guard import TokenGuard
+  guard = TokenGuard()
+  guard.track('pi-agent', tokens_used)
+
+Check budget:
+  if guard.check('pi-agent', 5000):
+      proceed
+
+================================================================================
+SKILLS
+================================================================================
+
+Read: Documents/NEXUS/.pi/SKILL.md
+Learn: Documents/NEXUS/.pi/HERMES_PROFILE.md
+
+Task patterns:
+  - Project cleanup → Create structure, archive
+  - Quick-start → ~500 token bootstrap
+  - Code → Write module + tests
+  - Architecture → Create spec doc
+  - Git → Commit, branch, merge
+
+================================================================================
+AGENTS
+================================================================================
+
+Read: Documents/NEXUS/AGENTS.md
+
+Models available:
+  osman-agent     → gemma3n:e4b
+  osman-coder    → qwen2.5-coder:7b
+  osman-speed    → frob/locooperator
+  osman-reasoning → uncensored:9b
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/
+2. WRITE to .pi/
+3. COMMIT to pi/experimental
+4. PR to main
+5. SPECI = main branch owner
+6. Update worklog.md after each task
+7. Commit after every meaningful change
+
+================================================================================
+START NOW
+================================================================================
+
+cd Documents/NEXUS
+git checkout pi/experimental
+git status
+# Ready to work
+
+================================================================================
