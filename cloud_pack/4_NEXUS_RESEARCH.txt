@@ -1,0 +1,1829 @@
+NEXUS OS v3.0 — RESEARCH & PLANNING
+====================================
+Generated: 2026-04-15
+
+════════════════════════════════════════════════════════════════
+FILE: NEXUS_MASTER_CONTEXT.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+                    NEXUS OS — MASTER CONTEXT
+                    Universal Bootstrap File
+================================================================================
+Version: 3.0
+Date: 2026-04-15
+Status: ACTIVE DEVELOPMENT
+Token Boot: ~250 tokens for minimal context
+
+================================================================================
+SECTION 0: WHAT IS NEXUS OS
+================================================================================
+
+Local-first Agent Operating System for Agent-to-Agent (A2A) communication.
+Primary purpose: Coordinate multiple AI models as a unified intelligent system.
+
+4 Pillars:
+  - BRIDGE: JSON-RPC 2.0 communication, MCP-native, A2A v1.0
+  - VAULT: S-P-E-W Memory System (Static/Processed/Embedded/Working)
+  - ENGINE: Task Orchestration, Hermes Router, Foreman/Workers
+  - GOVERNOR: Policy Enforcement, Trust Scoring, Security
+
+Research-backed upgrades planned for v3.0 (7 expert reports, 288+ sources).
+
+================================================================================
+SECTION 1: PROJECT ECOSYSTEM (5 PROJECTS)
+================================================================================
+
+1. NEXUS OS — PRIMARY Agent Operating System
+   Location: Documents/NEO agent/, Documents/NEXUS/
+   Status: Phase 1 ✅ (488 tests), Phase 2 ✅ (978 tests), v3.0 planned
+   
+2. DoppelGround — Research & Governance Helper
+   Location: Documents/DoppelGround/
+   Status: v6.1.9 Industrial Release
+   Role: Nexus's "brain" — research input, governance lanes (GOV/BLD/VAL/EXP)
+   
+3. GeniusTurtle (BonsaiTurtle) — Bonsai Model Pack
+   Location: Documents/GeniusTurtle/
+   Status: Active v1
+   Role: Portable Bonsai 8B/4B low-VRAM testing
+   
+4. OSMAN — Multi-Model Orchestrator
+   Location: OpenClaw workspace (Dell G16)
+   Status: v4 Stable
+   Models: osman-agent, osman-coder, osman-speed, osman-reasoning, osman-fast
+   
+5. TWAVE — Bonsai Research
+   Location: Research folder
+   Status: Analysis Phase
+   Focus: PrismML 1-bit Bonsai investigation
+
+================================================================================
+SECTION 2: ARCHITECTURE (LOCKED)
+================================================================================
+
+4 PILLARS:
+  Bridge (I/O) → Vault (Storage) → Engine (Execution) → Governor (Policy)
+
+S-P-E-W MEMORY HIERARCHY:
+  S: Static (MemPalace — verbatim storage, 96.6% recall)
+  P: Processed (FAISS — vector search, GPU-accelerated)
+  E: Embedded (SuperLocalMemory — math-based, zero cloud)
+  W: Working (Mira — decay-based, earn-or-fade)
+
+TRUST SCORING (Canonical Form):
+  Hot path: status → lane → hard-fail → Qeff → P → tanh → score (~μs)
+  Warm path: event log append, reason code (~ms)
+  Cold path: trust smoothing, card refresh (~s)
+
+LOCKED DECISIONS (Never Re-Debate):
+  ✓ 4 pillars architecture
+  ✓ S-P-E-W memory hierarchy
+  ✓ JSON-RPC 2.0 protocol
+  ✓ Deny-by-default isolation
+  ✓ speci = final authority
+  ✓ FTS5-only for Phase 1
+
+================================================================================
+SECTION 3: PHASE STATUS
+================================================================================
+
+Phase 1: ✅ COMPLETE (488 tests) — Bridge, Vault, Engine, Governor substrate
+Phase 2: ✅ COMPLETE (978 tests) — Hardening milestones 7-A→8-D
+v3.0 Integration: 📋 PLANNED — 12 component upgrades
+
+Critical Gaps (Must Fix):
+  - Bridge compliance bug (is_registered never set)
+  - Supply chain trust (ASI04 — no SkillFortify)
+  - Tool misuse risk (ASI02 — no risk classification)
+  - Executor timeout (default_timeout set but not enforced)
+  - Kill switch (ASI10 — no real-time termination)
+
+================================================================================
+SECTION 4: v3.0 UPGRADE PRIORITY (15 STEPS)
+================================================================================
+
+P0 — IMMEDIATE:
+  1. Fix bridge compliance bug (is_registered) — 5 min
+  2. Trust scoring hot-path (canonical form) — 2h
+  3. VAP L1+L2 audit trail (SHA-256 + Ed25519) — 3h
+  4. SkillFortify basic trust algebra — 3h
+  5. OWASP ASI Top 10 compliance — varies
+
+P1 — HIGH:
+  6. AgentAssert-ABC behavioral contracts — 4h
+  7. SuperLocalMemory + FAISS + MemPalace — 8h
+  8. Mira memory decay — 2h
+  9. AReaL + MegaTrain + TRL integration — 4h
+
+P2 — ENHANCEMENT:
+  10. MARS multi-token prediction (1.5-1.7x speed) — 1h
+  11. Metis tool discipline (98%→2% blind invocation) — 2h
+  12. RotorQuant KV compression (10.3x) — 1h
+  13. Semantic caching + prompt compression — 4h
+  14. Model routing — 2h
+  15. Context starvation indexing — 4h
+
+Total: ~35 hours
+
+================================================================================
+SECTION 5: TOKENGUARD SYSTEM (SPECI'S PRIORITY)
+================================================================================
+
+Token Saving Stack:
+  Layer 1: GPT-5.4 Tool Search (47% savings), tokscale CLI, ai-tokenizer
+  Layer 2: Semantic Caching (30-60%), Model Routing (40-60%), Context Starvation (10x)
+  Layer 3: SkillSmith Self-Optimization (8-18% per cycle)
+
+Integration Points:
+  Bridge: Token count in every JSON-RPC response
+  Vault: Token events → Mem0/Hermes
+  Engine: Foreman reads budget before spawning
+  Governor: Hard enforcement + VAP audit
+
+Implementation:
+  nexus_os/monitoring/token_guard.py (modular, local-first)
+
+================================================================================
+SECTION 6: SWARM ORCHESTRATION
+================================================================================
+
+OpenClaw Swarm Setup:
+  - Foreman: Watches tasks/pending/, spawns workers
+  - Workers: Execute delegated tasks
+  - Hermes: Route classification (code/ops/research/security)
+  - Mem0: Experience layer for context
+
+Trigger: When todo_count > 3 → auto-spawn Foreman + Workers
+
+Files: nexus_os/swarm/openclaw_spawner.py, foreman.py, worker.py
+
+================================================================================
+SECTION 7: DOPPELGROUND LANE SYSTEM
+================================================================================
+
+Lane Types:
+  DG-GOV-*: Governance, control, validation, authorization
+  DG-BLD-*: Bounded code/product implementation only
+  DG-VAL-*: Validation only
+  DG-EXP-*: Experiments only (never production)
+
+Rules:
+  - One canonical repo per project
+  - Experiments live outside production until promoted
+  - Artifact naming: prefixLANE-NNN.md format
+  - GOV writes GOV-*, BLD writes BLD-*, etc.
+
+================================================================================
+SECTION 8: EXPERT REPORTS (7 INTEGRATED)
+================================================================================
+
+1. Agent OS & Frameworks → MCP, SLM Mesh (P2P)
+2. Governance & Trust → OWASP ASI, VAP, SkillFortify
+3. Memory & Skills → SuperLocalMemory, MemPalace, FAISS, Mira
+4. A2A & Benchmarks → A2A v1.0, Claw-Eval Pass³
+5. Inference & Quant → RotorQuant (10.3x KV), ik_llama.cpp
+6. Training & Reasoning → AReaL, MegaTrain, TRL
+7. Models & Datasets → MARS (1.5-1.7x), Metis (tool efficiency)
+
+All integrated into v3.0 plan.
+
+================================================================================
+SECTION 9: FILE LOCATIONS
+================================================================================
+
+NEXUS OS:
+  Primary: Documents/NEO agent/nexus_os/
+  Secondary: Documents/NEXUS/
+  Source: Documents/NEO agent/nexus_os_full/nexus-os-hardening/src/
+
+DOPPELGROUND:
+  Canonical: Documents/DoppelGround/
+  Backups: DoppelGround_Industrial_Backup/, DoppelGround_m0_freeze_current/
+
+GENIUSTURTLE:
+  Canonical: Documents/GeniusTurtle/
+  Release: Documents/GeniusTurtle_release/
+
+QUICK-STARTS:
+  Pack: Downloads/codex starter pack NEXUSv2/
+  Continuation: Downloads/CONTINUATION_PACK_v3.md
+  MIMO Packs: Downloads/MIMO_CONTINUATION_PACK_*.md
+
+EXPERT REPORTS:
+  Primary: Downloads/NEXUSCLOUDSTARTER2/
+  Backup: Downloads/nexusdownloadDUMP-1/
+
+================================================================================
+SECTION 10: PROOF TAGS
+================================================================================
+
+FILE_CONFIRMED — File exists, content verified
+CODE_CONFIRMED — Code executed, tests passed
+ARTIFACT_CONFIRMED — Build artifact verified
+INFERRED — Deduced from context
+UNKNOWN — Not yet verified
+MISSING — Referenced but not found
+DRAFT — Design, not implemented
+
+================================================================================
+SECTION 11: COMMUNICATION RULES
+================================================================================
+
+1. State wins over all (file > chat)
+2. Never re-debate locked decisions
+3. Proof tags required for all assertions
+4. Direct communication, no filler
+5. Text format, not PDF
+6. speci = final authority
+7. Sign off: "regards, speci"
+
+================================================================================
+SECTION 12: BOOT TEMPLATE (~250 TOKENS)
+================================================================================
+
+You are resuming work on Nexus OS A2A — a local-first Agent Operating System.
+
+READ FIRST: 01_PROJECT_STATE.md (ground truth)
+Then: 04_INTEGRATIONS.md → pick P0 task → execute → update state
+
+RULES:
+1. State wins over all
+2. Never re-debate locked decisions
+3. Proof tags required: FILE_CONFIRMED | CODE_CONFIRMED | INFERRED
+4. Direct communication. No filler.
+5. speci = final authority
+
+STATUS: Phase 1 ✅ (488 tests), Phase 2 ✅ (978 tests), v3.0 planned
+NEXT: Pick P0 from 04_INTEGRATIONS.md → execute → report
+
+================================================================================
+END OF MASTER CONTEXT
+================================================================================
+
+For full details:
+  - Project state: 01_PROJECT_STATE.md
+  - Integrations: 04_INTEGRATIONS.md
+  - Architecture: 03_ARCHITECTURE.md
+  - Governance: 05_GOVERNANCE.md
+  - Expert reports: expert-[1-7]-*.md
+
+regards, NEXUS OS Architect
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: CYCLE5_RESEARCH_SUMMARY.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — CYCLE 5 RESEARCH INTELLIGENCE
+================================================================================
+Source: Downloads/NEXUS_OS_CYCLE5_MEGA_RESEARCH_SYNTHESIS.md
+Generated: 2026-04-11 by Super Z (GLM Research Swarm)
+Scope: 89 links, 50+ arXiv, 15+ GitHub, 25+ frameworks
+
+================================================================================
+CRITICAL FINDINGS
+================================================================================
+
+1. PRIMARY COMPETITOR: Qualixar OS (arXiv:2604.06392)
+   - TypeScript orchestration, 10 providers, Elastic License 2.0
+   - Weakness: Single author, no benchmarks, not truly open source
+   - Nexus advantage: True OS abstraction + open source
+
+2. SECURITY MODEL: KAIJU IGX (arXiv:2604.02375)
+   - 4-variable intent-gated execution: Scope, Intent, Impact, Clearance
+   - No adaptive attack surface (LLM never sees rejection reasons)
+   - Nexus must adopt: Replace CVA trait matching with IGX
+
+3. MEMORY VALIDATION: 10+ systems confirm S-P-E-W
+   - Mem0, A-MEM, FadeMem, MAGMA, ByteRover all validate 4-layer
+   - Fisher-Rao metric > cosine similarity
+   - Ebbinghaus decay + Zettelkasten linking emerging consensus
+
+4. AGENT ORCHESTRATION: DAG is standard
+   - AdaptOrch: 12-23% improvement with task-adaptive topology
+   - 4 topologies: Parallel, Sequential, Hierarchical, Hybrid
+
+================================================================================
+5-LAYER PROTOCOL STACK (Confirmed)
+================================================================================
+
+Layer 5: A2UI (Agent → User Interface) — Emerging
+Layer 4: ANP (Agent → Internet) — Decentralized
+Layer 3: A2A (Agent → Agent) — Google, 50+ partners
+Layer 2: MCP (Agent → Tool) — 10,000+ servers
+Layer 1: ACP (Agent → Agent lightweight REST) — IBM BeeAI
+
+Nexus OS: MCP + A2A (right bet, make extensible)
+
+================================================================================
+GOVERNANCE FRAMEWORKS (Complete Stack)
+================================================================================
+
+ATF (v0.9.1): 5 elements, 4-level maturity model
+OWASP ASI 2026: 10 risk categories (definitive)
+VAP (IETF): 4-layer verifiable AI provenance
+ABC (AgentAssert): Formal behavioral contracts with drift bounds
+KAIJU IGX: 4-variable intent-gated execution
+
+Nexus OS: ATF + VAP + ABC + KAIJU = Complete governance
+
+================================================================================
+7 NEW ARCHITECTURAL IDEAS
+================================================================================
+
+1. Nexus Kernel: KAIJU IGX + AdaptOrch + ABC combined
+2. Memory Flywheel: A-MEM + FadeMem + MemRL self-improving
+3. Agent Trust Chain: VAP + ATF + DID + KAIJU cryptographic
+4. Deliberation Gateway: DOVA + KAIJU + Squeez (40-60% savings)
+5. Skill Genome: ABC + LDP + ACE + Agent Skills Survey
+6. Red/Blue Team: Agent0 + MAST + DeepTeam co-evolution
+7. BranchFS for DAGs: Fork, Explore, Commit parallel execution
+
+================================================================================
+23 ACTION ITEMS (Prioritized)
+================================================================================
+
+PHASE 1 (Structural Foundation):
+  1. Add KAIJU 4-variable auth to Governor
+  2. Wire AsyncBridgeExecutor to real Bridge RPC
+  3. Integrate SecretStore into bridge/server.py
+  4. Implement FadeMem decay in memory layers
+  5. Replace similarity with value-aware retrieval
+  6. Make Bridge protocol handler pluggable
+
+PHASE 2 (Memory Overhaul):
+  7. Implement A-MEM Zettelkasten linking
+  8. Add MAGMA multi-graph relations
+  9. Build 5-tier progressive retrieval
+  10. Implement SAMEP for cross-agent memory
+
+PHASE 3 (Governance & Security):
+  11. Implement ABC behavioral contracts
+  12. Build ATF maturity model for permissions
+  13. Implement VAP provenance layer
+  14. Create OWASP ASI mitigation matrix
+  15. Build MAST health monitor (14 failure modes)
+
+PHASE 4 (Competitive Differentiation):
+  16. Build deliberation gateway
+  17. Implement Skill Genome system
+  18. Build Red/Blue Team co-evolution
+  19. Implement BranchFS for DAGs
+  20. Build Agent Trust Chain
+
+PHASE 5 (New Ideas):
+  21. Build Nexus Kernel
+  22. Build Memory Flywheel
+  23. Full 5-layer protocol support
+
+================================================================================
+COMPETITIVE POSITIONING
+================================================================================
+
+Nexus OS is NOT a framework. It is the OS that runs frameworks.
+
+No competitor has: True OS abstraction + Framework agnostic + IGX security
++ ATF governance + VAP provenance + ABC contracts + Memory lifecycle + 5-layer protocols
+
+Window is narrow. Execute now.
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: TOKEN_OPTIMIZATION_SUMMARY.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — TOKEN OPTIMIZATION SYSTEM
+================================================================================
+Source: Downloads/Real Developer Team – Token Optimiz.txt
+From: Grok (Team Lead, Real Developer Team)
+Date: 2026-04-15
+
+================================================================================
+TOKEN COUNTERS (Local + Cloud)
+================================================================================
+
+| Layer | Tool | Type | Token Savings |
+|-------|------|------|---------------|
+| Cloud | GPT-5.4 Tool Search | Native | 47% on tool-heavy |
+| Cloud+Local | tokscale CLI | Cross-platform | Dashboard |
+| Local | ai-tokenizer | 5-7x faster | Near-zero overhead |
+| Nexus-wide | Nexus-TokenGuard | Modular | Unified budget |
+
+Recommended stack:
+  - GPT-5.4 Tool Search (always on)
+  - tokscale dashboard
+  - ai-tokenizer in Python layer
+
+================================================================================
+TOKEN-SAVING STRATEGIES
+================================================================================
+
+| Strategy | Savings | Integration Point |
+|----------|---------|------------------|
+| GPT-5.4 Tool Search | 47% | Bridge/Skill Adapter |
+| Semantic Caching | 30-60% | Vault (SuperLocalMemory+FAISS) |
+| Model Routing | 40-60% | Coordinator+SkillSmith |
+| Context Starvation | 10x | Vault S/P layers |
+| SkillSmith Self-Opt | 8-18% | SkillSmith loop |
+| Queue/File Awareness | 10-15% | OpenClaw Foreman |
+
+================================================================================
+TOKENGUARD FEATURES
+================================================================================
+
+- Per-agent, per-skill, per-swarm token budgets
+- Real-time warning + hard stop
+- Automatic fallback to cheaper models
+- VAP-compliant logging
+- Hot path: non-blocking
+- Warm path: semantic cache, model routing
+- Cold path: analytics, optimization proposals
+
+================================================================================
+IMPLEMENTATION SEQUENCE
+================================================================================
+
+1. Today: Add TokenGuard module + basic counters (1hr)
+2. Tomorrow: Wire into Foreman + SkillSmith
+3. Next 2 days: Semantic caching + model routing
+4. Week 1: Dashboard + budget enforcement
+
+System gives visible, enforceable token savings.
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: EXPERT_REPORTS_INDEX.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — 7 EXPERT REPORTS INDEX
+================================================================================
+Date: 2026-04-15
+Source: Deep search (288+ links), structured analysis
+
+================================================================================
+EXPERT 1: AGENT OS & FRAMEWORKS
+================================================================================
+
+Sources: 29 projects analyzed
+Key Findings:
+  - MCP = universal tool protocol
+  - SLM Mesh for P2P agent communication
+  - Agno for core framework
+  - ByteRover for memory
+
+Top Integrations:
+  1. SLM Mesh → Bridge (P2P)
+  2. Agno → Engine
+  3. ByteRover → Vault
+  4. AutoAgent/AutoHarness → Self-improvement
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-1-agent-os-report.md
+
+================================================================================
+EXPERT 2: GOVERNANCE, TRUST & SAFETY
+================================================================================
+
+Sources: 21 frameworks analyzed
+Key Findings:
+  - OWASP ASI Top 10 = definitive threat model
+  - VAP 4-layer audit = cryptographic compliance
+  - SkillFortify = supply chain verification
+  - KAIJU IGX = intent-gated execution
+
+P0 Triad:
+  1. OWASP ASI compliance
+  2. VAP audit trail
+  3. SkillFortify trust
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-2-governance-report.md
+
+================================================================================
+EXPERT 3: MEMORY & SKILLS
+================================================================================
+
+Sources: 16 projects analyzed
+Key Findings:
+  - SuperLocalMemory = math-based, 74.8% zero-cloud
+  - MemPalace = verbatim, 96.6% LongMemEval
+  - FAISS = vector search
+  - Mira = decay-based working memory
+
+Vault Integration:
+  S: MemPalace (verbatim)
+  P: FAISS (vector)
+  E: SuperLocalMemory (math)
+  W: Mira (decay)
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-3-memory-skills-report.md
+
+================================================================================
+EXPERT 4: A2A PROTOCOL & BENCHMARKS
+================================================================================
+
+Sources: Research papers + benchmarks
+Key Findings:
+  - A2A v1.0 under Linux Foundation
+  - Claw-Eval Pass³ = 3-trial methodology
+  - Gym-Anything = 200+ environments
+  - AgentAssay = behavioral fingerprinting
+
+Must Adopt:
+  1. A2A v1.0 compliance
+  2. Pass³ evaluation methodology
+  3. Full-trajectory auditing
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-4-a2a-benchmarks-report.md
+
+================================================================================
+EXPERT 5: INFERENCE & QUANTIZATION
+================================================================================
+
+Key Findings:
+  - RotorQuant: 10.3x KV compression
+  - ik_llama.cpp: widest format support
+  - Bonsai 1-bit: llama.cpp merged
+
+Inference Stack:
+  Primary: ik_llama.cpp
+  KV: RotorQuant
+  Local: FAISS + LocalAI
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-5-inference-report.md
+
+================================================================================
+EXPERT 6: TRAINING & REASONING
+================================================================================
+
+Key Findings:
+  - AReaL: async RL, OpenClaw already demos
+  - MegaTrain: 100B+ on single GPU
+  - TRL: HuggingFace post-training
+  - Tree-GRPO: 4x rollout reduction
+
+Training Pipeline:
+  TRL (foundation)
+  + AReaL (agentic)
+  + MegaTrain (scale)
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-6-training-report.md
+
+================================================================================
+EXPERT 7: MODELS & DATASETS
+================================================================================
+
+Key Findings:
+  - MARS: 1.5-1.7x throughput, any model
+  - Metis: 98%→2% tool discipline
+  - Karpathy Wiki: persistent compounding knowledge
+  - Nemotron: agentic RL datasets
+
+Priority Models:
+  1. MARS (speed)
+  2. Metis (efficiency)
+  3. Gemma-4 (local)
+
+Location: Downloads/NEXUSCLOUDSTARTER2/expert-7-models-datasets-report.md
+
+================================================================================
+v3.0 INTEGRATION MAP
+================================================================================
+
+Component              Expert Sources
+───────────────────────────────────────
+MCP + A2A             1, 4
+Vault (S-P-E-W)      3
+Governance            2
+Trust Scoring         2
+Inference             5
+Training              6
+Models                7
+
+All 7 integrated into v3.0 plan.
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: NEXUS_V3_INTEGRATION_TASKS.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS v3.0 — INTEGRATION TASK LIST
+================================================================================
+Date: 2026-04-15
+Priority: P0 → P1 → P2
+
+================================================================================
+P0 TASKS — IMMEDIATE
+================================================================================
+
+P0-1: FIX BRIDGE COMPLIANCE BUG
+───────────────────────────────
+File: nexus_os/bridge/server.py
+Issue: is_registered context flag never set
+Fix: Set is_registered=True after successful auth
+Time: 5 minutes
+Test: Verify authenticated agents not blocked
+
+P0-2: TRUST SCORING HOT-PATH
+───────────────────────────────
+File: nexus_os/governor/trust.py
+Implementation: Canonical scoring form
+Formula:
+  if status in {blocked, unassigned, not_applicable}:
+    score = null
+  elif hard_fail or R > Rcrit(lane):
+    score = -1
+  else:
+    Qeff = clip((Q-qmin)/(1-qmin)) * (1-exp(-n/n0))
+    P = α*U + γ*D+ - β*R - η*D-
+    raw_score = tanh(κ * Qeff^δ * P)
+    score = 0 if |raw| < ε else raw
+Time: 2 hours
+Test: Unit tests for each lane (Research/Review/Audit/Compliance/Implementation)
+
+P0-3: VAP L1+L2 AUDIT TRAIL
+───────────────────────────────
+File: nexus_os/governor/proof_chain.py
+Implementation:
+  L1 Identity: UUIDv7 + timestamps + issuer
+  L2 Provenance: actor/input/context/action/outcome
+Time: 3 hours
+Dependencies: None
+Test: Verify hash chain integrity
+
+P0-4: SKILLFORTIFY TRUST ALGEBRA
+───────────────────────────────
+File: nexus_os/bridge/skill_fortify.py (NEW)
+Implementation: 4-level trust
+  FORMALLY_VERIFIED → AUDITED → SANDBOXED → UNSIGNED
+Time: 3 hours
+Test: Trust level assignment per skill
+
+P0-5: OWASP ASI TOP 10 COMPLIANCE
+───────────────────────────────
+File: nexus_os/governor/owasp_asi.py
+Status: Already implemented
+Action: Verify all 10 categories covered
+Time: 1 hour
+Test: test_owasp_asi.py
+
+================================================================================
+P1 TASKS — HIGH PRIORITY
+================================================================================
+
+P1-6: AGENTASSERT-ABC BEHAVIORAL CONTRACTS
+───────────────────────────────
+File: nexus_os/governor/agent_assert.py (NEW)
+Implementation: YAML DSL with 14 operators
+Formula: (p,δ,k) probabilistic guarantees
+Time: 4 hours
+Test: Contract enforcement tests
+
+P1-7: SUPERLOCALMEMORY + FAISS + MEMPALACE
+───────────────────────────────
+Files: nexus_os/vault/superlocal.py, mempalace.py, faiss_adapter.py
+Vault upgrade:
+  S: MemPalace (verbatim, 96.6% recall)
+  P: FAISS (vector, GPU-accelerated)
+  E: SuperLocalMemory (math, zero-cloud)
+Time: 8 hours
+Dependencies: P0-3 (audit trail)
+Test: Benchmark vs mem0
+
+P1-8: MIRA MEMORY DECAY
+───────────────────────────────
+File: nexus_os/vault/mira.py (NEW)
+Implementation: Earn-or-fade formula
+Formula-based decay + Text-Based LoRA
+Time: 2 hours
+Dependencies: P1-7
+Test: Memory retention tests
+
+P1-9: AREAL + MEGATRAIN + TRL INTEGRATION
+───────────────────────────────
+Files: nexus_os/engine/training/ (NEW)
+Stack: TRL (foundation) + AReaL (agentic) + MegaTrain (scale)
+Time: 4 hours
+Dependencies: None
+Test: Training pipeline smoke test
+
+================================================================================
+P2 TASKS — ENHANCEMENT
+================================================================================
+
+P2-10: MARS MULTI-TOKEN PREDICTION
+───────────────────────────────
+File: nexus_os/engine/mars.py (NEW)
+Implementation: 1.5-1.7x throughput boost
+Drop-in: Any AR model
+Time: 1 hour
+Test: Speed benchmark
+
+P2-11: METIS TOOL DISCIPLINE
+───────────────────────────────
+File: nexus_os/engine/metis.py (NEW)
+Implementation: 98%→2% blind invocation reduction
+Framework: HDPO
+Time: 2 hours
+Test: Tool usage accuracy
+
+P2-12: ROTORQUANT KV COMPRESSION
+───────────────────────────────
+File: nexus_os/engine/rotorquant.py (NEW)
+Implementation: 10.3x KV compression
+Drop-in: ik_llama.cpp integration
+Time: 1 hour
+Test: Memory vs speed benchmark
+
+P2-13: SEMANTIC CACHING + PROMPT COMPRESSION
+───────────────────────────────
+File: nexus_os/vault/semantic_cache.py (NEW)
+Implementation: LongLLMLingua or Bifrost
+Savings: 30-60%
+Time: 4 hours
+Dependencies: P1-7
+Test: Cache hit rate
+
+P2-14: MODEL ROUTING
+───────────────────────────────
+File: nexus_os/engine/router.py (upgrade)
+Implementation: Complexity-based routing
+Rules:
+  Simple → cheap/fast model
+  Complex → frontier model
+Time: 2 hours
+Dependencies: P2-12
+Test: Routing accuracy
+
+P2-15: CONTEXT STARVATION INDEXING
+───────────────────────────────
+File: nexus_os/vault/compile_index.py (NEW)
+Implementation: Pre-compute indexes
+Savings: 10x on knowledge tasks
+Time: 4 hours
+Dependencies: P1-7
+Test: Query latency benchmark
+
+================================================================================
+DEPENDENCY GRAPH
+================================================================================
+
+P0-1 ─┬─ P0-2 ─┬─ P1-6
+      │         │
+      │         └─ P1-7 ─┬─ P1-8 ─┬─ P2-13 ─┬─ P2-14
+      │                 │         │          │
+      │                 │         └─ P2-15 ─┤
+      │                 │                    │
+      │                 └────────────────────┘
+      │
+      └─ P0-3 ─┬─ P0-4
+               │
+               └─ P0-5
+
+P2-10, P2-11, P2-12, P1-9: Independent (no deps)
+
+================================================================================
+ESTIMATED TIME
+================================================================================
+
+P0: 9.5 hours
+P1: 18 hours
+P2: 14 hours
+───────────────────────────────────────
+Total: ~41.5 hours
+
+Parallel execution possible: ~20 hours with 2 agents
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: contexts/DOPPELGROUND_CANONICAL.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+DOPPELGROUND — CANONICAL REFERENCE
+================================================================================
+Version: 6.1.9 Industrial Release
+Date: 2026-04-15
+Location: Documents/DoppelGround/
+
+================================================================================
+WHAT IS DOPPELGROUND
+================================================================================
+
+Research & Governance Helper for NEXUS OS.
+"Deep T" — DoppelGround's "brain" system.
+Biological analogy: Brain (memory), Spinal Cord (DAG), Immune (security).
+
+14-Agent Workforce:
+  Director, Scientist, Librarian, Security, Architect,
+  Backend, Creative + specialized organs (DNA specs in agents/*.agent.md)
+
+================================================================================
+ARCHITECTURE
+================================================================================
+
+Brain (Central Intelligence)
+  Component: brain/brain_store.py
+  Function: Hippocampus & Long-term Memory
+  Spec: LanceDB Vector Store with Nomic-Embed-v3
+  Metric: 70% reduction in redundant context loads
+
+Spinal Cord (Data Transport)
+  Component: sync-protocol.md, agents/parallel_runner.py
+  Function: DAG-based Event Synchronization
+  Metric: 1.82x–1.95x speedup on independent hardware
+
+Immune System (Doppel-Shell)
+  Component: agents/policy_engine.py
+  Function: Zero-Trust Whitelist, self-quarantine
+  Spec: Out-of-process shell/file interception
+
+Nervous System (Bridge)
+  Component: assemblerun/bridge.py
+  Function: API tunnel with heartbeat monitoring
+
+================================================================================
+LANE SYSTEM (STRICT)
+================================================================================
+
+DG-GOV-* — Governance, control, authorization
+DG-BLD-* — Bounded code implementation only
+DG-VAL-* — Validation only
+DG-EXP-* — Experiments only
+
+RULES:
+  - One canonical repo per project
+  - Experiments live outside production
+  - Artifact naming: prefixLANE-NNN.md
+  - GOV writes GOV-*, BLD writes BLD-*, etc.
+  - No generic task.md or walkthrough.md
+
+================================================================================
+V6.1.9 HARDENING (9 PATCHES)
+================================================================================
+
+v6.1.9 = 9 exact sequential hardening patches:
+  1. Baseline identity lock (Gate 1)
+  2-9. Progressive security hardening
+  10. Ultimate cryptographic human-in-the-loop (Gate 10)
+
+Zero-Trust Override:
+  operator_auth.py Out-of-Band lock
+  AI mechanically incapable of auto-proceeding without CEO
+
+================================================================================
+FILES
+================================================================================
+
+Canonical: Documents/DoppelGround/
+Backups:
+  DoppelGround_Industrial_Backup/
+  DoppelGround_m0_freeze_current/
+  DoppelGround_wt_exp02/
+
+Key files:
+  AGENTS.md — 14-agent workforce DNA
+  DOPPELGROUND LANE PACK — Operator standard
+  brain/brain_store.py — Memory system
+  assemblerun/bridge.py — API tunnel
+  agents/policy_engine.py — Doppel-Shell
+
+================================================================================
+CURRENT LANES
+================================================================================
+
+DG-GOV-01 = BASELINE_CONTROL_REVIEW
+DG-BLD-02 = Next approved bounded implementation
+DG-EXP-01 = EXPERIMENT_BROWSER_TEST
+
+================================================================================
+PROOF TAGS
+================================================================================
+
+FILE_CONFIRMED — Verified
+CODE_CONFIRMED — Tests passed
+DRAFT — Design, not implemented
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: contexts/GENIUSTURTLE_CANONICAL.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+GENIUSTURTLE (BonsaiTurtle) — CANONICAL REFERENCE
+================================================================================
+Version: v1.0
+Date: 2026-04-15
+Location: Documents/GeniusTurtle/
+
+================================================================================
+WHAT IS GENIUSTURTLE
+================================================================================
+
+Portable Bonsai Low-VRAM Pack v1
+Windows-first portable starter for Bonsai 8B/4B testing
+Truth-first operator pack, not benchmark theatre
+
+Purpose:
+  - Reusable low-VRAM model pack
+  - Launcher-first setup
+  - Repo-relative structure
+  - Manifest-driven HuggingFace model setup
+
+================================================================================
+PROFILE LADDER
+================================================================================
+
+Eco 16k:
+  Model: Bonsai 4B
+  Context: 16K
+  Use: Lighter sessions
+
+Balanced 24k (DEFAULT):
+  Model: Bonsai 8B
+  Context: 24K
+  Use: Daily serious work
+
+Research 32k:
+  Model: Bonsai 8B
+  Context: 32K
+  Use: Deep research, structure design
+
+================================================================================
+REPO STRUCTURE
+================================================================================
+
+launchers/         — Primary surface (status, eco, balanced, research)
+configs/           — Runtime + runtime-presets
+runtime/           — llama-server.exe or similar
+models/            — Repo-local model storage
+logs/              — Operator review (generated)
+scripts/trusted/   — Automation scripts
+manifests/models/   — HuggingFace model manifests
+
+Launchers:
+  status.cmd, eco-16k.cmd, balanced-24k.cmd, research-32k.cmd
+
+================================================================================
+MODEL SETUP
+================================================================================
+
+Primary path: hf download
+Fallback: Python huggingface_hub helper
+
+Current manifests:
+  prism-ml/Bonsai-4B-gguf
+  prism-ml/Bonsai-8B-gguf
+
+Download commands:
+  hf download prism-ml/Bonsai-4B-gguf
+  hf download prism-ml/Bonsai-8B-gguf
+
+Auth: hf auth login (if needed)
+
+================================================================================
+TRUTH BOUNDARIES
+================================================================================
+
+✓ Full GPU layer offload encoded
+✓ Flash attention preserved as evidence
+✗ n-predict not set (intentional)
+✗ Portable thermal behavior NOT proven
+✗ Hard token caps are safety rails, not finish detectors
+
+================================================================================
+TURLTLEBENCH PROGRAM
+================================================================================
+
+TurtleBench for testing:
+  - Truth-first evaluation
+  - Operator-grade evidence
+  - NOT benchmark theatre
+
+================================================================================
+FILES
+================================================================================
+
+Documents/GeniusTurtle/
+  README.md — Full documentation
+  QUICKSTART.md — Fast setup
+  BENCHMARKS.md — Test results
+  FINDINGS.md — Operator discoveries
+  MANUAL_RUNBOOK.md — Detailed guide
+  launchers/ — .cmd launchers
+  configs/ — Runtime configurations
+  tests/ — TurtleBench suite
+
+Documents/GeniusTurtle_release/
+  Stable release version
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: contexts/OSMAN_CANONICAL.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+OSMAN — CANONICAL REFERENCE
+================================================================================
+Version: v4 Stable
+Date: 2026-04-15
+Platform: OpenClaw (Dell G16)
+
+================================================================================
+WHAT IS OSMAN
+================================================================================
+
+Multi-Model Orchestrator on OpenClaw
+4 custom OSMAN models + test roster
+Windows-first PowerShell automation
+
+Hardware:
+  Dell G16 (Windows 10)
+  RTX 4070 8GB VRAM
+  31.7GB RAM
+
+================================================================================
+MODEL ROSTER (TESTED & STABLE)
+================================================================================
+
+Role         Model                    Base              Speed      Status
+────────────────────────────────────────────────────────────────────────────
+Agent        osman-agent             gemma3n:e4b       25.9 tok/s  ✅ CLEAN
+Coder        osman-coder             qwen2.5-coder:7b  23.2 tok/s  ✅ CLEAN
+Speed        osman-speed             frob/locooperator 62.4 tok/s  ✅ CLEAN
+Quick        qwen3:4b-thinking       —                72.6 tok/s  ✅ CLEAN
+Light        gemma3n:e4b             —                27.2 tok/s  ✅ CLEAN
+Experimental frob/locooperator        —                58.1 tok/s  ✅ CLEAN
+
+Thinking models (leakage expected):
+  osman-reasoning (uncensored:9b), qwen3:8b, qwen3.5:4b
+
+Broken models:
+  Bonsai: ❌ Q1_0 incompatible with Ollama
+  HF LocoOperator 4B: ❌ Safety refusal
+
+================================================================================
+STABILITY TEST SCRIPT
+================================================================================
+
+model-stability-test-v4.ps1
+
+Test all models with:
+  Prompt: "Say TEST_OK"
+  Timeout: 60s
+  keep_alive: 0 (clear VRAM between tests)
+
+Run:
+  cd osman-workspace
+  .\model-stability-test-v4.ps1 -Quick
+
+================================================================================
+MODEL FILES
+================================================================================
+
+osman-agent (Modelfile-agent):
+  FROM gemma3n:e4b
+  SYSTEM: "Be direct, no reasoning in replies"
+
+osman-coder (Modelfile-coder):
+  FROM qwen2.5-coder:7b
+  SYSTEM: "Clean code, error handling, minimal explanation"
+
+osman-speed (Modelfile-speed):
+  FROM frob/locooperator
+  SYSTEM: "Maximum brevity, one-line answers"
+
+osman-reasoning (Modelfile-reasoning):
+  FROM jaahas/qwen3.5-uncensored:9b
+  SYSTEM: "Deep analysis, chain-of-thought"
+
+osman-fast (Modelfile-fast):
+  FROM qwen3.5:4b
+  SYSTEM: "Quick response, no thinking prefix"
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+Best local model: frob/locooperator (86.3 tok/s, clean)
+Best reasoning: osman-reasoning (thinking leak fine here)
+Avoid: Thinking models for speed roles
+
+Bonsai solution:
+  - Requantized versions don't work well
+  - Use PrismML llama-server for original Q1_0
+  - Or skip until better Ollama support
+
+================================================================================
+HEARTBEAT WIRING
+================================================================================
+
+HEARTBEAT.md: Created but not wired to baselines
+Next: Wire heartbeat rotation to stable roster
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: contexts/TWAVE_CANONICAL.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+TWAVE — CANONICAL REFERENCE
+================================================================================
+Version: Analysis Phase
+Date: 2026-04-15
+Focus: Bonsai/PrismML Research
+
+================================================================================
+WHAT IS TWAVE
+================================================================================
+
+Research project analyzing PrismML 1-bit Bonsai
+Investigating:
+  - Whitepaper claims
+  - Runtime forks
+  - Intelligence density metrics
+  - TWAVE vs Bonsai differentiation
+
+================================================================================
+BONSAI 8B SUMMARY
+================================================================================
+
+PrismML release (March 2026):
+  - Built on Qwen3-8B
+  - 1-bit weights (Q1_0_g128 format)
+  - 14.2x size reduction (1.15GB vs 16.38GB FP16)
+  - 5-8x faster inference
+  - Custom llama.cpp kernels needed
+
+Claims verified:
+  ✓ End-to-end 1-bit deployment
+  ✓ Q1_0_g128 format
+  ✓ Runtime footprint reduction
+  ✓ Benchmark performance
+
+NOT disclosed (proprietary):
+  ✗ Training recipe
+  ✗ Loss function
+  ✗ Regularizer
+  ✗ Curvature techniques
+
+================================================================================
+TWAVE ANALYSIS
+================================================================================
+
+Founder publication map:
+  Babak Hassibi: Second-order pruning (Optimal Brain Surgeon)
+  Sahin Lale: Control theory, stability
+  Omead Pooladzandi: Curvature-informed optimization
+
+Strongest hypothesis:
+  Second-order / curvature-aware compression-aware training
+  + stability-oriented regularization
+
+================================================================================
+TWAVE BOUNDED DIAGNOSTICS
+================================================================================
+
+TWAVE's own investigation path:
+  1. Inspect Prism runtime forks
+     - Kernel entry points
+     - Q1_0_g128 handling
+     - Offline conversion scripts
+  
+  2. Author publication deep read
+     - Hassibi: Optimal Brain Surgeon
+     - Lale: Implicit regularization
+     - Pooladzandi: Curvature-aware optimization
+  
+  3. Spectral entropy diagnostics
+     - Conditioning analysis
+     - Factorized operators
+  
+  4. TileLang kernel prototyping
+     - After environment is clean
+     - Informed by Bonsai patterns
+
+================================================================================
+TWAVE vs BONSAI
+================================================================================
+
+Bonsai value for TWAVE:
+  ✓ Runtime/kernel engineering reference
+  ✓ Hypothesis space for compression
+  ✗ Cannot rely on hidden method
+  ✗ Cannot claim reproduction
+
+TWAVE must continue:
+  - Reconstruction analysis
+  - Downstream stability
+  - Bounded evidence path
+
+================================================================================
+FILES
+================================================================================
+
+Research location: Downloads/
+Expert report: ALLAIreportsPrism.txt
+TWAVE verdicts: ## TWAVE — Final Verdict Proposal.txt
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_GEMINI_31_PRO.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — GEMINI 3.1 PRO QUICK-START
+================================================================================
+Model: Google Gemini 3.1 Pro
+Purpose: Research, governance reasoning, complex analysis
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Provider: Google AI (via OpenClaw gateway)
+Type: Frontier reasoning, long context
+Context: 1M tokens (Gemini 3.1)
+Strengths: Research, governance, complex reasoning
+Use Case: DG-GOV lane reasoning, complex task analysis
+
+================================================================================
+OPENCLAW SETUP
+================================================================================
+
+1. Add to openclaw config:
+   providers:
+     google:
+       api_key: ${GOOGLE_API_KEY}
+       models:
+         - gemini-3.1-pro
+
+2. Test connection:
+   openclaw model test google/gemini-3.1-pro
+
+3. Use in tasks:
+   /model google/gemini-3.1-pro
+   "Analyze this governance policy..."
+
+================================================================================
+DOPPELGROUND INTEGRATION
+================================================================================
+
+Best for: DG-GOV-01 (Governance Lane)
+  - Complex policy analysis
+  - Multi-stakeholder review
+  - Risk assessment
+
+Workflow:
+  1. Gemini 3.1 Pro analyzes policy
+  2. Output → DoppelGround brain (memory)
+  3. Architect validates structure
+  4. Security validates integrity
+
+================================================================================
+RESEARCH WORKFLOW
+================================================================================
+
+Gemini 3.1 Pro + Hermes Router:
+  1. Research query arrives
+  2. Hermes routes to Gemini 3.1 Pro
+  3. Deep analysis (1M context)
+  4. Result → Mem0 (experience layer)
+  5. Foreman delegates action if needed
+
+================================================================================
+TOKEN SAVINGS
+================================================================================
+
+With Gemini 3.1 Pro:
+  - Native Tool Search: 47% reduction
+  - Long context: No need to chunk documents
+  - Thinking mode: Better reasoning per token
+
+================================================================================
+ANTIGRAVITY INTEGRATION
+================================================================================
+
+Antigravity Workspace: .antigravity/
+Use for:
+  - Complex architectural decisions
+  - Governance policy review
+  - Multi-model orchestration planning
+
+================================================================================
+STATUS
+================================================================================
+
+Priority: P0 (Research backbone)
+Model: gemini-3.1-pro
+API: google
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_GEMMA4_E4B.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — GEMMA-4 E4B QUICK-START
+================================================================================
+Model: Gemma-4 E4B (Embedding + Reasoning)
+Purpose: Local agent backbone, multimodal reasoning
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Base Model: google/gemma-4-e4b-it
+Type: Instruction-tuned, 4B parameters
+Context: 32K tokens
+Strengths: Reasoning, code, multimodal
+Use Case: osman-agent base (replacement for gemma3n:e4b)
+
+================================================================================
+QUICK SETUP (OpenClaw)
+================================================================================
+
+1. Pull model:
+   ollama pull google/gemma-4-e4b-it
+
+2. Create Modelfile:
+   FROM google/gemma-4-e4b-it
+   PARAMETER temperature 0.5
+   PARAMETER top_p 0.85
+   PARAMETER num_ctx 8192
+   PARAMETER repeat_penalty 1.1
+   SYSTEM """
+   You are osman-agent, the coordinator AI.
+   Rules: 1) Be direct. 2) Never explain reasoning in replies.
+   3) Handle conversations, research, tasks. 4) Skip filler.
+   """
+
+3. Create model:
+   ollama create osman-agent -f Modelfile-agent
+
+4. Test:
+   ollama run osman-agent "Reply: TEST_OK"
+
+================================================================================
+SWARM INTEGRATION
+================================================================================
+
+Hermes Router: gemma-4-e4b handles classification tasks
+Foreman: gemma-4-e4b as coordinator
+Vault: gemma-4-e4b for memory queries
+
+Flow:
+  1. Task arrives
+  2. gemma-4-e4b classifies (Hermes)
+  3. gemma-4-e4b delegates to workers
+  4. gemma-4-e4b synthesizes response
+
+================================================================================
+TOKEN SAVINGS
+================================================================================
+
+With TokenGuard:
+  - Semantic caching: 30-60% on repeated queries
+  - Model routing: Route simple queries to gemma-4-e4b, complex to GLM-5
+  - Context starvation: Pre-compute indexes via MemPalace
+
+================================================================================
+NEXUS INTEGRATION
+================================================================================
+
+Bridge: JSON-RPC with token headers
+Vault: S-P-E-W memory queries
+Engine: Hermes classification
+Governor: Trust scoring + policies
+
+================================================================================
+STATUS
+================================================================================
+
+Recommended for: Local agent backbone
+Priority: P0
+Alternative: gemma3n:e4b (if VRAM limited)
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_GLM5.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — GLM-5 QUICK-START
+================================================================================
+Model: Zhipu GLM-5 (via OpenClaw gateway)
+Purpose: Reasoning, research, swarm coordination
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Provider: OpenClaw (cloud)
+Type: Reasoning, long context
+Context: 128K tokens
+Strengths: Reasoning, code, multilingual
+Use Case: GLM-5 Turbo, research synthesis, complex analysis
+
+================================================================================
+OPENCLAW SETUP
+================================================================================
+
+1. Add to openclaw config:
+   providers:
+     glm:
+       api_key: ${GLM_API_KEY}
+       base_url: https://open.bigmodel.cn/api/paas/v4
+       models:
+         - glm-5
+         - glm-5-turbo
+
+2. Test:
+   openclaw model test glm/glm-5-turbo
+
+================================================================================
+SWARM COORDINATION
+================================================================================
+
+GLM-5 as Foreman (swarm coordinator):
+  1. Task arrives
+  2. GLM-5 analyzes complexity
+  3. Routes to specialists:
+     - Code → osman-coder
+     - Speed → osman-speed
+     - Research → Gemini 3.1 Pro
+  4. Synthesizes response
+  5. Updates Mem0
+
+Strengths for coordination:
+  - Fast reasoning
+  - Long context (128K)
+  - Cost-effective
+
+================================================================================
+RESEARCH INTEGRATION
+================================================================================
+
+MiMo CLAW workflow (already established):
+  1. speci uploads research files
+  2. GLM-5 analyzes + synthesizes
+  3. Creates quick-start packs
+  4. Updates continuation packs
+
+Session management:
+  - MIMO_CONTINUATION_PACK_*.md
+  - Token-efficient session continuation
+
+================================================================================
+DOPPELGROUND INTEGRATION
+================================================================================
+
+Use in: DG-BLD-02 (Build lane)
+  - Complex implementation planning
+  - Architecture decisions
+  - Multi-file coordination
+
+Not primary for: DG-GOV-01 (Gemini for governance)
+
+================================================================================
+CONTEXT TRANSFER
+================================================================================
+
+GLM-5 Session Management:
+  1. Create continuation pack after each session
+  2. New session reads pack first
+  3. ~250 token boot cost
+  4. No conversation history needed
+
+Pack format:
+  - 00_BOOT.txt: Cold start
+  - 01_PROJECT_STATE.md: Ground truth
+  - 04_INTEGRATIONS.md: Task queue
+  - Continue from last task
+
+================================================================================
+STATUS
+================================================================================
+
+Priority: P1 (already integrated)
+Models: glm-5 (full), glm-5-turbo (fast)
+Integration: OpenClaw gateway, MiMo CLAW workspace
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_GPT54.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — GPT-5.4 QUICK-START
+================================================================================
+Model: OpenAI GPT-5.4 (with Tool Search)
+Purpose: Code execution, complex reasoning, token efficiency
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Provider: OpenAI
+Type: Frontier + Native Tool Search
+Context: 200K tokens
+Key Feature: Built-in tool selection (47% token savings)
+Strengths: Code, reasoning, tool orchestration
+Use Case: Codex primary, complex task execution
+
+================================================================================
+OPENCLAW SETUP
+================================================================================
+
+1. Add to openclaw config:
+   providers:
+     openai:
+       api_key: ${OPENAI_API_KEY}
+       models:
+         - gpt-5.4
+         - gpt-5.4-mini
+
+2. Enable Tool Search:
+   gpt-5.4:
+     tool_search: true  # 47% token savings
+     reasoning: medium
+
+3. Test:
+   openclaw model test openai/gpt-5.4
+
+================================================================================
+TOOL SEARCH BENEFITS
+================================================================================
+
+GPT-5.4 Native Tool Search:
+  - Automatic function selection
+  - No manual tool manifest
+  - 47% reduction in tool-heavy workflows
+  - Dynamic tool loading on-demand
+
+Integration:
+  - Skill Adapter → GPT-5.4 Tool Search
+  - Manifest → Dynamic (only load what's needed)
+  - Token savings → Automatic
+
+================================================================================
+CODEX INTEGRATION
+================================================================================
+
+Codex Workspace: Documents/OPENcode/
+Model: gpt-5.4 as primary
+
+Workflow:
+  1. Task arrives via BLD-* lane
+  2. Codex (GPT-5.4) analyzes
+  3. Tool Search selects relevant skills
+  4. Execute bounded change
+  5. Report via BLD-* artifact
+
+================================================================================
+TOKEN SAVINGS STACK
+================================================================================
+
+GPT-5.4 Tool Search: 47%
+Semantic Caching: 30-60%
+Context Starvation: 10x
+
+Combined potential: 60-80% reduction on tool tasks
+
+================================================================================
+NEXUS BRIDGE INTEGRATION
+================================================================================
+
+Bridge: JSON-RPC 2.0
+Token Headers:
+  X-Nexus-Input-Tokens: 1250
+  X-Nexus-Output-Tokens: 890
+  X-Nexus-Tool-Search: true
+
+Governor: Hard enforcement at budget limit
+Vault: Token events stored for SkillSmith analysis
+
+================================================================================
+STATUS
+================================================================================
+
+Priority: P0 (Code backbone)
+Models: gpt-5.4 (complex), gpt-5.4-mini (fast)
+Feature: Native Tool Search (automatic)
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_MINIMAX.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — MINIMAX 2.5/2.7 QUICK-START
+================================================================================
+Model: MiniMax 2.5 / MiniMax 2.7
+Purpose: Speed, Chinese context, multimodal
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Provider: MiniMax (via OpenClaw gateway)
+Models:
+  - minimax-2.5: Fast reasoning, 32K context
+  - minimax-2.7: Extended context, 256K context
+Strengths: Speed, multilingual, cost-efficient
+Use Case: Fast research, multilingual tasks, batch processing
+
+================================================================================
+OPENCLAW SETUP
+================================================================================
+
+1. Add to openclaw config:
+   providers:
+     minimax:
+       api_key: ${MINIMAX_API_KEY}
+       base_url: https://api.minimax.chat/v1
+       models:
+         - minimax-2.5
+         - minimax-2.7
+
+2. Environment:
+   export MINIMAX_API_KEY=your_key_here
+
+3. Test:
+   openclaw model test minimax/minimax-2.5
+
+================================================================================
+OSMAN INTEGRATION
+================================================================================
+
+Current roster already supports minimax:
+  - minimax-2.5:cloud — tested, working
+  - minimax-2.7:cloud — extended context option
+
+Speed comparison:
+  MiniMax 2.5: ~1-3s latency (cloud)
+  vs local: 62 tok/s (frob/locooperator)
+
+================================================================================
+MULTILINGUAL WORKFLOW
+================================================================================
+
+MiniMax strength: Chinese/English bilingual
+
+Research pipeline:
+  1. Gemini 3.1 Pro → English analysis
+  2. MiniMax 2.7 → Chinese verification
+  3. Synthesize → Unified response
+
+Batch processing:
+  1. MiniMax 2.5 → Process 100 queries
+  2. Cache results → Semantic cache
+  3. Forward → Specialist models
+
+================================================================================
+DOPPELGROUND INTEGRATION
+================================================================================
+
+Use in: DG-EXP-01 (Experiment lane)
+  - Rapid prototyping
+  - Bilingual research
+  - Batch analysis
+
+Not for: DG-GOV-01 (requires Gemini for complex reasoning)
+
+================================================================================
+TOKEN SAVINGS
+================================================================================
+
+MiniMax advantages:
+  - Cost: ~10x cheaper than GPT-5.4
+  - Speed: Fast batch processing
+  - Context: 256K (2.7) for long documents
+
+Strategy:
+  - Research draft: MiniMax 2.7
+  - Verification: Gemini 3.1 Pro
+  - Execution: GPT-5.4 or local
+
+================================================================================
+STATUS
+================================================================================
+
+Priority: P0 (already in roster)
+Models: minimax-2.5 (fast), minimax-2.7 (extended)
+Integration: OpenClaw gateway, OSMAN workspace
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: models/MODEL_QUICKSTART_QWEN36.md
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — QWEN 3.6 QUICK-START
+================================================================================
+Model: Qwen 3.6 (various sizes)
+Purpose: Code, reasoning, multilingual
+Token Budget: ~500
+
+================================================================================
+MODEL PROFILE
+================================================================================
+
+Provider: OpenClaw (local Ollama)
+Variants:
+  - qwen3:4b-thinking: Fast reasoning, 72.6 tok/s
+  - qwen3:8b: Strong reasoning, 16 tok/s
+  - qwen3.5:4b: Balanced, 23.9 tok/s
+  - qwen3.5-coder:7b: Code-specialized, 24.6 tok/s
+Strengths: Code, multilingual, reasoning
+Use Case: osman-coder, osman-reasoning, fast queries
+
+================================================================================
+OPENCLAW SETUP
+================================================================================
+
+1. Pull models:
+   ollama pull qwen3:4b-thinking
+   ollama pull qwen3.5-coder:7b
+
+2. Current Modelfiles:
+   osman-agent: gemma3n:e4b (25.9 tok/s)
+   osman-coder: qwen2.5-coder:7b (23.2 tok/s)
+   osman-speed: frob/locooperator (62.4 tok/s)
+
+3. Optional upgrades:
+   osman-coder: qwen3.5-coder:7b (newer, potentially better)
+   osman-fast: qwen3.5:4b (lightweight)
+
+================================================================================
+QWEN 3.6 NEW FEATURES
+================================================================================
+
+Qwen 3.6 expected features:
+  - Enhanced code generation
+  - Better multilingual
+  - Improved reasoning
+  - Native tool use
+
+When available:
+  ollama pull qwen3.6
+  ollama create osman-agent -f Modelfile-qwen36
+
+================================================================================
+CURRENT TEST RESULTS
+================================================================================
+
+Working models (from osmanclawREADME4.txt):
+  qwen2.5-coder:7b: ✅ 24.6 tok/s, CLEAN
+  qwen3:4b-thinking: ✅ 72.6 tok/s, CLEAN
+  qwen3.5:4b: ⚠️ Thinking leak (expected for thinking models)
+
+Broken models:
+  Bonsai: ❌ Q1_0 incompatible
+  HF LocoOperator 4B: ❌ Safety refusal
+
+================================================================================
+CODE OPTIMIZATION
+================================================================================
+
+Best for code tasks:
+  1. qwen3.5-coder:7b — Specialized
+  2. qwen2.5-coder:7b — Stable
+  3. osman-coder — Already configured
+
+Token savings via routing:
+  - Simple code: qwen3:4b-thinking (fastest)
+  - Complex code: qwen3.5-coder:7b
+  - Review: GPT-5.4 Tool Search
+
+================================================================================
+STATUS
+================================================================================
+
+Priority: P1 (evaluate qwen3.6 when released)
+Current: qwen2.5-coder:7b stable
+Upgrade path: qwen3.6 → replace qwen2.5
+
+================================================================================
+
+

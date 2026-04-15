@@ -1,0 +1,1464 @@
+NEXUS OS v3.0 — ALL DOCUMENTATION
+==================================
+Generated: 2026-04-15
+
+════════════════════════════════════════════════════════════════
+FILE: COLD_HANDOFF.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — COLD HANDOFF DOCUMENT
+================================================================================
+Version: 3.0 | Date: 2026-04-15
+Purpose: Zero-context agent bootstrap, ~500 tokens
+
+================================================================================
+WHAT IS NEXUS OS
+================================================================================
+
+Local-first Agent Operating System with 4 pillars:
+  Bridge    — JSON-RPC API, SDK, secrets
+  Vault     — Memory (S-P-E-W), trust, poisoning
+  Engine    — Executor, Hermes router, skill adapter
+  Governor  — Compliance, KAIJU auth, governance
+
+Protocols: A2A v1.0 + MCP + JSON-RPC 2.0
+Memory: S-P-E-W (Static/Processed/Embedded/Working)
+Token: Nexus-TokenGuard (monitoring + savings)
+
+================================================================================
+WHERE IS EVERYTHING
+================================================================================
+
+DOCUMENTS/
+├── NEXUS/                    ← GIT REPO (main branch)
+│   ├── src/nexus_os/         ← CANONICAL SOURCE (READ ONLY)
+│   ├── .codex/               ← CODEX workspace
+│   ├── .openclaw/            ← OPENCLAW workspace
+│   ├── .pi/                  ← PI workspace
+│   ├── research/              ← RESEARCH workspace
+│   ├── worklog.md            ← CURRENT WORK
+│   └── AGENTS.md             ← AGENT ROSTER
+│
+└── NEXUS_OS_CLEANUP/         ← REFERENCE ARCHIVE
+    ├── contexts/             ← Project references
+    ├── models/               ← Model packs
+    ├── quickstarts/          ← Templates
+    └── tokens/               ← TokenGuard module
+
+================================================================================
+GIT WORKFLOW
+================================================================================
+
+BRANCHES:
+  main                    ← PROTECTED (SPECI only)
+  codex/experimental      ← CODEX experiments
+  openclaw/experimental   ← OPENCLAW experiments
+  pi/experimental         ← PI experiments
+  research/experimental    ← RESEARCH experiments
+
+RULES:
+  1. READ from src/nexus_os/
+  2. WRITE to own workspace (.codex/, .openclaw/, etc.)
+  3. COMMIT to own experimental branch
+  4. PR to main
+  5. SPECI reviews and merges
+
+================================================================================
+TOKEN BUDGET
+================================================================================
+
+~500 tokens for bootstrap (Ultra-Compact v2.0)
+  - 50 tokens: File paths
+  - 200 tokens: Core rules
+  - 150 tokens: Current priority
+  - 100 tokens: Workspace setup
+
+Track: from src.nexus_os.monitoring.token_guard import TokenGuard
+Check: guard.check('agent-id', required_tokens)
+
+================================================================================
+QUICK-START WORKSPACES
+================================================================================
+
+CODEX (.codex/):
+  - Bounded code work
+  - Read: src/nexus_os/bridge/, engine/, vault/
+  - Write: .codex/*.py
+  - Test: pytest tests/
+
+OPENCLAW (.openclaw/):
+  - Swarm coordination
+  - Read: src/nexus_os/swarm/, engine/hermes.py
+  - Write: .openclaw/swarm/
+  - Trigger: todo_count > 3
+
+PI (.pi/):
+  - General coding
+  - Read: src/nexus_os/
+  - Write: .pi/*.py
+  - All patterns
+
+================================================================================
+P0 PRIORITIES (Today)
+================================================================================
+
+1. Run TokenGuard tests: pytest tests/monitoring/test_token_guard.py -v
+2. Integrate TokenGuard into Bridge (token headers)
+3. Integrate TokenGuard into Governor (hard stop)
+4. Read worklog.md for current tasks
+
+================================================================================
+MEMORY FIRST
+================================================================================
+
+Before task:
+  1. Read Documents/NEXUS/worklog.md
+  2. Read Documents/NEXUS/src/nexus_os/CANONICAL_STRUCTURE.txt
+  3. Read relevant *_QUICKSTART.txt for workspace
+
+After task:
+  1. Update worklog.md
+  2. Commit to branch
+  3. Report status
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/ (canonical)
+2. WRITE to own workspace (branch)
+3. COMMIT after every meaningful change
+4. PR to main (SPECI reviews)
+5. SPECI = main branch owner
+6. Update worklog.md
+7. Token budget: ~500 for bootstrap
+
+================================================================================
+START
+================================================================================
+
+cd Documents/NEXUS
+git checkout [workspace]/experimental
+git status
+
+# READ: worklog.md, CANONICAL_STRUCTURE.txt
+# WORK: in .codex/, .openclaw/, or .pi/
+# COMMIT: after each task
+# REPORT: status, blockers, next
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: worklog.md
+════════════════════════════════════════════════════════════════
+# NEXUS OS Work Log
+
+## 2026-04-15 v3.0 Canonical System
+
+### Session 2 — Continuation (MiniMax 2.7 → Pi handoff)
+- **Status**: IN PROGRESS
+- **Actions**:
+  - Merged Pi workspace files (.pi/SKILL.md, HERMES_PROFILE.md, QUICKSTART.txt) to main
+  - Merged CODEX and OpenClaw quickstarts to main
+  - Synced quickstarts v2 to NEXUS_OS_CLEANUP/quickstarts/
+  - Updated 00_MASTER_INDEX.txt with new canonical paths
+  - Total: 13 commits on main, v3.0.0-beta tag
+
+### Git Commits (All)
+```
+6293d88 feat: Merge CODEX and OpenClaw quickstarts to main
+e352d0b feat: Merge Pi agent workspace files to main
+6e808a4 docs: Update worklog for multi-agent workspace system
+efc159e feat: Add COLD_HANDOFF.txt for zero-context bootstrap
+b2fd6f7 docs: Update worklog for v3.0 canonical setup
+be9f512 feat: Add TokenGuard tests and integration guide
+eb0fc7f chore: Update .gitignore to exclude test artifacts
+25b25be feat: Add TokenGuard monitoring module to canonical source
+ba29a0e docs: Add CANONICAL_STRUCTURE.txt to src/nexus_os/
+1c134f9 feat: Add .pi workspace for Pi agent experimental branch
+e78746b docs: Add AGENT_WORKSPACES.txt defining workspace structure
+ffd72aa feat: Complete baseline snapshot with KAIJU auth, TokenGuard
+c1478df backup: baseline nexus workspace snapshot
+```
+
+### Branches
+- `main` — Protected canonical (SPECI only) ← CURRENT
+- `codex/experimental` — CODEX experiments
+- `openclaw/experimental` — OPENCLAW experiments
+- `pi/experimental` — PI experiments (3 commits)
+- `research/experimental` — RESEARCH experiments
+
+### Tag
+- `v3.0.0-beta` — Initial v3.0 baseline
+
+### Next P0 Tasks
+1. Run TokenGuard tests: `pytest tests/monitoring/test_token_guard.py -v`
+2. Integrate TokenGuard into Bridge (add token headers to responses)
+3. Integrate TokenGuard into Governor (hard stop enforcement)
+4. Create PR template for experimental branches
+
+---
+
+## 2026-04-14 (Previous Session)
+- task-004: Wire SecretStore Into Bridge ✅ (28 passed)
+- task-003: Fix Encryption Hardfail Regression ✅ (6 passed)
+- task-002: Implement Governor KAIJU Auth ✅ (27 passed)
+
+## 2026-04-13 (Previous Session)
+- task-001: Implement Mem0 Bridge Adapter ✅ (7 passed)
+
+
+════════════════════════════════════════════════════════════════
+FILE: AGENTS.md
+════════════════════════════════════════════════════════════════
+# AGENTS.md — Nexus OS Sovereign Coordination Layer (Codex Cloud + GPT-5.4 + OpenClaw Swarm + Mem0 + Hermes)
+
+## TEAM ARCHITECTURE (EXACTLY 5 AGENTS)
+- **Coordinator (Main Connection Agent)**: Orchestrator. NEVER execute complex work yourself. Decompose tasks, delegate to the 4 specialist Skills, verify output, maintain project memory, and enforce token discipline ruthlessly.
+- **Specialist Skills**: Only invoke: Nexus-Research, Nexus-Architecture, Nexus-Execution, Nexus-Verification.
+
+## COLD-START BOOTSTRAP RULES (Nexus + DoppelGround Handoff v2)
+- New agents must first prove understanding of systems, authoritative files, locked vs draft, and read order.
+- Read order: 01_PROJECT_STATE.md → 07_DECISION_LOG.md → 04_GOVERNANCE.md → 08_PITFALLS.md → 03_WORKFLOW.md → 06_TASK_QUEUE.md → 02_ARCHITECTURE.md
+- Proof tags required: FILE_CONFIRMED, CODE_CONFIRMED, INFERRED, UNKNOWN, MISSING, DRAFT
+- State files win over chat history.
+- Unknown environments require discovery before implementation.
+
+## OPENCLAW SWARM + MEM0 + HERMES INTEGRATION
+- Foreman: glm5-foreman (watches tasks/pending/ and spawns workers)
+- Workers: glm5-worker-1, glm5-worker-2, glm5-hermes
+- Memory: Mem0 for fast recall + Hermes for experience loop and skill evolution
+- Swarm helpers are called automatically by Coordinator when task volume > 3 or on heartbeat.
+- File-driven coordination: new .task.md in tasks/pending/ triggers Foreman.
+
+## MEMORY & PERSISTENCE (CLOUD-NATIVE)
+- Primary Memory: Mem0 + Basic Memory + MCP is the shared source of truth across all automation runs.
+- Hermes Experience Loop: Auto-create and improve skills from task outcomes.
+- Coordinator Rule: Always query memory first before assigning any specialist.
+- Skill Improvement: After every successful task, Coordinator MUST call Nexus-SkillSmith to propose targeted SKILL.md updates.
+
+## OPERATIONAL DIRECTIVES (TOKEN-EFFICIENT)
+- Context Starvation: Do NOT load the entire codebase. Read specific files only when needed.
+- Skill Usage: Use the Skill tool for every specialist task. Skills load on-demand, saving 40–50% tokens.
+- Tool Search: Use GPT-5.4's native Tool Search for external calls (47% token reduction).
+
+## WORKFLOW PROTOCOL
+1. Coordinator analyzes task → queries memory → Creates Plan.
+2. Coordinator invokes Nexus-Research → Returns source-ranked matrix.
+3. Coordinator invokes Nexus-Architecture → Returns design mapped to S-P-E-W/Governor/Bridge/Engine.
+4. Coordinator invokes Nexus-Execution → Writes code/patch.
+5. Coordinator invokes Nexus-Verification → Runs tests, audits tokens.
+6. Coordinator invokes Nexus-SkillSmith (on success) → Proposes skill improvements.
+7. Coordinator synthesizes final report in clear structured Markdown.
+
+## AUTOMATION PROTOCOL (STRICT)
+- Task Queue Location: tasks/pending/ and tasks/completed/
+- Event-Driven Trigger: Process tasks ONLY when a new .task.md appears in tasks/pending/.
+- Single Summary: At the end of the cycle, output ONLY a final summary. Do not ask follow-up questions.
+
+## GOVERNANCE GATE
+- Claim Gate: No task marked "Done" without a passing test log from Verification Agent.
+- Token Audit: Every response from Verification Agent must include token_used count.
+
+## DEEP-THINK & ANTI-MIRRORING RULES
+- Research Agent: Always cite 3+ specific sources/quotes. Never summarize without new value.
+- Verification Agent: Run claim-gate on every output before acceptance.
+- Coordinator: Only accept work that reduces token usage or prevents repeated mistakes.
+
+## OUTPUT FORMAT (STRICT)
+- Use ONLY clear, structured Markdown.
+- No raw JSON blocks for status updates.
+- No fluff. No heartbeat tags. No internal XML.
+
+════════════════════════════════════════════════════════════════
+FILE: GIT_WORKFLOW.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — GIT WORKFLOW & BRANCH STRATEGY
+================================================================================
+Date: 2026-04-15
+Purpose: One main implementer, read-only access for others
+
+================================================================================
+CURRENT SITUATION
+================================================================================
+
+Documents/NEXUS/         ← MAIN (has .git)
+├── src/nexus_os/       ← Production source code (canonical)
+├── .openclaw/          ← OpenClaw agents
+├── .codex/            ← Codex workspace
+├── nexus_os/           ← Older/secondary
+├── NEXUSCLOUDSTARTER/ ← Starter pack
+├── skills/             ← Skill definitions
+├── workspaces/         ← Workspace configs
+├── cron/               ← Cron jobs
+├── research/           ← Research files
+├── tasks/              ← Task tracking
+└── .git               ← ✓ Git initialized
+
+Documents/NEO agent/    ← OLDER (partial)
+├── nexus_os/          ← Incomplete
+└── nexus_os_full/     ← Full copy
+
+Documents/NEXUS_OS_CLEANUP/ ← REFERENCE ONLY
+├── contexts/           ← Read-only project references
+├── models/             ← Read-only model packs
+├── tokens/            ← Read-only TokenGuard
+└── archives/          ← Read-only archives
+
+================================================================================
+PROPOSED BRANCH STRATEGY
+================================================================================
+
+Git repo: Documents/NEXUS/
+Main branch: main (canonical, production-ready)
+Main implementer: SPECI (push to main)
+
+BRANCHES:
+  main                    ← Canonical (SPECI only)
+  ├── codex/             ← Codex experimental (read-only, PR to main)
+  ├── openclaw/          ← OpenClaw experimental (read-only, PR to main)
+  ├── pi/                ← Pi experimental (read-only, PR to main)
+  ├── research/          ← Research branch (read-only, merge to main)
+  └── doppelground/      ← DoppelGround integration (read-only)
+
+RULES:
+  1. main = only SPECI or designated main implementer pushes
+  2. Experimental branches = read + copy, write to own branch only
+  3. Pull requests from branches → main (reviewed by main implementer)
+  4. Commit after every meaningful change
+  5. Tag releases: v3.0.0, v3.1.0, etc.
+
+================================================================================
+CANONICAL PATH DEFINITIONS
+================================================================================
+
+CANONICAL_MAIN = Documents/NEXUS/src/nexus_os/
+  - Production code only
+  - Git-tracked
+  - One main implementer (SPECI)
+  - All agents: READ + COPY ONLY
+
+CANONICAL_WORKSPACE = Documents/NEXUS/workspaces/
+  - Agent workspace configs
+  - Shared read-only
+
+CANONICAL_SKILLS = Documents/NEXUS/skills/
+  - Skill definitions
+  - Main implementer maintains
+
+CANONICAL_DOCS = Documents/NEXUS/
+  - AGENTS.md, MISSION_REPORT.md, worklog.md
+  - Git-tracked
+
+CANONICAL_RESEARCH = Documents/NEXUS/research/
+  - Research files
+  - Git-tracked
+
+AGENT_LOCAL = Documents/NEXUS/.openclaw/
+  - OpenClaw agents (workspace-local)
+  - Each agent: READ + COPY from CANONICAL_MAIN
+
+AGENT_CODEX = Documents/NEXUS/.codex/
+  - Codex workspace
+  - READ + COPY from CANONICAL_MAIN
+  - Can experiment, PR changes to main
+
+AGENT_PI = Documents/NEXUS/.pi/
+  - Pi agent workspace (if used)
+  - READ + COPY from CANONICAL_MAIN
+
+================================================================================
+PROTECTION RULES
+================================================================================
+
+main branch:
+  ✗ No force push
+  ✗ No direct commit from other agents
+  ✓ PR required from experimental branches
+  ✓ Main implementer (SPECI) direct push allowed
+
+Experimental branches:
+  ✓ Direct commit allowed (agent experiments)
+  ✓ PR required to merge to main
+  ✓ Rebase before PR
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Commit after every meaningful change:
+  - New feature implemented
+  - Bug fixed
+  - Test passing
+  - Documentation updated
+  - v3.0 integration step completed
+
+Commit message format:
+  feat|fix|docs|style|refactor|test: [short description]
+  
+  Example:
+  feat: Add TokenGuard monitoring module
+  fix: Resolve Bridge is_registered context bug
+  docs: Update AGENTS.md with new roster
+
+Tags:
+  - v3.0.0: Initial v3.0 baseline
+  - v3.0.1: TokenGuard added
+  - v3.0.2: KAIJU IGX integrated
+
+================================================================================
+CURRENT STATUS
+================================================================================
+
+Branch: codex/specimba/nexus-baseline-backup-20260413
+Status: Has staged changes (needs commit)
+Main implementer: SPECI (not yet merged to main)
+
+TODO:
+  1. SPECI commits staged changes to main
+  2. Create experimental branches (codex, openclaw, pi)
+  3. Set up branch protection for main
+  4. Define read-only access for other agents
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: AGENT_WORKSPACES.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — AGENT WORKSPACE STRUCTURE
+================================================================================
+Date: 2026-04-15
+Purpose: Define read-only access for experimental agents
+
+================================================================================
+CANONICAL PATHS (Source of Truth)
+================================================================================
+
+CANONICAL_SOURCE = src/nexus_os/
+  - Main production code
+  - Git-tracked on main branch
+  - Read-only for experimental agents
+  - All code must PR to main to be canonical
+
+CANONICAL_SKILLS = skills/
+  - Skill definitions
+  - Read-only for experimental agents
+  - PR to main for new skills
+
+CANONICAL_DOCS = *.md (root)
+  - AGENTS.md, MISSION_REPORT.md, worklog.md
+  - Read-only for experimental agents
+  - PR to main for documentation changes
+
+CANONICAL_STARTER = NEXUSCLOUDSTARTER/
+  - Reference packs
+  - Read-only for experimental agents
+
+================================================================================
+EXPERIMENTAL WORKSPACES (Each agent gets own)
+================================================================================
+
+CODEX WORKSPACE = .codex/
+  Branch: codex/experimental
+  Purpose: Bounded code work, syntax fixes
+  Access: READ CANONICAL_SOURCE, WRITE to .codex/
+  PR: Required before merging to main
+
+OPENCLAW WORKSPACE = .openclaw/
+  Branch: openclaw/experimental
+  Purpose: Swarm coordination work
+  Access: READ CANONICAL_SOURCE, WRITE to .openclaw/
+  PR: Required before merging to main
+
+PI WORKSPACE = .pi/
+  Branch: pi/experimental
+  Purpose: Pi agent experimentation
+  Access: READ CANONICAL_SOURCE, WRITE to .pi/
+  PR: Required before merging to main
+
+RESEARCH WORKSPACE = research/
+  Branch: research/experimental
+  Purpose: Architecture research, benchmarking
+  Access: READ CANONICAL_SOURCE, WRITE to research/
+  PR: Required before merging to main
+
+================================================================================
+WORKFLOW RULES
+================================================================================
+
+1. CHECKOUT:
+   git checkout [branch]  # codex/experimental, openclaw/experimental, etc.
+
+2. READ (from canonical):
+   # Always read from src/nexus_os/ for source code
+   cat src/nexus_os/bridge/server.py
+
+3. WRITE (own branch only):
+   # Code changes go to your workspace
+   vim .codex/my_feature.py
+   git add .codex/my_feature.py
+   git commit -m "codex: Add my_feature experimental"
+
+4. COPY (from canonical):
+   # Copy canonical files to experiment locally
+   cp src/nexus_os/bridge/server.py .codex/server_experiment.py
+
+5. PR (merge to main):
+   # When ready, create PR from your branch to main
+   # Review by main implementer (SPECI)
+   # Merge after approval
+
+================================================================================
+BRANCH PROTECTION (Main)
+================================================================================
+
+Main branch rules:
+  ✗ No direct push from experimental agents
+  ✗ No force push
+  ✓ PR required
+  ✓ Review by main implementer
+
+Experimental branches:
+  ✓ Direct commit allowed
+  ✓ Full read access to canonical
+  ✗ Cannot modify src/nexus_os/ directly
+
+================================================================================
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/CANONICAL_STRUCTURE.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — CANONICAL MAIN STRUCTURE
+================================================================================
+Date: 2026-04-15
+Location: Documents/NEXUS/
+Branch: main (PROTECTED)
+
+================================================================================
+BRANCH STRUCTURE
+================================================================================
+
+main                    ← CANONICAL (SPECI only)
+  ├── codex/specimba/*  ← CODEX experimental (merged)
+  ├── codex/experimental ← CODEX new experiments
+  ├── openclaw/experimental ← OPENCLAW experiments
+  ├── pi/experimental   ← PI experiments
+  └── research/experimental ← RESEARCH experiments
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+src/nexus_os/           ← Production code (READ-ONLY for agents)
+  ├── bridge/           ← JSON-RPC server, SDK, secrets
+  ├── db/               ← Database manager
+  ├── engine/           ← Executor, forge, heartbeat, hermes, hermes_experience, router
+  ├── governor/         ← Compliance, kaiju_auth, autoharness
+  ├── monitoring/       ← TokenGuard (token_guard.py, counters, strategies)
+  ├── observability/    ← Squeez, tracing
+  ├── swarm/            ← Foreman, worker, openclaw_spawner
+  ├── team/             ← Coordinator
+  └── vault/            ← Manager, memory, poisoning, trust
+
+NEXUSCLOUDSTARTER/      ← Reference packs (READ-ONLY)
+
+skills/                ← Skill definitions (READ-ONLY)
+
+AGENTS.md              ← Agent roster
+MISSION_REPORT.md      ← Mission documentation
+worklog.md            ← Current work log
+
+GIT_WORKFLOW.txt       ← Git rules
+AGENT_WORKSPACES.txt   ← Workspace structure
+
+================================================================================
+EXPERIMENTAL WORKSPACES
+================================================================================
+
+.codex/                ← CODEX agent (codex/experimental branch)
+  ├── README.md
+  └── [experimental code]
+
+.openclaw/             ← OPENCLAW agent (openclaw/experimental branch)
+  ├── agents/
+  └── [experimental code]
+
+.pi/                   ← PI agent (pi/experimental branch)
+  └── README.md
+
+research/              ← RESEARCH (research/experimental branch)
+  └── [research files]
+
+================================================================================
+GIT WORKFLOW
+================================================================================
+
+1. All agents READ from src/nexus_os/
+2. All agents WRITE to own workspace (.codex/, .openclaw/, etc.)
+3. Commit to own experimental branch
+4. Create PR to merge to main
+5. SPECI reviews and merges
+
+COMMIT after:
+  - New feature implemented
+  - Bug fixed
+  - Test passing
+  - Documentation updated
+
+TAG: v3.0.0-beta (current)
+
+================================================================================
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/monitoring/INTEGRATION.md
+════════════════════════════════════════════════════════════════
+================================================================================
+TOKENGUARD INTEGRATION GUIDE
+================================================================================
+Nexus OS v3.0 - Token Monitoring Layer
+
+================================================================================
+QUICK START
+================================================================================
+
+1. Import TokenGuard:
+   from src.nexus_os.monitoring.token_guard import TokenGuard
+
+2. Initialize with budgets:
+   guard = TokenGuard(budgets={
+       'agent': 50000,
+       'skill': 10000,
+       'swarm': 200000,
+       'session': 500000
+   })
+
+3. Track token usage:
+   guard.track('foreman-1', 1250, operation='inference')
+
+4. Check budget before operation:
+   if guard.check('foreman-1', 5000):
+       # Proceed with operation
+       pass
+
+5. Atomic reserve:
+   result = guard.check_and_reserve('foreman-1', 5000)
+   if result['allowed']:
+       # Execute operation
+
+================================================================================
+INTEGRATION POINTS
+================================================================================
+
+BRIDGE (bridge/server.py):
+  - Add X-Nexus-Input-Tokens header to responses
+  - Track tokens per agent call
+
+GOVERNOR (governor/):
+  - Check budget before task delegation
+  - Enforce hard stops at 95% threshold
+  - Log to VAP audit trail
+
+ENGINE (engine/executor.py):
+  - Track tokens per task execution
+  - Route to fallback model when budget low
+  - Update Mem0 with usage patterns
+
+VAULT (vault/):
+  - Store token events in memory layer
+  - Query historical usage for SkillSmith
+  - Semantic cache for repeated queries
+
+SKILLS (skills/):
+  - Track tokens per skill execution
+  - Optimize skill manifest based on usage
+
+================================================================================
+HOT PATH (Non-Blocking)
+================================================================================
+
+Foreman track() call:
+  # ~1ms latency
+  guard.track(agent_id, tokens)
+
+Bridge response header:
+  # No blocking
+  X-Nexus-Input-Tokens: 1250
+  X-Nexus-Output-Tokens: 890
+
+================================================================================
+WARM PATH (Async)
+================================================================================
+
+Model routing:
+  model = guard.route(task_type='code', complexity='low')
+  
+Semantic cache check:
+  result = guard.semantic_cache_get(query_hash)
+  if result:
+      return cached_result
+
+================================================================================
+COLD PATH (Background)
+================================================================================
+
+Trend analysis:
+  python -c "
+  from src.nexus_os.monitoring.token_guard import TokenGuard
+  guard = TokenGuard()
+  print(guard.analyze_trends('foreman-1', '24h'))
+  "
+
+Budget optimization:
+  # SkillSmith reads trends and proposes optimization
+  # 8-18% savings per cycle
+
+================================================================================
+COUNTERS
+================================================================================
+
+Local (ai-tokenizer):
+  from src.nexus_os.monitoring.counters import LocalCounter
+  counter = LocalCounter()
+  count = counter.count("text to count")
+
+Cloud (tokscale):
+  from src.nexus_os.monitoring.counters import TokscaleCounter
+  counter = TokscaleCounter()
+  count = counter.count("text to count")
+
+Native (Ollama/OpenAI):
+  from src.nexus_os.monitoring.counters import NativeCounter
+  counter = NativeCounter('qwen3:4b-thinking')
+  count = counter.count("text to count")
+
+================================================================================
+STRATEGIES
+================================================================================
+
+Semantic Cache:
+  from src.nexus_os.monitoring.strategies import SemanticCache
+  cache = SemanticCache(threshold=0.85)
+  cache.set(query_hash, response)
+  result = cache.get(query_hash)
+  print(cache.stats())  # hit rate
+
+Model Router:
+  from src.nexus_os.monitoring.strategies import ModelRouter
+  router = ModelRouter()
+  model = router.route('code', 'low')
+  fallback = router.get_fallback('gpt-5.4')
+
+Budget Manager:
+  from src.nexus_os.monitoring.strategies import BudgetManager
+  manager = BudgetManager(total_budget=500000)
+  manager.allocate('agent', 50000)
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: .pi/SKILL.md
+════════════════════════════════════════════════════════════════
+================================================================================
+PI AGENT SKILL DEFINITION
+================================================================================
+Agent: Pi (speci's coding agent)
+Version: 1.0 | Date: 2026-04-15
+
+================================================================================
+AGENT PROFILE
+================================================================================
+
+Name: Pi
+Role: Main coding agent, orchestrator
+Owner: speci
+Branch: pi/experimental
+
+================================================================================
+CAPABILITIES
+================================================================================
+
+STRENGTHS:
+  - File operations (read, write, edit, bash)
+  - Code generation and debugging
+  - Project organization and cleanup
+  - Architecture design and planning
+  - Multi-file coordination
+  - Git workflow management
+
+LIMITATIONS:
+  - No direct terminal access (use bash)
+  - No browser access
+  - Limited to local file system
+
+================================================================================
+TASK PATTERNS
+================================================================================
+
+PATTERN-1: Project Cleanup
+  Input: "tidy", "organize", "cleanup"
+  Action: Create directory structure, consolidate files
+  Models: osman-speed for simple ops, osman-agent for complex
+  Output: Clean project structure, index file
+
+PATTERN-2: Quick-Start Pack Creation
+  Input: "create quick-start", "bootstrap"
+  Action: Generate ~500 token boot file with project state
+  Models: osman-reasoning for design, osman-coder for formatting
+  Output: *_QUICKSTART.txt, 00_BOOT.txt
+
+PATTERN-3: Code Implementation
+  Input: "implement", "add module", "create feature"
+  Action: Write Python module with tests
+  Models: osman-coder, gpt-5.4 for complex
+  Output: src/nexus_os/*/*.py, tests/*/test_*.py
+
+PATTERN-4: Architecture Planning
+  Input: "plan", "design", "structure"
+  Action: Create specification document
+  Models: osman-reasoning
+  Output: *_SPEC.md, ARCHITECTURE.md
+
+PATTERN-5: Git Workflow
+  Input: "commit", "branch", "merge"
+  Action: git add, commit, branch operations
+  Models: osman-speed
+  Output: Committed changes, branch structure
+
+PATTERN-6: Research Integration
+  Input: "integrate report", "add research"
+  Action: Summarize large docs, add to canonical
+  Models: osman-reasoning, gemini-3.1-pro for deep
+  Output: *_SUMMARY.txt, canonical references
+
+================================================================================
+MEMORY INTEGRATION
+================================================================================
+
+Before new task:
+  1. Read worklog.md for context
+  2. Read NEXUS_MASTER_CONTEXT.txt for project state
+  3. Read relevant *_CANONICAL.txt for domain knowledge
+
+After task:
+  1. Update worklog.md with completed work
+  2. Update relevant documentation
+  3. Commit to git with meaningful message
+
+================================================================================
+TOKENGUARD USAGE
+================================================================================
+
+Hot path (no blocking):
+  from src.nexus_os.monitoring.token_guard import TokenGuard
+  guard = TokenGuard()
+  guard.track('pi-agent', tokens_used)
+
+Check before large operation:
+  if guard.check('pi-agent', required_tokens):
+      proceed
+
+Fallback (budget low):
+  result = guard.trigger_fallback('pi-agent')
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. Receive task from speci
+2. Read canonical context
+3. Plan approach
+4. Execute (small chunks)
+5. Verify output
+6. Update worklog
+7. Commit to git
+8. Report status
+
+================================================================================
+COMMIT STYLE
+================================================================================
+
+Format: type: [short description]
+
+Types:
+  feat: New feature
+  fix: Bug fix
+  docs: Documentation
+  chore: Maintenance
+  refactor: Code restructure
+  test: Test updates
+
+Examples:
+  feat: Add TokenGuard monitoring module
+  fix: Resolve bridge is_registered context bug
+  docs: Update worklog for v3.0 setup
+  chore: Clean up duplicate folders
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: .pi/HERMES_PROFILE.md
+════════════════════════════════════════════════════════════════
+================================================================================
+PI AGENT — HERMES EXPERIENCE PROFILE
+================================================================================
+Learning from execution history, self-improving agent
+
+================================================================================
+EXPERIENCE LEARNED (2026-04-15)
+================================================================================
+
+LESSON-1: Project Organization
+───────────────────────────────
+Task: Clean up NEXUS ecosystem (850+ files)
+Approach: Create canonical structure, archive duplicates
+Result: 15MB clean archive, organized quick-starts
+Model used: osman-reasoning for planning, osman-speed for execution
+Time: ~2 hours
+Score: 95% (well organized)
+
+Pattern: Always create canonical reference first, archive originals
+
+LESSON-2: Git Workflow
+───────────────────────────────
+Task: Establish multi-agent Git workflow
+Approach: Create main branch (protected), experimental branches
+Result: 9 commits, v3.0.0-beta tag, clean branch structure
+Model used: osman-speed (git commands)
+Time: ~30 minutes
+Score: 90% (simple, effective)
+
+Pattern: Commit after every meaningful change, tag releases
+
+LESSON-3: TokenGuard Integration
+───────────────────────────────
+Task: Add TokenGuard to canonical source
+Approach: Create module, tests, integration guide
+Result: 3 files, 12 tests, comprehensive docs
+Model used: osman-coder (tests), osman-agent (structure)
+Time: ~1 hour
+Score: 100% (complete, tested)
+
+Pattern: Always write tests with implementation
+
+LESSON-4: Multi-Agent Workspace
+───────────────────────────────
+Task: Define read-only access for experimental agents
+Approach: Branch strategy + workspace folders + PR workflow
+Result: .codex/, .openclaw/, .pi/ workspaces, AGENT_WORKSPACES.txt
+Model used: osman-reasoning (design), osman-speed (files)
+Time: ~30 minutes
+Score: 85% (needs more automation)
+
+Pattern: SPECI = main branch, agents = experimental branches
+
+================================================================================
+ROUTING DECISIONS
+================================================================================
+
+Simple file ops:
+  → osman-speed (62.4 tok/s, fastest)
+
+Code with tests:
+  → osman-coder + gpt-5.4 for complex
+
+Planning/design:
+  → osman-reasoning
+
+Documentation:
+  → osman-agent (clean output)
+
+Deep research:
+  → gemini-3.1-pro (1M context)
+
+================================================================================
+IMPROVEMENTS TO MAKE
+================================================================================
+
+1. Automate workspace creation (script)
+2. Add pre-commit hooks for branch protection
+3. Create PR template for experimental branches
+4. Add CI/CD for test running
+5. Implement semantic caching for repeated patterns
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: .pi/QUICKSTART.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+PI AGENT — QUICK-START BOOT
+================================================================================
+Version: 3.0 | Token Budget: ~500 | Date: 2026-04-15
+
+================================================================================
+FIRST: READ CONTEXT
+================================================================================
+
+1. Documents/NEXUS_OS_CLEANUP/00_MASTER_INDEX.txt
+2. Documents/NEXUS_OS_CLEANUP/NEXUS_MASTER_CONTEXT.txt
+3. Documents/NEXUS/worklog.md
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+CANONICAL SOURCE (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+
+YOUR WORKSPACE:
+  Documents/NEXUS/.pi/
+
+EXPERIMENTAL BRANCH:
+  pi/experimental
+
+MAIN (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+  → READ from here
+  → COPY to .pi/ before editing
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. CHECKOUT branch:
+   cd Documents/NEXUS
+   git checkout pi/experimental
+
+2. READ canonical:
+   cat Documents/NEXUS/src/nexus_os/bridge/server.py
+
+3. COPY to workspace:
+   cp Documents/NEXUS/src/nexus_os/bridge/server.py Documents/NEXUS/.pi/
+
+4. EDIT workspace copy:
+   vim Documents/NEXUS/.pi/server_experiment.py
+
+5. COMMIT to branch:
+   cd Documents/NEXUS
+   git add .pi/
+   git commit -m "pi: Add server experiment"
+
+6. PR to main:
+   git push origin pi/experimental
+   # Create PR on GitHub/Gitea
+
+================================================================================
+MEMORY FIRST
+================================================================================
+
+Before task:
+  1. Read worklog.md
+  2. Read NEXUS_MASTER_CONTEXT.txt
+  3. Check tasks/pending/
+
+After task:
+  1. Update worklog.md
+  2. Update relevant docs
+  3. Commit to branch
+
+================================================================================
+TOKENGUARD (Hot Path)
+================================================================================
+
+Track tokens:
+  from src.nexus_os.monitoring.token_guard import TokenGuard
+  guard = TokenGuard()
+  guard.track('pi-agent', tokens_used)
+
+Check budget:
+  if guard.check('pi-agent', 5000):
+      proceed
+
+================================================================================
+SKILLS
+================================================================================
+
+Read: Documents/NEXUS/.pi/SKILL.md
+Learn: Documents/NEXUS/.pi/HERMES_PROFILE.md
+
+Task patterns:
+  - Project cleanup → Create structure, archive
+  - Quick-start → ~500 token bootstrap
+  - Code → Write module + tests
+  - Architecture → Create spec doc
+  - Git → Commit, branch, merge
+
+================================================================================
+AGENTS
+================================================================================
+
+Read: Documents/NEXUS/AGENTS.md
+
+Models available:
+  osman-agent     → gemma3n:e4b
+  osman-coder    → qwen2.5-coder:7b
+  osman-speed    → frob/locooperator
+  osman-reasoning → uncensored:9b
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/
+2. WRITE to .pi/
+3. COMMIT to pi/experimental
+4. PR to main
+5. SPECI = main branch owner
+6. Update worklog.md after each task
+7. Commit after every meaningful change
+
+================================================================================
+START NOW
+================================================================================
+
+cd Documents/NEXUS
+git checkout pi/experimental
+git status
+# Ready to work
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: .codex/QUICKSTART.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — CODEX QUICK-START
+================================================================================
+Version: 3.0 | Token Budget: ~500 | Date: 2026-04-15
+
+================================================================================
+FIRST: READ CONTEXT
+================================================================================
+
+1. Documents/NEXUS_OS_CLEANUP/00_MASTER_INDEX.txt
+2. Documents/NEXUS/src/nexus_os/CANONICAL_STRUCTURE.txt
+3. Documents/NEXUS/worklog.md
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+CANONICAL SOURCE (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+  ├── bridge/          ← JSON-RPC, SDK, secrets
+  ├── db/             ← Database manager
+  ├── engine/         ← Executor, forge, heartbeat, hermes
+  ├── governor/        ← Compliance, kaiju_auth
+  ├── monitoring/     ← TokenGuard
+  ├── observability/  ← Squeez, tracing
+  ├── team/           ← Coordinator
+  └── vault/          ← Manager, memory, poisoning, trust
+
+YOUR WORKSPACE:
+  Documents/NEXUS/.codex/
+
+EXPERIMENTAL BRANCH:
+  codex/experimental
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. CHECKOUT branch:
+   cd Documents/NEXUS
+   git checkout codex/experimental
+
+2. READ canonical:
+   cat Documents/NEXUS/src/nexus_os/bridge/server.py
+
+3. COPY to workspace:
+   cp Documents/NEXUS/src/nexus_os/bridge/server.py Documents/NEXUS/.codex/
+
+4. EDIT workspace copy:
+   vim Documents/NEXUS/.codex/server_experiment.py
+
+5. TEST:
+   cd Documents/NEXUS
+   pytest tests/monitoring/test_token_guard.py -v
+
+6. COMMIT to branch:
+   git add .codex/
+   git commit -m "codex: Add server experiment"
+
+7. PR to main:
+   git push origin codex/experimental
+   # Create PR for SPECI to review
+
+================================================================================
+MEMORY FIRST
+================================================================================
+
+Before code task:
+  1. Read worklog.md
+  2. Read src/nexus_os/*/CANONICAL.txt
+  3. Check tests/*/ for existing tests
+
+After code task:
+  1. Write tests for new code
+  2. Run pytest
+  3. Update worklog.md
+  4. Commit to branch
+
+================================================================================
+TOKENGUARD (Hot Path)
+================================================================================
+
+Track tokens:
+  from src.nexus_os.monitoring.token_guard import TokenGuard
+  guard = TokenGuard()
+  guard.track('codex-agent', tokens_used)
+
+Check budget:
+  if guard.check('codex-agent', 5000):
+      proceed
+
+================================================================================
+CODE PATTERNS
+================================================================================
+
+Bounded Change Pattern:
+  1. Read existing test
+  2. Copy test to .codex/
+  3. Modify copy
+  4. Run test
+  5. Verify green
+  6. Commit
+
+Code Style:
+  - PEP 8
+  - Type hints
+  - Docstrings
+  - Unit tests required
+
+Files to modify:
+  - .codex/*.py (experiments)
+  - tests/*.py (write tests first)
+
+================================================================================
+KEY FILES
+================================================================================
+
+Documents/NEXUS/
+  src/nexus_os/bridge/server.py   ← Main API
+  src/nexus_os/engine/hermes.py   ← Hermes router
+  src/nexus_os/governor/         ← Governor pillars
+  src/nexus_os/vault/            ← Memory system
+  tests/monitoring/test_token_guard.py ← TokenGuard tests
+
+Documents/NEXUS_OS_CLEANUP/
+  quickstarts/                    ← Reference templates
+  models/                        ← Model packs
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/
+2. WRITE to .codex/
+3. TEST with pytest
+4. COMMIT to codex/experimental
+5. PR to main
+6. SPECI = main branch owner
+7. Update worklog.md
+8. Commit after every meaningful change
+
+================================================================================
+START NOW
+================================================================================
+
+cd Documents/NEXUS
+git checkout codex/experimental
+git status
+# Ready to code
+
+================================================================================
+
+
+════════════════════════════════════════════════════════════════
+FILE: .openclaw/QUICKSTART.txt
+════════════════════════════════════════════════════════════════
+================================================================================
+NEXUS OS — OPENCLAW/SWARM QUICK-START
+================================================================================
+Version: 3.0 | Token Budget: ~600 | Date: 2026-04-15
+
+================================================================================
+FIRST: READ CONTEXT
+================================================================================
+
+1. Documents/NEXUS_OS_CLEANUP/00_MASTER_INDEX.txt
+2. Documents/NEXUS/src/nexus_os/CANONICAL_STRUCTURE.txt
+3. Documents/NEXUS/worklog.md
+
+================================================================================
+CANONICAL PATHS
+================================================================================
+
+CANONICAL SOURCE (READ ONLY):
+  Documents/NEXUS/src/nexus_os/
+  ├── swarm/          ← OpenClaw spawner, foreman, worker
+  ├── engine/hermes.py ← Hermes router (3-layer)
+  ├── engine/hermes_experience.py ← Experience-based learning
+  └── vault/mem0_adapter.py ← Memory adapter
+
+YOUR WORKSPACE:
+  Documents/NEXUS/.openclaw/
+
+EXPERIMENTAL BRANCH:
+  openclaw/experimental
+
+================================================================================
+SWARM ARCHITECTURE
+================================================================================
+
+HERMES ROUTER (3-Layer):
+  Layer 1: Task Classification (code/ops/research/security)
+  Layer 2: Experience Scoring (historical performance)
+  Layer 3: Cost-Optimized Selection (cheapest that meets threshold)
+
+SWARM COMPONENTS:
+  Foreman      → Task coordinator, delegation
+  Workers      → Execute code/research/security
+  Hermes       → Route to best model
+  Mem0         → Memory layer
+  TokenGuard   → Budget monitoring
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. CHECKOUT branch:
+   cd Documents/NEXUS
+   git checkout openclaw/experimental
+
+2. READ canonical:
+   cat Documents/NEXUS/src/nexus_os/swarm/foreman.py
+   cat Documents/NEXUS/src/nexus_os/engine/hermes.py
+
+3. COPY to workspace:
+   cp -r Documents/NEXUS/src/nexus_os/swarm/ Documents/NEXUS/.openclaw/
+
+4. EDIT workspace copy:
+   vim Documents/NEXUS/.openclaw/swarm/foreman_experiment.py
+
+5. TEST:
+   cd Documents/NEXUS
+   pytest tests/ -v -k "hermes or foreman"
+
+6. COMMIT to branch:
+   git add .openclaw/
+   git commit -m "openclaw: Add foreman experiment"
+
+7. PR to main:
+   git push origin openclaw/experimental
+
+================================================================================
+MEMORY LANES (S-P-E-W)
+================================================================================
+
+S: MemPalace — Verbatim storage (96.6% recall)
+P: FAISS — Vector search, GPU-accelerated
+E: SuperLocalMemory — Math-based, zero cloud
+W: Mira — Decay-based, earn-or-fade
+
+Storage:
+  mem0.store(content, metadata)
+  mem0.search(query, limit=10)
+
+Hermes classify:
+  hermes.classify(task) → code|ops|research|security
+
+================================================================================
+PARALLEL WORKFLOW
+================================================================================
+
+1. Task arrives at Foreman
+2. Foreman queries Mem0 (S-P-E-W)
+3. Hermes classifies task (Layer 1)
+4. Hermes scores models (Layer 2)
+5. Hermes selects cheapest (Layer 3)
+6. Foreman delegates to Worker
+7. Worker executes
+8. Mem0 stores result
+9. TokenGuard tracks tokens
+10. Foreman synthesizes report
+
+================================================================================
+TOKENGUARD INTEGRATION
+================================================================================
+
+Hot Path (non-blocking):
+  guard.track('foreman-1', tokens_used)
+
+Warm Path:
+  model = guard.route(task_type='code', complexity='low')
+  result = guard.semantic_cache_get(query_hash)
+
+Cold Path (background):
+  trends = guard.analyze_trends('foreman-1', '24h')
+
+================================================================================
+OPENCLAW ROSTER (OSMAN)
+================================================================================
+
+osman-agent      → gemma3n:e4b (25.9 tok/s, clean)
+osman-coder     → qwen2.5-coder:7b (23.2 tok/s, clean)
+osman-speed     → frob/locooperator (62.4 tok/s, clean)
+osman-reasoning → uncensored:9b (6.9 tok/s, thinking)
+qwen3:4b-thinking → 72.6 tok/s (clean)
+
+Stability Test:
+  cd osman-workspace
+  .\model-stability-test-v4.ps1 -Quick
+
+================================================================================
+KEY FILES
+================================================================================
+
+Documents/NEXUS/src/nexus_os/
+  swarm/
+    openclaw_spawner.py  ← Spawn swarm agents
+    foreman.py           ← Task coordinator
+    worker.py            ← Worker agent
+  engine/
+    hermes.py            ← 3-layer router
+    hermes_experience.py ← Experience learning
+  vault/
+    mem0_adapter.py      ← Memory adapter
+  monitoring/
+    token_guard.py       ← Token monitoring
+
+================================================================================
+RULES
+================================================================================
+
+1. READ from src/nexus_os/
+2. WRITE to .openclaw/
+3. TEST with pytest
+4. COMMIT to openclaw/experimental
+5. PR to main
+6. SPECI = main branch owner
+7. Swarm triggers at todo_count > 3
+8. Hermes classifies before delegation
+
+================================================================================
+START NOW
+================================================================================
+
+cd Documents/NEXUS
+git checkout openclaw/experimental
+git status
+# Ready to swarm
+
+================================================================================
+
+

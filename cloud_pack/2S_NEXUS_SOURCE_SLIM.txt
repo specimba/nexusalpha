@@ -1,0 +1,1916 @@
+NEXUS OS v3.0 — SOURCE SLIM (Interfaces + Key Logic)
+=====================================================
+Generated: 2026-04-15
+This is a COMPRESSED version. Full source: 2_NEXUS_SOURCE.txt
+
+Includes: All class/function signatures, docstrings, key logic.
+Excludes: Test boilerplate, verbose implementations, __pycache__.
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/__init__.py (25 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+11:__version__ = "1.0.0"
+13:from .token_guard import TokenGuard
+14:from .counters import LocalCounter, NativeCounter, TokscaleCounter
+15:from .strategies import SemanticCache, ModelRouter, BudgetManager
+17:__all__ = [
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/bridge/__init__.py (13 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:from nexus_os.bridge.server import (
+12:from nexus_os.bridge.secrets import SecretStore, generate_signature, verify_signature
+13:from nexus_os.bridge.sdk import NexusClient, CircuitBreaker, RetryPolicy, BridgeResponse
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/bridge/sdk.py (464 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+31:"""
+33:import time
+34:import json
+35:import hashlib
+36:import hmac
+37:import logging
+38:import threading
+39:from typing import Dict, Any, Optional, List
+40:from dataclasses import dataclass, field
+41:from enum import Enum
+42:from urllib.request import Request, urlopen
+43:from urllib.error import URLError, HTTPError
+48:# ── Signature Helpers ───────────────────────────────────────────
+50:def generate_signature(secret: str, trace_id: str, payload: str) -> str:
+51:    """Generate HMAC-SHA256 signature for Bridge requests."""
+53:    return hmac.new(secret.encode(), message.encode(), hashlib.sha256).hexdigest()
+56:def verify_signature(secret: str, trace_id: str, payload: str, provided: str) -> bool:
+57:    """Verify a Bridge request signature using constant-time comparison."""
+59:    return hmac.compare_digest(expected, provided)
+62:# ── Circuit Breaker ─────────────────────────────────────────────
+64:class CircuitState(Enum):
+70:@dataclass
+71:class CircuitBreaker:
+72:    """
+79:    """
+90:    @property
+91:    def state(self) -> CircuitState:
+97:            return self._state
+99:    def allow_request(self) -> bool:
+100:        """Check if a request should be allowed through."""
+104:                return True
+108:                    return True
+109:                return False
+110:            return False  # OPEN
+112:    def record_success(self):
+117:    def record_failure(self):
+126:    def get_stats(self) -> Dict[str, Any]:
+127:        return {
+135:# ── Retry Policy ────────────────────────────────────────────────
+137:@dataclass
+138:class RetryPolicy:
+139:    """Exponential backoff retry policy."""
+146:    def get_delay(self, attempt: int) -> float:
+147:        """Calculate delay for the given retry attempt (0-indexed)."""
+149:        return min(delay, self.max_delay)
+151:    def should_retry(self, error: Exception) -> bool:
+152:        """Determine if an error is retryable."""
+154:            return error.code in self.retryable_status_codes
+156:            return True  # Network errors are always retryable
+158:            return True
+159:        return False
+162:# ── Nexus Client ────────────────────────────────────────────────
+164:@dataclass
+165:class BridgeResponse:
+166:    """Response from a Bridge request."""
+175:class NexusClient:
+176:    """
+185:    """
+187:    def __init__(
+205:    def set_circuit_breaker(self, breaker: CircuitBreaker):
+208:    def _generate_trace_id(self) -> str:
+209:        """Generate a unique trace ID for this request."""
+212:        return hashlib.sha256(raw.encode()).hexdigest()[:16]
+214:    def _build_headers(
+221:        """Build the full Nexus protocol headers."""
+232:        return headers
+234:    def _execute_request(
+240:        """Execute a single HTTP request to the Bridge."""
+251:                return BridgeResponse(
+265:            return BridgeResponse(
+273:    def _request_with_retry(
+279:        """Execute request with retry and circuit breaker logic."""
+282:            return BridgeResponse(
+311:                    return response
+349:        return response
+351:    # ── Public API ──────────────────────────────────────────────
+353:    def submit_task(
+364:        """
+379:        """
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/bridge/secrets.py (137 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+12:"""
+14:import os
+15:import json
+16:import hashlib
+17:import hmac
+18:import logging
+19:from typing import Optional, Dict
+20:from pathlib import Path
+25:class SecretNotFoundError(Exception):
+26:    """Raised when a requested agent secret is not found."""
+30:class SecretStore:
+31:    """
+39:    """
+41:    def __init__(
+55:    def _load_file(self, path: str):
+71:    def register(self, agent_id: str, secret: str):
+72:        """Register a secret at runtime (highest priority)."""
+75:    def get_secret(self, agent_id: str) -> str:
+76:        """Retrieve the secret for an agent."""
+78:            return self._overrides[agent_id]
+81:            return self._file_secrets[agent_id]
+86:            return env_val
+91:            return derived
+93:        raise SecretNotFoundError(
+98:    def _derive_secret(self, agent_id: str) -> str:
+99:        """Derive a per-agent secret from the master key using HMAC-SHA256."""
+100:        return hmac.new(
+106:    def has_secret(self, agent_id: str) -> bool:
+109:            return True
+111:            return False
+113:    def remove(self, agent_id: str):
+116:    def rotate(self, agent_id: str, new_secret: str):
+122:def generate_signature(secret: str, trace_id: str, payload: str) -> str:
+123:    """Generate HMAC-SHA256 signature for Bridge requests."""
+125:    return hmac.new(
+132:def verify_signature(
+135:    """Verify a Bridge request signature using constant-time comparison."""
+137:    return hmac.compare_digest(expected, provided_signature)
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/bridge/server.py (511 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+19:"""
+21:import json
+22:import time
+23:import uuid
+24:import logging
+25:from typing import Dict, Any, Optional, List
+26:from dataclasses import dataclass, field
+31:# ── Exceptions ──────────────────────────────────────────────────
+33:class BridgeError(Exception):
+34:    """Base exception for Bridge errors."""
+35:    def __init__(self, code: int, message: str, http_status: int = 500):
+42:class AuthError(BridgeError):
+43:    def __init__(self, message: str):
+47:class ForbiddenError(BridgeError):
+48:    def __init__(self, message: str):
+52:class HeldError(BridgeError):
+53:    def __init__(self, message: str, trace_id: str):
+58:class ParseError(BridgeError):
+59:    def __init__(self, message: str):
+63:# ── Request Models ──────────────────────────────────────────────
+65:@dataclass
+66:class BridgeRequest:
+67:    """Parsed Bridge request with validated headers and body."""
+79:# ── JSON-RPC Response Builder ──────────────────────────────────
+81:def jsonrpc_result(result: Any, trace_id: Optional[str] = None) -> Dict[str, Any]:
+82:    return {
+88:def jsonrpc_error(code: int, message: str, trace_id: Optional[str] = None, data: Any = None) -> Dict[str, Any]:
+89:    return {
+100:# ── Bridge Server ──────────────────────────────────────────────
+102:class BridgeServer:
+103:    """
+107:    All public methods take raw HTTP inputs and return (status_code, response_dict).
+108:    """
+110:    def __init__(
+124:    # ── Authentication ─────────────────────────────────────────
+126:    def _authenticate(self, request: BridgeRequest):
+127:        """Validate HMAC-SHA256 signature. Raises AuthError on failure."""
+131:            raise AuthError("Missing X-Nexus-Signature header")
+134:            raise AuthError("Missing X-Nexus-Trace-ID header")
+139:            raise AuthError(f"Unknown agent: {request.agent_id}")
+142:            raise AuthError("Invalid signature")
+144:    # ── Authorization ──────────────────────────────────────────
+146:    def _authorize(self, request: BridgeRequest):
+147:        """Run KAIJU 4-variable authorization. Raises ForbiddenError or HeldError."""
+149:            return  # No governor — skip authz (dev mode)
+171:            raise ForbiddenError(result.reason)
+173:            raise HeldError(result.reason, request.trace_id)
+175:    def _kaiju_action(self, method: str) -> str:
+176:        """Map Bridge method to KAIJU action type."""
+183:        return action_map.get(method, "read")
+185:    # ── Request Parsing ────────────────────────────────────────
+187:    def parse_request(
+192:        """Parse and validate raw HTTP request into BridgeRequest."""
+198:            raise ParseError(f"Malformed JSON body: {e}")
+201:            raise ParseError("Request body must be a JSON object")
+217:        return BridgeRequest(
+229:    # ── Handler Dispatch ───────────────────────────────────────
+231:    def handle_request(
+237:        """
+247:        """
+253:                return 405, jsonrpc_error(
+277:            return 200, jsonrpc_result(result, req.trace_id)
+280:            return e.http_status, jsonrpc_result(
+290:            return e.http_status, jsonrpc_error(e.code, e.message)
+292:            return e.http_status, jsonrpc_error(e.code, e.message)
+294:            return e.http_status, jsonrpc_error(e.code, e.message)
+297:            return 500, jsonrpc_error(
+301:    def handle_submit(self, body: bytes, headers: Dict[str, str]) -> tuple:
+302:        """Handle POST /tasks/submit."""
+325:            return 200, jsonrpc_result({
+334:            return e.http_status, jsonrpc_result(
+339:            return e.http_status, jsonrpc_error(e.code, e.message)
+341:            return e.http_status, jsonrpc_error(e.code, e.message)
+343:            return e.http_status, jsonrpc_error(e.code, e.message)
+346:            return 500, jsonrpc_error(-32603, f"Internal error: {e}")
+348:    def handle_status(self, body: bytes, headers: Dict[str, str]) -> tuple:
+349:        """Handle POST /tasks/status."""
+360:                return 404, jsonrpc_error(-32602, f"Task not found: {task_id}")
+362:            return 200, jsonrpc_result(result, req.trace_id)
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/db/__init__.py (0 lines — full)
+════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/db/manager.py (266 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+9:"""
+11:import sqlite3
+12:import threading
+13:import logging
+14:from typing import Optional, Protocol, Any, List
+15:from dataclasses import dataclass
+20:class DBAdapter(Protocol):
+21:    def execute(self, query: str, params: tuple = ()) -> Any: ...
+22:    def executemany(self, query: str, params_list: list) -> Any: ...
+23:    def fetchone(self, cursor: Any) -> Optional[tuple]: ...
+24:    def fetchall(self, cursor: Any) -> List[tuple]: ...
+25:    def commit(self) -> None: ...
+26:    def close(self) -> None: ...
+29:class StandardAdapter:
+30:    """Standard SQLite adapter for development."""
+32:    def __init__(self, path: str):
+38:    def execute(self, query: str, params: tuple = ()) -> sqlite3.Cursor:
+39:        return self.conn.execute(query, params)
+41:    def executemany(self, query: str, params_list: list) -> sqlite3.Cursor:
+42:        return self.conn.executemany(query, params_list)
+44:    def fetchone(self, cursor: sqlite3.Cursor) -> Optional[tuple]:
+45:        return cursor.fetchone()
+47:    def fetchall(self, cursor: sqlite3.Cursor) -> List[tuple]:
+48:        return cursor.fetchall()
+50:    def commit(self) -> None:
+53:    def close(self) -> None:
+57:class EncryptedAdapter:
+58:    """SQLCipher adapter for production encryption."""
+60:    def __init__(self, path: str, passphrase: str):
+64:            raise ImportError(
+75:    def execute(self, query: str, params: tuple = ()) -> Any:
+76:        return self.conn.execute(query, params)
+78:    def executemany(self, query: str, params_list: list) -> Any:
+79:        return self.conn.executemany(query, params_list)
+81:    def fetchone(self, cursor: Any) -> Optional[tuple]:
+82:        return cursor.fetchone()
+84:    def fetchall(self, cursor: Any) -> List[tuple]:
+85:        return cursor.fetchall()
+87:    def commit(self) -> None:
+90:    def close(self) -> None:
+94:@dataclass
+95:class DBConfig:
+102:class DatabaseManager:
+103:    """
+115:    """
+117:    def __init__(self, config: DBConfig):
+125:    def _get_adapter(self) -> DBAdapter:
+126:        """Get or create a connection for the current thread."""
+131:                raise RuntimeError(
+144:                        raise e
+159:        return adapter
+161:    def get_connection(self) -> DBAdapter:
+162:        """Public API: get the connection for the current thread."""
+163:        return self._get_adapter()
+165:    def setup_schema(self) -> bool:
+166:        """Initialize the full Nexus OS database schema."""
+169:        adapter.execute("""
+180:        adapter.execute("""
+199:            adapter.execute("""
+208:        adapter.execute("""
+223:        adapter.execute("""
+236:        adapter.execute("""
+253:        return True
+255:    def close(self):
+256:        """Close the current thread's connection."""
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/__init__.py (0 lines — full)
+════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/executor.py (260 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+12:"""
+14:import time
+15:import logging
+16:from abc import ABC, abstractmethod
+17:from typing import List, Dict, Any, Optional, Callable
+18:from dataclasses import dataclass
+19:from concurrent.futures import ThreadPoolExecutor, Future
+21:from nexus_os.db.manager import DatabaseManager
+22:from nexus_os.engine.router import EngineRouter, TaskStatus
+27:@dataclass
+28:class ExecutionResult:
+29:    """Result of a single task execution."""
+38:class ExecutorBackend(ABC):
+39:    """
+42:    """
+44:    @abstractmethod
+45:    def execute(self, task_id: str, description: str, context: Dict[str, Any]) -> ExecutionResult:
+46:        """Execute a task and return the result."""
+50:class SyncCallbackExecutor(ExecutorBackend):
+51:    """
+58:    """
+60:    def __init__(self, default_timeout: float = 30.0):
+64:    def register_handler(self, task_type: str, handler: Callable[[str, Dict], Any]):
+65:        """Register a callable for a specific task type."""
+68:    def execute(self, task_id: str, description: str, context: Dict[str, Any]) -> ExecutionResult:
+72:            return ExecutionResult(
+81:            return ExecutionResult(
+89:            return ExecutionResult(
+97:class AsyncBridgeExecutor(ExecutorBackend):
+98:    """
+101:    """
+103:    def __init__(self, bridge_url: str = "http://127.0.0.1:8000", timeout: float = 30.0):
+107:    def execute(self, task_id: str, description: str, context: Dict[str, Any]) -> ExecutionResult:
+110:            return ExecutionResult(
+116:        # For now, return a structured not-implemented result
+117:        return ExecutionResult(
+125:class MockExecutor(ExecutorBackend):
+126:    """
+129:    """
+131:    def __init__(self, delay: float = 0.01, failure_rate: float = 0.0):
+136:    def execute(self, task_id: str, description: str, context: Dict[str, Any]) -> ExecutionResult:
+142:            return ExecutionResult(
+148:        return ExecutionResult(
+156:class TaskExecutor:
+157:    """
+159:    """
+161:    def __init__(
+175:    def set_backend(self, backend: ExecutorBackend):
+176:        """Swap the execution backend at runtime."""
+179:    def execute_next_batch(self, project_id: str) -> List[ExecutionResult]:
+180:        """Execute all ready tasks for a project."""
+190:        return results
+192:    def execute_async(self, project_id: str) -> Dict[str, Future]:
+193:        """Submit all ready tasks to the thread pool for parallel execution."""
+206:        return futures
+208:    def get_result(self, task_id: str, timeout: Optional[float] = None) -> Optional[ExecutionResult]:
+211:            return None
+215:            return result
+217:            return ExecutionResult(
+223:    def _execute_single(
+241:            return result
+245:            return ExecutionResult(
+251:    def _update_status(self, task_id: str, status: TaskStatus):
+259:    def shutdown(self, wait: bool = True):
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/forge.py (222 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+42:from nexus_os.engine.forge import ForgeLoader, TeamSpec, WorkflowStep
+56:"""
+58:import os
+59:import yaml
+60:import logging
+61:from dataclasses import dataclass, field
+62:from typing import List, Dict, Optional, Any
+67:@dataclass
+68:class AgentSpec:
+69:    """Specification for a single agent in a team."""
+77:@dataclass
+78:class WorkflowStep:
+79:    """A single step in the team workflow."""
+88:    def set_result(self, result: Any):
+91:    def get_result(self) -> Optional[Any]:
+92:        return self._result
+94:    def build_context(self, previous_results: Dict[int, Any]) -> Dict[str, Any]:
+95:        """Build execution context from previous step results."""
+104:        return self._context
+107:@dataclass
+108:class TeamSpec:
+109:    """Complete team specification parsed from YAML."""
+115:    def get_agent(self, role: str) -> Optional[AgentSpec]:
+116:        """Look up an agent spec by role name."""
+119:                return agent
+120:        return None
+122:    def get_step(self, step_number: int) -> Optional[WorkflowStep]:
+123:        """Look up a workflow step by number."""
+126:                return step
+127:        return None
+129:    def validate(self) -> List[str]:
+130:        """Validate the team spec. Returns list of error messages (empty = valid)."""
+152:        return errors
+154:    def get_final_result(self) -> Optional[Any]:
+155:        """Get the result of the last workflow step."""
+158:            return last_step.get_result()
+159:        return None
+162:class ForgeLoader:
+163:    """
+165:    """
+167:    def load_file(self, path: str) -> TeamSpec:
+168:        """Load a team spec from a YAML file."""
+170:            raise FileNotFoundError(f"Forge spec not found: {path}")
+175:        return self._parse(data)
+177:    def load_string(self, yaml_content: str) -> TeamSpec:
+178:        """Load a team spec from a YAML string."""
+180:        return self._parse(data)
+182:    def _parse(self, data: Dict[str, Any]) -> TeamSpec:
+183:        """Parse raw YAML dict into TeamSpec."""
+222:        return team
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/heartbeat.py (252 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+14:"""
+16:import time
+17:import threading
+18:import logging
+19:import uuid
+20:from typing import Dict, Any, Optional, List, Set
+21:from dataclasses import dataclass
+23:from nexus_os.db.manager import DatabaseManager
+28:@dataclass
+29:class ReclamationEvent:
+30:    """Record of a single task reclamation."""
+39:class HeartbeatMonitor:
+40:    """
+53:    """
+55:    def __init__(
+73:    @property
+74:    def is_running(self) -> bool:
+75:        return self._thread is not None and self._thread.is_alive()
+77:    @property
+78:    def events(self) -> List[ReclamationEvent]:
+80:            return list(self._events)
+82:    @property
+83:    def suspended_agents(self) -> Set[str]:
+85:            return set(self._suspended_agents)
+87:    def start(self):
+88:        """Start the heartbeat monitoring daemon thread."""
+104:    def stop(self):
+105:        """Stop the heartbeat monitoring daemon thread."""
+113:    def check_now(self) -> List[ReclamationEvent]:
+114:        """
+117:        """
+118:        return self._reclaim_stalled_tasks()
+120:    def _monitor_loop(self):
+121:        """Main daemon loop — runs until stop() is called."""
+132:    def _reclaim_stalled_tasks(self) -> List[ReclamationEvent]:
+133:        """
+138:        """
+220:        return cycle_events
+222:    def unsuspend_agent(self, agent_id: str) -> bool:
+223:        """
+226:        """
+239:            return True
+240:        return False
+242:    def get_stats(self) -> Dict[str, Any]:
+243:        """Return monitor statistics."""
+245:            return {
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/hermes.py (646 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+21:"""
+23:import time
+24:import logging
+25:import re
+26:import uuid
+27:from typing import Dict, List, Optional, Tuple, Any
+28:from dataclasses import dataclass, field
+29:from enum import Enum
+30:from collections import defaultdict
+32:from nexus_os.db.manager import DatabaseManager
+37:class TaskComplexity(Enum):
+38:    """Task complexity levels for routing decisions."""
+45:class TaskDomain(Enum):
+46:    """Task domain categories."""
+56:@dataclass
+57:class ModelProfile:
+58:    """Profile of a single model available for routing."""
+69:@dataclass
+70:class RoutingDecision:
+71:    """Result of a routing decision."""
+74:    complexity: TaskComplexity
+75:    domain: TaskDomain
+83:@dataclass
+84:class SkillRecord:
+85:    """A reusable skill extracted from successful task execution."""
+97:# ── Domain keywords for task classification ─────────────────────
+99:DOMAIN_KEYWORDS = {
+100:    TaskDomain.CODE: [
+105:    TaskDomain.ANALYSIS: [
+110:    TaskDomain.REASONING: [
+115:    TaskDomain.CREATIVE: [
+120:    TaskDomain.OPERATIONS: [
+124:    TaskDomain.SECURITY: [
+130:COMPLEXITY_SIGNALS = {
+131:    TaskComplexity.TRIVIAL: {"quick", "simple", "format", "check", "list", "get", "fetch"},
+132:    TaskComplexity.STANDARD: {"implement", "create", "update", "modify", "generate"},
+133:    TaskComplexity.COMPLEX: {"redesign", "optimize", "refactor", "integrate", "migrate"},
+134:    TaskComplexity.CRITICAL: {"architecture", "security", "production", "deploy", "migration"},
+138:class TaskClassifier:
+139:    """Classifies tasks by domain and complexity for routing."""
+141:    def classify(self, description: str, context: Optional[Dict] = None) -> Tuple[TaskDomain, TaskComplexity]:
+142:        """Classify a task description into domain and complexity."""
+148:        for domain, keywords in DOMAIN_KEYWORDS.items():
+154:            best_domain = TaskDomain.UNKNOWN
+161:            complexity = TaskComplexity.TRIVIAL
+163:            complexity = TaskComplexity.STANDARD
+165:            complexity = TaskComplexity.COMPLEX
+167:            complexity = TaskComplexity.COMPLEX
+178:        return best_domain, complexity
+181:class ExperienceScorer:
+182:    """
+191:    """
+197:    def __init__(self, db: DatabaseManager):
+202:    def score(
+204:        domain: TaskDomain,
+207:        """
+216:        """
+219:            return self._cache[cache_key]
+224:        # ── Backend 1: model_performance table (Bayesian) ──
+239:        # ── Backend 2: memory_records fallback ──
+254:        # ── Merge: Bayesian first, memory_records as supplement ──
+298:        return model_scores
+300:    def record_outcome(
+303:        domain: TaskDomain,
+307:        """
+313:        """
+316:        # ── Backend 1: model_performance UPSERT ──
+338:        # ── Backend 2: memory_records provenance trail ──
+364:class CostOptimizer:
+365:    """Selects the cheapest model that meets the quality threshold."""
+367:    def __init__(self, quality_threshold: float = 0.6):
+370:    def select(
+374:        complexity: TaskComplexity,
+376:        """
+387:        """
+398:            return best[0], best[1], f"Fallback: no model above threshold {self.quality_threshold}"
+400:        if complexity in (TaskComplexity.COMPLEX, TaskComplexity.CRITICAL):
+404:            if complexity == TaskComplexity.CRITICAL:
+409:                        return mid, score, f"Critical: best local model (score={score:.2f})"
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/hermes_experience.py (432 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:from typing import List, Dict, Any, Optional, Callable
+7:from dataclasses import dataclass, field
+8:from datetime import datetime
+9:from enum import Enum
+10:import json
+11:import hashlib
+12:import sys
+13:import os
+17:from nexus_os.vault.mem0_adapter import Mem0Adapter, get_adapter
+20:class Domain(Enum):
+21:    """Task domains for classification"""
+29:class Skill(Enum):
+30:    """29 registered skills for matching"""
+71:@dataclass
+72:class Task:
+73:    """Task envelope for routing"""
+84:    @property
+85:    def domain(self) -> str:
+86:        """Infer domain from lane"""
+93:        return domain_map.get(self.lane, Domain.UNKNOWN.value)
+95:    @property
+96:    def signature(self) -> str:
+97:        """Generate task signature for pattern matching"""
+99:        return hashlib.md5(content.encode()).hexdigest()[:16]
+102:@dataclass
+103:class RouteDecision:
+104:    """Routing decision with confidence and evidence"""
+115:@dataclass
+116:class AgentCard:
+117:    """A2A Agent Card format"""
+127:    def to_dict(self) -> Dict[str, Any]:
+128:        return {
+140:class HermesExperienceRouter:
+141:    """
+146:    """
+149:    DOMAIN_KEYWORDS = {
+189:    def __init__(self, mem0_adapter: Optional[Mem0Adapter] = None):
+194:    def _register_default_agents(self):
+195:        """Register default agent pool"""
+211:    def classify_domain(self, task: Task) -> Domain:
+212:        """Classify task domain based on description and lane"""
+216:        for domain, keywords in self.DOMAIN_KEYWORDS.items():
+222:            return max(scores, key=scores.get)
+231:        return domain_map.get(task.lane, Domain.UNKNOWN)
+233:    def match_skills(self, task: Task) -> List[Skill]:
+234:        """Match task to skills from 29 registered skills"""
+242:        # Always return at least one skill
+246:        return matched
+248:    def route(self, task: Task) -> RouteDecision:
+249:        """
+254:        """
+302:        return RouteDecision(
+313:    def _select_agent(self, lane: str, required_skills: List[str]) -> tuple:
+314:        """Select best agent for lane and skills"""
+323:            return "glm5-coordinator", "coordination"
+337:        return best_agent.agent_id, best_agent.lane
+339:    def _calc_confidence(self, similar_tasks: List[Any], pattern: Optional[Dict], skills: List[Skill]) -> float:
+340:        """Calculate confidence score using experience-informed method"""
+356:        return min(base_confidence, 1.0)
+358:    def _assess_risk(self, task: Task, similar_tasks: List[Any]) -> str:
+359:        """Assess risk level based on task and history"""
+365:            return "HIGH"
+372:                return "HIGH"
+374:                return "MEDIUM"
+376:        return "LOW"
+378:    def _estimate_time(self, similar_tasks: List[Any], pattern: Optional[Dict]) -> int:
+379:        """Estimate task completion time based on experience"""
+381:            return pattern["avg_time"]
+385:            return 180  # 3 minutes with experience
+386:        return 300  # 5 minutes default
+388:    def _build_reasoning(self, domain: Domain, skills: List[Skill], 
+391:        """Build human-readable reasoning for routing decision"""
+404:        return "; ".join(parts)
+406:    def register_agent(self, agent_card: AgentCard):
+407:        """Register a new agent"""
+410:    def get_agent(self, agent_id: str) -> Optional[AgentCard]:
+411:        """Get agent by ID"""
+412:        return self._agents.get(agent_id)
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/router.py (237 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+9:"""
+11:import enum
+12:import logging
+13:import sqlite3
+14:from typing import Dict, List, Any, Optional
+19:class TaskStatus(enum.Enum):
+20:    """Task lifecycle states."""
+29:class EngineRouter:
+30:    """
+37:    """
+39:    def __init__(self, db_manager):
+40:        """
+43:        """
+47:    def _ensure_tables(self):
+48:        """Create tasks and dependency tables if missing."""
+50:        conn.executescript("""
+76:    def add_task(
+85:        """
+88:        """
+107:            return True
+110:            return False
+112:    def get_ready_tasks(self, project_id: str) -> List[Dict[str, Any]]:
+113:        """
+123:        """
+129:        no_deps = conn.execute("""
+139:        with_deps = conn.execute("""
+164:        return results
+166:    def get_blocked_tasks(self, project_id: str) -> List[Dict[str, Any]]:
+167:        """Get tasks blocked by incomplete dependencies."""
+171:        rows = conn.execute("""
+180:        return [
+189:    def _get_blocking_parents(self, task_id: str) -> List[str]:
+190:        """Get IDs of parent tasks that haven't completed yet."""
+192:        rows = conn.execute("""
+197:        return [r[0] for r in rows]
+199:    def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
+200:        """Get the current status of a task."""
+206:            return TaskStatus(row[0])
+207:        return None
+209:    def update_task_status(self, task_id: str, status: TaskStatus):
+210:        """Transition a task to a new status."""
+219:    def get_project_tasks(self, project_id: str) -> List[Dict[str, Any]]:
+220:        """Get all tasks for a project with their statuses."""
+228:        return [
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/engine/skill_adapter.py (1058 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+14:"""
+16:import logging
+17:import os
+18:import re
+19:import time
+20:from dataclasses import dataclass, field
+21:from typing import Dict, List, Optional, Tuple
+25:# Valid complexity levels (must align with hermes.TaskComplexity)
+26:COMPLEXITY_LEVELS = ("trivial", "standard", "complex", "critical")
+27:COMPLEXITY_ORDER = {level: idx for idx, level in enumerate(COMPLEXITY_LEVELS)}
+30:_DEFAULT_MODEL_PER_DOMAIN = {
+41:_TOKEN_COST_MULTIPLIERS = {
+49:_BASE_TOKEN_COSTS = {
+56:@dataclass
+57:class SkillDefinition:
+62:    """
+77:    # ── Hermes integration fields (populated on conversion) ──
+82:    def __post_init__(self):
+83:        """Validate fields and set hermes_task_type from domains."""
+87:            raise ValueError(f"Invalid min complexity: {min_c!r}. Must be one of {COMPLEXITY_LEVELS}")
+89:            raise ValueError(f"Invalid max complexity: {max_c!r}. Must be one of {COMPLEXITY_LEVELS}")
+91:            raise ValueError(f"Min complexity {min_c!r} > max complexity {max_c!r}")
+95:            raise ValueError(f"Invalid token_cost: {self.token_cost!r}. Must be one of {list(_BASE_TOKEN_COSTS)}")
+99:            raise ValueError(f"Invalid execution_mode: {self.execution_mode!r}")
+105:            raise ValueError(f"Invalid regex pattern {self.pattern!r}: {e}")
+116:    def complexity_matches(self, complexity: str) -> bool:
+117:        """Check if a given complexity level falls within this skill's range."""
+119:            return False
+122:        return min_idx <= COMPLEXITY_ORDER[complexity] <= max_idx
+124:    def domain_matches(self, domain: str) -> bool:
+125:        """Check if a given Hermes domain is covered by this skill."""
+126:        return domain in self.domains
+128:    def matches_description(self, description: str) -> bool:
+129:        """Check if a task description matches this skill's regex pattern."""
+130:        return bool(re.search(self.pattern, description.lower()))
+137:SKILL_CATALOG: List[SkillDefinition] = [
+138:    # ── Information Retrieval ──────────────────────────────────────────
+190:    # ── AI / LLM Core ─────────────────────────────────────────────────
+227:    # ── Speech ─────────────────────────────────────────────────────────
+264:    # ── Media Generation ───────────────────────────────────────────────
+319:    # ── Data Visualization ─────────────────────────────────────────────
+337:    # ── Document Generation ────────────────────────────────────────────
+402:    # ── Financial Analysis ─────────────────────────────────────────────
+421:    # ── Code & Development ─────────────────────────────────────────────
+458:    # ── Frontend Development (enriched from GitHub/Reddit research) ────────
+527:    # ── MCP Tools (Model Context Protocol integration) ───────────────────
+579:    # ── Documentation & Review ───────────────────────────────────────────
+616:    # ── Performance & Monitoring ─────────────────────────────────────────
+655:class SkillRegistry:
+671:    """
+673:    def __init__(self) -> None:
+674:        """Initialize the registry and load the predefined skill catalog."""
+680:    # ── Registration ───────────────────────────────────────────────────
+682:    def register_skill(self, skill: SkillDefinition) -> None:
+690:        """
+692:            raise ValueError("skill_id must not be empty")
+696:    # ── Lookup ─────────────────────────────────────────────────────────
+698:    def get_skill(self, skill_id: str) -> Optional[SkillDefinition]:
+706:        """
+707:        return self._skills.get(skill_id)
+709:    def list_skills(self) -> List[SkillDefinition]:
+710:        """Return all registered skills as a list."""
+711:        return list(self._skills.values())
+713:    def list_skill_ids(self) -> List[str]:
+714:        """Return all registered skill IDs."""
+715:        return list(self._skills.keys())
+717:    # ── Task Matching ──────────────────────────────────────────────────
+719:    def find_skills_for_task(
+745:        """
+775:        return [skill for _, skill in scored]
+777:    # ── Hermes Integration ─────────────────────────────────────────────
+779:    def create_hermes_skill_records(self) -> List:
+789:        """
+810:        return records
+812:    # ── Cost Estimation ────────────────────────────────────────────────
+814:    def estimate_token_cost(self, skill_id: str, task_description: str) -> int:
+832:        """
+835:            raise KeyError(f"Unknown skill: {skill_id!r}")
+851:        return estimated
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/governor/__init__.py (9 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:from nexus_os.governor.base import NexusGovernor
+2:from nexus_os.governor.kaiju_auth import (
+6:from nexus_os.governor.compliance import (
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/governor/autoharness.py (461 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:import os
+7:import json
+8:import yaml
+9:from typing import List, Dict, Any, Optional, Callable
+10:from dataclasses import dataclass, field
+11:from datetime import datetime
+12:from enum import Enum
+13:from pathlib import Path
+14:import sys
+18:from nexus_os.vault.mem0_adapter import Mem0Adapter, get_adapter
+21:class RiskLevel(Enum):
+22:    """Risk classification levels"""
+29:class ActionType(Enum):
+30:    """Action types for risk classification"""
+42:@dataclass
+43:class TaskIntent:
+44:    """Parsed task intent"""
+52:@dataclass
+53:class RiskAssessment:
+54:    """Risk assessment result"""
+63:@dataclass
+64:class PermissionResult:
+65:    """Permission check result"""
+72:@dataclass
+73:class ExecutionResult:
+74:    """Execution result"""
+82:@dataclass
+83:class AuditRecord:
+84:    """Audit trail record"""
+94:class AutoHarness:
+95:    """
+103:    """
+105:    def __init__(self, 
+128:    def _load_constitution(self, path: str) -> Dict[str, Any]:
+129:        """Load constitution YAML"""
+132:                return yaml.safe_load(f) or {}
+135:            return self._default_constitution()
+137:    def _default_constitution(self) -> Dict[str, Any]:
+138:        """Default constitution if YAML not found"""
+139:        return {
+159:    def run_pipeline(self, task_id: str, task_input: str, 
+161:        """
+164:        """
+194:        return {
+205:    def _step_parse(self, context: Dict) -> Dict:
+206:        """Step 1: Parse - extract intent and entities"""
+245:        return context
+247:    def _step_risk(self, context: Dict) -> Dict:
+248:        """Step 2: Risk - classify with mem0 history check"""
+315:        return context
+317:    def _step_permission(self, context: Dict) -> Dict:
+318:        """Step 3: Permission - check against policy"""
+349:        return context
+351:    def _step_execute(self, context: Dict) -> Dict:
+352:        """Step 4: Execute - run approved action"""
+382:        return context
+384:    def _step_sanitize(self, context: Dict) -> Dict:
+385:        """Step 5: Sanitize - clean output"""
+390:            return context
+406:            output = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '***@***.***', output)  # Email
+414:        return context
+416:    def _step_audit(self, context: Dict) -> Dict:
+417:        """Step 6: Audit - log to mem0"""
+453:        return context
+455:    def get_audit_log(self) -> List[AuditRecord]:
+456:        """Get full audit log"""
+457:        return self._audit_log.copy()
+459:    def get_constitution(self) -> Dict[str, Any]:
+460:        """Get current constitution"""
+461:        return self.constitution.copy()
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/governor/base.py (247 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+27:        raise AccessDenied(result.reason)
+30:"""
+32:import logging
+33:from typing import Optional, Dict, Any
+35:from nexus_os.db.manager import DatabaseManager
+36:from nexus_os.governor.kaiju_auth import (
+44:class NexusGovernor:
+45:    """
+55:    """
+57:    def __init__(
+64:        """
+72:        """
+78:    def check_access(
+90:        """
+113:        """
+116:        # ── Step 1: KAIJU 4-variable authorization ──────────────
+135:            return result
+141:            return kaiju_result
+145:            return kaiju_result
+147:        # ── Step 2: CVA trait verification (optional) ──────────
+159:                return result
+161:        # ── Step 3: Compliance engine post-check (optional) ────
+182:                    return result
+186:        # ── Step 4: All checks passed ───────────────────────────
+193:        return result
+195:    def _audit_log(
+198:        """Write authorization decision to audit_logs table."""
+216:    def get_hold_queue(self):
+217:        """Delegate to KAIJU hold queue."""
+218:        return self.kaiju.get_hold_queue()
+220:    def resolve_hold(self, trace_id: str, decision: Decision) -> bool:
+221:        """Delegate to KAIJU hold resolution."""
+222:        return self.kaiju.resolve_hold(trace_id, decision)
+225:class _CVAVerifier:
+226:    """
+233:    """
+235:    def verify_alignment(
+238:        """
+243:        """
+247:        return True, "OK"
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/governor/compliance.py (557 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+21:        raise ComplianceViolation(result.violations)
+22:"""
+24:import time
+25:import logging
+26:import hashlib
+27:import json
+28:from typing import Dict, List, Optional, Any
+29:from dataclasses import dataclass, field
+30:from enum import Enum
+31:from collections import defaultdict
+33:from nexus_os.db.manager import DatabaseManager
+38:class ComplianceLevel(Enum):
+39:    """Compliance severity levels."""
+46:class ComplianceStatus(Enum):
+47:    """Overall compliance status."""
+54:class RuleSource(Enum):
+55:    """Origin of a compliance rule."""
+64:@dataclass
+65:class ComplianceRule:
+66:    """Definition of a single compliance rule."""
+78:@dataclass
+79:class ComplianceViolation:
+80:    """A single compliance violation."""
+89:@dataclass
+90:class ComplianceResult:
+91:    """Result of a compliance evaluation."""
+99:    @property
+100:    def is_compliant(self) -> bool:
+101:        return self.status == ComplianceStatus.COMPLIANT
+104:class ComplianceEngine:
+105:    """
+116:    """
+118:    def __init__(self, db: DatabaseManager):
+123:    def add_rule(self, rule: ComplianceRule):
+124:        """Register a compliance rule."""
+128:    def load_default_rules(self):
+129:        """Load the standard Nexus OS compliance ruleset."""
+259:    def evaluate(
+266:        """
+277:        """
+334:        return result
+336:    # ── Check Methods ────────────────────────────────────────────
+338:    def check_authentication(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+339:        """OWASP-ASI-01: Verify agent has valid authentication."""
+343:            return ComplianceViolation(
+349:        return None
+351:    def check_poisoning_defense(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+352:        """OWASP-ASI-02: Verify poisoning detection is active for writes."""
+354:            return None
+357:            return ComplianceViolation(
+363:        return None
+365:    def check_provenance(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+366:        """OWASP-ASI-03: Verify trace and lineage IDs are present."""
+370:            return ComplianceViolation(
+376:        return None
+378:    def check_supply_chain(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+379:        """OWASP-ASI-04: Verify model response validation."""
+382:            return ComplianceViolation(
+388:        return None
+390:    def check_clearance_enforcement(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+391:        """OWASP-ASI-05 / KAIJU: Verify KAIJU authorization is active."""
+394:            return ComplianceViolation(
+400:        return None
+402:    def check_deny_default(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+403:        """CSA-TRUST-01: Verify agent is registered."""
+406:            return ComplianceViolation(
+412:        return None
+414:    def check_project_isolation(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+415:        """CSA-TRUST-02: Verify project scope enforcement."""
+422:                return ComplianceViolation(
+428:        return None
+430:    def check_human_oversight(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+431:        """IMDA-01: Critical actions must be held for human review."""
+435:            return ComplianceViolation(
+441:        return None
+443:    def check_audit_chain(self, agent_id, action, context) -> Optional[ComplianceViolation]:
+444:        """IETF-VAP-01: Verify full audit chain."""
+448:            return ComplianceViolation(
+454:        return None
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/governor/kaiju_auth.py (263 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+20:"""
+22:import logging
+23:from enum import Enum
+24:from dataclasses import dataclass
+25:from typing import Optional, List, Dict
+30:class Decision(Enum):
+31:    """Governor authorization decision."""
+38:class ScopeLevel(Enum):
+39:    """Resource scope granularity."""
+46:class ImpactLevel(Enum):
+47:    """Potential blast radius of an action."""
+54:class ClearanceLevel(Enum):
+55:    """Agent authorization level (ascending)."""
+63:CLEARANCE_HIERARCHY = {
+71:SCOPE_LIMITS: Dict[ClearanceLevel, List[ScopeLevel]] = {
+79:IMPACT_LIMITS: Dict[ClearanceLevel, List[ImpactLevel]] = {
+87:@dataclass
+88:class AuthRequest:
+89:    """Authorization request with all 4 KAIJU variables."""
+100:@dataclass
+101:class AuthResult:
+102:    """Authorization result."""
+108:class KaijuAuthorizer:
+109:    """
+118:    """
+130:    def __init__(self, require_intent_for: Optional[List[str]] = None):
+134:    def check_scope(self, scope: ScopeLevel, clearance: ClearanceLevel) -> tuple:
+135:        """Check if clearance level permits the requested scope."""
+138:            return True, "OK"
+139:        return False, f"Clearance '{clearance.value}' does not permit scope '{scope.value}'. Allowed: {[s.value for s in allowed]}"
+141:    def check_intent(self, intent: str, action: str) -> tuple:
+142:        """
+145:        """
+147:            return False, "HOLD: Intent is empty or too short — requires human review"
+155:                return False, f"HOLD: Action '{action}' requires detailed intent justification (10+ chars)"
+165:            return True, f"WARN: Intent keywords don't match action '{action}' — flagged for review"
+167:        return True, "OK"
+169:    def check_impact(self, impact: ImpactLevel, clearance: ClearanceLevel) -> tuple:
+170:        """Check if clearance level permits the requested impact level."""
+173:            return True, "OK"
+174:        return False, f"Clearance '{clearance.value}' does not permit impact '{impact.value}'. Allowed: {[i.value for i in allowed]}"
+176:    def authorize(self, request: AuthRequest) -> AuthResult:
+177:        """
+180:        """
+186:            return AuthResult(Decision.DENY, scope_reason, trace)
+191:            return AuthResult(Decision.DENY, impact_reason, trace)
+198:            return result
+200:        return AuthResult(Decision.ALLOW, "All checks passed", trace)
+202:    def get_hold_queue(self) -> List[AuthResult]:
+203:        """Retrieve all items held for human review."""
+204:        return list(self._hold_queue)
+206:    def resolve_hold(self, trace_id: str, override_decision: Decision) -> bool:
+207:        """
+210:        """
+218:                return True
+219:        return False
+222:# ============================================================
+224:# ============================================================
+239:#         """
+242:#         """
+255:#             return result
+257:#             return result  # Queue for human review
+261:#             return AuthResult(Decision.HOLD, "CVA trait mismatch", request.trace_id)
+263:#         return result
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/monitoring/__init__.py (4 lines — full)
+════════════════════════════════════════════════════════════════
+# Monitoring module
+from .token_guard import TokenGuard, quick_track
+
+__all__ = ["TokenGuard", "quick_track"]
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/monitoring/counters.py (92 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:import subprocess
+7:import re
+8:from abc import ABC, abstractmethod
+9:from typing import Dict, Any
+12:class BaseCounter(ABC):
+13:    """Base token counter."""
+15:    @abstractmethod
+16:    def count(self, text: str) -> int:
+17:        """Count tokens in text."""
+21:class LocalCounter(BaseCounter):
+22:    """
+25:    """
+27:    def __init__(self, model: str = "gpt-4"):
+34:    def count(self, text: str) -> int:
+36:            return len(self.encoder.encode(text))
+39:        return len(text) // 4
+42:class NativeCounter(BaseCounter):
+43:    """
+46:    """
+48:    def __init__(self, model_name: str):
+51:    def count(self, text: str) -> int:
+57:            return len(encoder.encode(text))
+59:            return len(text) // 4
+62:class TokscaleCounter(BaseCounter):
+63:    """
+66:    """
+68:    def __init__(self, api_key: str = None):
+71:    def count(self, text: str) -> int:
+72:        """Count via tokscale CLI."""
+83:                    return int(match.group())
+88:        return len(text) // 4
+90:    def get_dashboard_url(self) -> str:
+91:        """Get tokscale dashboard URL."""
+92:        return "https://tokscale.com/dashboard"
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/monitoring/strategies.py (189 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+5:"""
+7:import hashlib
+8:import time
+9:from typing import Dict, Any, Optional, Callable
+12:class SemanticCache:
+13:    """
+23:            return result
+27:    """
+29:    def __init__(self, threshold: float = 0.85, max_entries: int = 10000):
+36:    def get(self, query_hash: str) -> Optional[Any]:
+37:        """Get cached result (hot path)."""
+43:            return entry.get('response')
+46:        return None
+48:    def set(self, query_hash: str, response: Any, score: float = 1.0) -> None:
+49:        """Store result in cache (warm path)."""
+63:    def stats(self) -> Dict[str, Any]:
+64:        """Get cache statistics."""
+68:        return {
+76:class ModelRouter:
+77:    """
+84:    """
+110:    def route(
+116:        """Route task to appropriate model."""
+122:            return ladder['low']
+126:            return ladder.get(complexity, ladder['medium'])
+128:        return ladder['low']
+130:    def get_fallback(self, primary_model: str) -> str:
+131:        """Get fallback model for primary."""
+138:        return fallbacks.get(primary_model, 'osman-speed')
+141:class BudgetManager:
+142:    """
+145:    """
+147:    def __init__(self, total_budget: int):
+152:    def allocate(self, category: str, amount: int) -> bool:
+153:        """Allocate budget to category."""
+155:            return False
+158:        return True
+160:    def reserve(self, category: str, amount: int) -> Optional[str]:
+161:        """Reserve budget for operation."""
+163:            return None
+166:        return f"{category}:{time.time()}"
+168:    def can_reserve(self, category: str, amount: int) -> bool:
+169:        """Check if reservation possible."""
+175:        return (allocated - reserved) >= amount
+177:    @property
+178:    def available(self) -> int:
+179:        """Get available budget."""
+181:        return self.total_budget - allocated
+183:    def reset(self, category: Optional[str] = None) -> None:
+184:        """Reset budget."""
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/monitoring/token_guard.py (577 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+6:"""
+8:import time
+9:import hashlib
+10:import json
+11:import threading
+12:from datetime import datetime, timedelta
+13:from typing import Dict, List, Optional, Any
+14:from dataclasses import dataclass, field
+15:from enum import Enum
+18:class OperationType(Enum):
+19:    """Token operation types."""
+28:@dataclass
+29:class TokenBudget:
+30:    """Token budget configuration."""
+36:    @property
+37:    def remaining(self) -> int:
+38:        return self.total - self.used
+40:    @property
+41:    def percentage(self) -> float:
+43:            return 0.0
+44:        return (self.used / self.total) * 100
+46:    def check_threshold(self, threshold: float = 80.0) -> bool:
+47:        """Check if usage exceeds threshold."""
+48:        return self.percentage >= threshold
+51:@dataclass
+52:class AuditEntry:
+53:    """VAP-compliant audit entry."""
+63:    def to_dict(self) -> Dict[str, Any]:
+64:        return {
+76:class TokenGuard:
+77:    """
+87:    """
+89:    def __init__(
+96:        """
+105:        """
+135:    def track(
+144:        """
+157:        """
+178:        return {
+187:    def check(self, agent_id: str, required_tokens: int) -> bool:
+188:        """
+197:        """
+202:            return True  # No budget limit
+206:            return False
+210:            return False
+212:        return True
+214:    def check_and_reserve(
+221:        """
+232:        """
+234:            return {
+250:        return {
+259:    def trigger_fallback(self, agent_id: str) -> Dict[str, Any]:
+260:        """
+268:        """
+279:        return {
+286:    def get_status(self, agent_id: Optional[str] = None) -> Dict[str, Any]:
+287:        """
+295:        """
+300:                return {
+307:            return {}
+309:        return {
+319:    def get_audit(
+325:        """
+335:        """
+348:        return [e.to_dict() for e in entries[-limit:]]
+350:    def semantic_cache_get(
+355:        """
+364:        """
+368:                return entry.get('response')
+369:        return None
+371:    def semantic_cache_set(
+377:        """
+384:        """
+392:    def route(
+398:        """
+408:        """
+412:                return 'qwen3:4b-thinking'  # Fastest
+413:            return 'osman-speed'
+417:                return 'osman-coder'
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/observability/__init__.py (8 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:from nexus_os.observability.squeez import SqueezPruner
+2:from nexus_os.observability.tracing import TraceContext, trace_context
+4:__all__ = [
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/observability/squeez.py (284 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+16:"""
+18:import time
+19:import logging
+20:from typing import List, Dict, Any, Optional, Tuple
+21:from collections import defaultdict
+23:from nexus_os.db.manager import DatabaseManager
+28:class SqueezPruner:
+29:    """
+38:    """
+52:    def __init__(self, db: DatabaseManager, config: Optional[Dict] = None):
+62:    # ── Pass 1: Session TTL Pruning ──────────────────────────────
+64:    def prune_session_layer(self, ttl_seconds: Optional[int] = None) -> int:
+65:        """
+73:        """
+76:            return 0
+87:        return count
+89:    # ── Pass 2: Experience Compression ────────────────────────────
+91:    def compress_experience_layer(
+96:        """
+111:        """
+114:        query = """
+119:        """
+184:        return paradigms_created, raw_compressed
+186:    # ── Pass 3: Wisdom Promotion ──────────────────────────────────
+188:    def promote_to_wisdom(
+193:        """
+203:        """
+241:        return promoted
+243:    # ── Full Pipeline ────────────────────────────────────────────
+245:    def run_full_pipeline(
+249:        """
+257:        """
+269:        return results
+271:    # ── Statistics ───────────────────────────────────────────────
+273:    def get_memory_stats(self, project_id: Optional[str] = None) -> Dict[str, int]:
+274:        """Get current record counts by memory layer."""
+284:        return {row[0]: row[1] for row in rows}
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/observability/tracing.py (107 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+25:"""
+27:import threading
+28:import uuid
+29:from typing import Optional
+30:from contextlib import contextmanager
+32:_logger_lock = threading.Lock()
+35:class TraceContext:
+36:    """
+42:    """
+44:    def __init__(self):
+47:    def set_trace_id(self, trace_id: str) -> None:
+48:        """
+53:        """
+56:    def get_trace_id(self) -> Optional[str]:
+57:        """
+62:        """
+63:        return getattr(self._local, "trace_id", None)
+65:    def clear_trace_id(self) -> None:
+66:        """Clear the trace ID for the current thread."""
+69:    @staticmethod
+70:    def generate_trace_id() -> str:
+71:        """
+80:        """
+81:        return f"trace-{uuid.uuid4().hex[:16]}"
+83:    @contextmanager
+84:    def with_trace_id(self, trace_id: str):
+85:        """
+98:        """
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/swarm/__init__.py (7 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""Nexus OS Swarm - Open Claw Spawner"""
+3:from .openclaw_spawner import OpenClawSpawner, SpawnConfig
+4:from .foreman import Foreman
+5:from .worker import Worker
+7:__all__ = ["OpenClawSpawner", "SpawnConfig", "Foreman", "Worker"]
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/swarm/foreman.py (229 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:import json
+7:import time
+8:import threading
+9:from typing import List, Dict, Any, Optional
+10:from dataclasses import dataclass
+11:from datetime import datetime, timedelta
+12:from pathlib import Path
+15:@dataclass
+16:class WorkerStatus:
+17:    """Worker health status"""
+26:class Foreman:
+27:    """
+30:    """
+32:    def __init__(self, 
+53:    def register_worker(self, agent_card: Dict[str, Any]) -> bool:
+54:        """Register a new worker with the foreman"""
+57:            return False
+61:                return False
+73:        return True
+75:    def deregister_worker(self, worker_id: str):
+76:        """Remove a worker from the pool"""
+82:    def record_heartbeat(self, worker_id: str) -> bool:
+83:        """Record heartbeat from a worker"""
+86:                return False
+91:            return True
+93:    def check_worker_health(self, worker_id: str) -> bool:
+94:        """Check if worker is healthy based on last heartbeat"""
+97:                return False
+105:                return False
+107:            return worker.healthy
+109:    def get_healthy_workers(self) -> List[str]:
+110:        """Get list of healthy worker IDs"""
+112:            return [
+117:    def assign_task(self, task_id: str, worker_id: Optional[str] = None) -> Optional[str]:
+118:        """
+122:        """
+126:            return None
+143:        return assigned
+145:    def complete_task(self, task_id: str, success: bool = True):
+146:        """Mark task as completed and update worker stats"""
+160:    def monitor_loop(self):
+161:        """Background heartbeat monitoring loop"""
+186:    def start_monitoring(self):
+187:        """Start the heartbeat monitoring thread"""
+196:    def stop_monitoring(self):
+197:        """Stop the monitoring thread"""
+203:    def get_status(self) -> Dict[str, Any]:
+204:        """Get foreman status report"""
+206:            return {
+224:    def get_worker_capabilities(self, worker_id: str) -> List[str]:
+225:        """Get capabilities for a specific worker"""
+228:                return []
+229:            return self._workers[worker_id].agent_card.get("capabilities", [])
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/swarm/openclaw_spawner.py (255 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:import os
+7:import json
+8:import time
+9:import threading
+10:from typing import List, Dict, Any, Optional
+11:from dataclasses import dataclass, field
+12:from datetime import datetime
+13:from pathlib import Path
+16:from .foreman import Foreman
+17:from .worker import Worker
+20:@dataclass
+21:class SpawnConfig:
+22:    """Configuration for swarm spawning"""
+30:class OpenClawSpawner:
+31:    """
+35:    """
+37:    def __init__(self, config: Optional[SpawnConfig] = None):
+55:    def get_pending_count(self) -> int:
+56:        """Count pending tasks in tasks/pending directory"""
+58:            return len(list(self.pending_dir.glob("*.task.md")))
+60:            return 0
+62:    def get_task_files(self) -> List[Path]:
+63:        """Get list of pending task files"""
+65:            return list(self.pending_dir.glob("*.task.md"))
+67:            return []
+69:    def should_spawn(self) -> bool:
+70:        """Check if spawning conditions are met"""
+75:            return False
+81:                return False
+86:                return False
+88:        return True
+90:    def spawn_foreman(self) -> Foreman:
+91:        """Spawn a new Foreman instance"""
+98:        return foreman
+100:    def spawn_worker(self, worker_id: Optional[str] = None) -> Worker:
+101:        """Spawn a new Worker instance"""
+114:        return worker
+116:    def spawn_swarm(self, num_workers: int = 2) -> Dict[str, Any]:
+117:        """
+120:        """
+144:        return {
+152:    def monitor_loop(self):
+153:        """Background monitoring loop - checks task volume and spawns as needed"""
+183:    def start(self):
+184:        """Start the spawner monitoring"""
+193:    def stop(self):
+194:        """Stop the spawner and all spawned agents"""
+210:    def get_status(self) -> Dict[str, Any]:
+211:        """Get current spawner status"""
+212:        return {
+221:    def distribute_tasks(self) -> int:
+222:        """
+225:        """
+227:            return 0
+244:        return distributed
+248:def spawn_swarm_if_needed(tasks_dir: str = "tasks", threshold: int = 3) -> Optional[Dict[str, Any]]:
+249:    """Check task volume and spawn swarm if needed"""
+253:        return spawner.spawn_swarm()
+255:    return None
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/swarm/worker.py (293 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+4:"""
+6:import os
+7:import json
+8:import time
+9:import threading
+10:from typing import Dict, Any, Optional
+11:from dataclasses import dataclass, field
+12:from datetime import datetime
+13:from pathlib import Path
+14:import hashlib
+17:@dataclass
+18:class AgentCard:
+19:    """A2A Agent Card format"""
+29:    def to_dict(self) -> Dict[str, Any]:
+30:        return {
+42:class Worker:
+43:    """
+49:    """
+51:    def __init__(self,
+91:    def get_agent_card(self) -> Dict[str, Any]:
+92:        """Generate A2A Agent Card"""
+94:        return self._agent_card.to_dict()
+96:    def send_heartbeat(self):
+97:        """Send heartbeat to foreman (file-based for now)"""
+115:    def heartbeat_loop(self):
+116:        """Background heartbeat sender"""
+125:    def get_next_task(self) -> Optional[Path]:
+126:        """Get next pending task file"""
+129:            return tasks[0] if tasks else None
+131:            return None
+133:    def parse_task(self, task_file: Path) -> Dict[str, Any]:
+134:        """Parse task from .task.md file"""
+155:        return task
+157:    def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
+158:        """
+159:        Execute task and return result
+161:        """
+198:        return result
+200:    def save_result(self, result: Dict[str, Any]):
+201:        """Save task result to done or failed directory"""
+215:    def worker_loop(self):
+216:        """Main worker execution loop"""
+253:    def start(self):
+254:        """Start the worker threads"""
+270:    def stop(self):
+271:        """Stop the worker gracefully"""
+280:    def is_running(self) -> bool:
+281:        """Check if worker is running"""
+282:        return self._running
+284:    def get_stats(self) -> Dict[str, Any]:
+285:        """Get worker statistics"""
+286:        return {
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/team/__init__.py (20 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+10:"""
+12:from nexus_os.team.coordinator import (
+17:__all__ = [
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/team/coordinator.py (1086 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+35:"""
+37:import logging
+38:import re
+39:import uuid
+40:from dataclasses import dataclass, field
+41:from datetime import datetime, timezone, timedelta
+42:from pathlib import Path
+43:from typing import Any, Dict, List, Optional, Tuple
+47:# ── Conditional imports for concurrent subsystems ──────────────────────
+59:from nexus_os.db.manager import DatabaseManager, DBConfig
+60:from nexus_os.engine.hermes import (
+63:    TaskDomain,
+64:    TaskComplexity,
+70:# ── Constants ──────────────────────────────────────────────────────────
+72:DEFAULT_OPENCLAW_BASE = Path.home() / ".openclaw" / "agents"
+74:WORKER_DEFINITIONS: List[Dict[str, Any]] = [
+90:DOMAIN_WORKER_MAP: Dict[str, str] = {
+100:STALL_THRESHOLD = timedelta(minutes=10)
+103:# ── Data Classes ───────────────────────────────────────────────────────
+105:@dataclass
+106:class WorkerProfile:
+119:    """
+129:    @property
+130:    def pending_queue(self) -> Path:
+131:        return self.agent_dir / "tasks" / "pending"
+133:    @property
+134:    def done_queue(self) -> Path:
+135:        return self.agent_dir / "tasks" / "done"
+137:    @property
+138:    def failed_queue(self) -> Path:
+139:        return self.agent_dir / "tasks" / "failed"
+142:# ── Coordinator ────────────────────────────────────────────────────────
+144:class TeamCoordinator:
+164:    """
+166:    def __init__(
+175:        # ── Database ──
+187:        # ── Hermes Router ──
+190:        # ── mem0 Memory (optional) ──
+199:        # ── Skill Registry (optional) ──
+208:        # ── Worker Profiles ──
+212:        # ── Task tracking ──
+215:    # ────────────────────────────────────────────────────────────────────
+217:    # ────────────────────────────────────────────────────────────────────
+219:    def _init_hermes(self) -> None:
+220:        """Build a HermesRouter with model profiles matching each worker."""
+236:    def _load_worker_profiles(self) -> None:
+237:        """Load WorkerProfile objects for each known worker."""
+250:    # ────────────────────────────────────────────────────────────────────
+252:    # ────────────────────────────────────────────────────────────────────
+254:    def dispatch(
+274:        """
+324:        return {
+341:    def dispatch_with_skill(
+360:        """
+369:        return result
+371:    # ────────────────────────────────────────────────────────────────────
+373:    # ────────────────────────────────────────────────────────────────────
+375:    def check_status(self, task_id: str) -> Dict[str, Any]:
+384:        """
+394:                    return entry
+403:                return {
+409:        return {"task_id": task_id, "status": "unknown"}
+411:    def collect_results(self, since: Optional[str] = None) -> List[Dict[str, Any]]:
+422:        """
+459:        return results
+461:    def get_team_status(self) -> Dict[str, Any]:
+467:        """
+487:        return {
+497:    # ────────────────────────────────────────────────────────────────────
+499:    # ────────────────────────────────────────────────────────────────────
+501:    def record_outcome(
+519:        """
+575:        return {
+583:    # ────────────────────────────────────────────────────────────────────
+585:    # ────────────────────────────────────────────────────────────────────
+587:    def run_foreman_patrol(self) -> Dict[str, Any]:
+598:        """
+657:        return report
+659:    # ────────────────────────────────────────────────────────────────────
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/vault/__init__.py (12 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:from nexus_os.vault.manager import VaultManager
+2:from nexus_os.vault.poisoning import MinjaDetector, PoisoningError
+3:from nexus_os.vault.trust import TrustScorer
+4:from nexus_os.vault.memory_adapter import Mem0Adapter
+6:__all__ = [
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/vault/manager.py (337 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+22:"""
+24:import uuid
+25:import time
+26:import logging
+27:from typing import Dict, List, Optional, Any
+29:from nexus_os.db.manager import DatabaseManager
+30:from nexus_os.vault.poisoning import MinjaDetector, PoisoningError
+31:from nexus_os.vault.trust import TrustScorer
+36:class VaultManager:
+37:    """
+43:    """
+49:    def __init__(self, db_manager: DatabaseManager, config: Optional[Dict] = None):
+62:    # ── Write ───────────────────────────────────────────────────
+64:    def write_memory(
+76:        """
+85:        """
+87:            raise ValueError(f"Invalid memory type: {memory_type}. Must be one of {self.VALID_TYPES}")
+89:            raise ValueError(f"Invalid classification: {classification}")
+91:            raise ValueError(f"Invalid consent: {consent}")
+104:            raise PoisoningError(reason)
+128:        return record_id
+130:    # ── Read ────────────────────────────────────────────────────
+132:    def read_memory(
+140:        """
+152:        """
+153:        query = """
+159:        """
+164:                raise ValueError(f"Invalid memory type: {memory_type}")
+188:        return [
+199:    # ── Search ──────────────────────────────────────────────────
+201:    def search(
+207:        """
+215:        """
+217:            return []
+243:        return [
+254:    # ── Get Single ──────────────────────────────────────────────
+256:    def get_memory(self, record_id: str) -> Optional[Dict[str, Any]]:
+257:        """Get a single memory record by ID."""
+269:            return None
+278:        return {
+286:    # ── Delete ──────────────────────────────────────────────────
+288:    def delete_memory(self, record_id: str, soft: bool = True) -> bool:
+289:        """
+298:        """
+311:        return conn.execute(
+315:    # ── Stats ───────────────────────────────────────────────────
+317:    def get_stats(self, project_id: Optional[str] = None) -> Dict[str, Any]:
+318:        """Get memory statistics by layer."""
+331:        return {
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/vault/memory_adapter.py (837 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+17:"""
+19:import json
+20:import os
+21:import time
+22:import uuid
+23:import logging
+24:import re
+25:from pathlib import Path
+26:from typing import Dict, List, Optional, Any
+30:# ── Constants ──────────────────────────────────────────────────────────────────
+32:VALID_LAYERS = {"session", "project", "experience", "wisdom"}
+34:LAYER_TTL_SECONDS = {
+41:LAYER_RELEVANCE_BOOST = {
+48:LOCAL_BACKEND_PATH = os.path.expanduser("~/.nexus_os/mem0_local.json")
+51:CHARS_PER_TOKEN_ESTIMATE = 4
+54:# ── Local Fallback Backend ─────────────────────────────────────────────────────
+56:class _LocalMemoryBackend:
+64:    """
+66:    def __init__(self, storage_path: Optional[str] = None):
+71:    # ── Persistence ───────────────────────────────────────────────
+73:    def _load(self) -> None:
+74:        """Load memories from JSON file."""
+86:    def _save(self) -> None:
+87:        """Persist memories to JSON file."""
+97:    # ── CRUD ──────────────────────────────────────────────────────
+99:    def add(
+106:        """Store a new memory. Returns the memory ID."""
+122:        return memory_id
+124:    def get(self, memory_id: str) -> Optional[Dict[str, Any]]:
+125:        """Retrieve a single memory by ID, respecting TTL."""
+128:            return None
+133:            return None
+134:        return dict(mem)
+136:    def get_all(
+141:        """Get all non-expired memories, optionally filtered."""
+159:        return results
+161:    def search(
+173:        """
+175:            return []
+179:            return []
+196:        return scored[:limit]
+198:    def delete(self, memory_id: str) -> bool:
+199:        """Delete a memory by ID. Returns True if found and deleted."""
+203:            return True
+204:        return False
+206:    def update(self, memory_id: str, data: Dict[str, Any]) -> bool:
+207:        """Update memory fields. Returns True if the memory exists."""
+210:            return False
+217:        return True
+219:    def get_stats(self) -> Dict[str, Any]:
+220:        """Return memory counts by layer and total."""
+240:        return {
+250:    def reset(self) -> None:
+251:        """Clear all memories."""
+255:    # ── Internals ─────────────────────────────────────────────────
+257:    @staticmethod
+258:    def _is_expired(mem: Dict[str, Any]) -> bool:
+259:        """Check if a memory has passed its TTL."""
+262:            return False
+263:        return time.time() > expires_at
+266:# ── Mem0 Adapter ──────────────────────────────────────────────────────────────
+268:class Mem0Adapter:
+289:    """
+291:    def __init__(self, config: Optional[Dict[str, Any]] = None):
+301:        """
+318:    # ── Initialization ────────────────────────────────────────────
+320:    def _try_init_mem0(self, mem0_config: Any) -> None:
+325:        """
+339:    # ── Store ─────────────────────────────────────────────────────
+341:    def store(
+363:        """
+365:            raise ValueError(f"Invalid layer: {layer!r}. Must be one of {VALID_LAYERS}")
+367:            raise ValueError("Content must not be empty")
+379:                return self._local.add(
+400:                        return str(mid)
+404:                return fallback_id
+407:            raise RuntimeError(f"Memory store failed: {e}") from e
+409:    # ── Search ────────────────────────────────────────────────────
+411:    def search(
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/vault/poisoning.py (284 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+11:"""
+13:import time
+14:import re
+15:import math
+16:from collections import deque, Counter
+17:from typing import Dict, List, Optional, Tuple, Set
+18:from dataclasses import dataclass, field
+21:class PoisoningError(Exception):
+22:    """Raised when a memory write is flagged as a poisoning attempt."""
+26:@dataclass
+27:class WriteRecord:
+28:    """Single write event for pattern analysis."""
+35:class _TfidfIndex:
+36:    """
+40:    """
+42:    def __init__(self):
+49:    @staticmethod
+50:    def _tokenize(text: str) -> List[str]:
+51:        """Extract lowercase alpha tokens, 3+ chars."""
+58:        return [t for t in tokens if t not in stops]
+60:    def _compute_idf(self, term: str) -> float:
+61:        """IDF = log(N / (1 + df)) — smoothed to avoid division by zero."""
+63:            return self._idf_cache[term]
+67:        return idf
+69:    def add_document(self, text: str) -> int:
+70:        """Add a document and return its index."""
+88:        return self._doc_count - 1
+90:    @staticmethod
+91:    def _cosine_similarity(v1: Dict[str, float], v2: Dict[str, float]) -> float:
+92:        """Cosine similarity between two sparse vectors."""
+94:            return 0.0
+97:            return 0.0
+102:            return 0.0
+103:        return dot / (mag1 * mag2)
+105:    def find_similar(
+108:        """Find documents similar to the query text."""
+124:        return sorted(results, key=lambda x: x[1], reverse=True)
+127:class MinjaDetector:
+128:    """
+134:    """
+136:    def __init__(
+175:    def check_velocity(self, agent_id: str) -> bool:
+183:            return False
+185:        return True
+187:    def _get_project_index(self, project_id: str) -> _TfidfIndex:
+191:        return self._project_indexes[project_id]
+193:    def register_write(
+196:        """Register a successful write into the semantic index."""
+211:    def _has_negation_signal(self, content: str) -> bool:
+214:            return True
+217:                return True
+218:        return False
+220:    def check_contradiction(
+224:            return True
+231:            return False
+238:            return True
+252:                    return False
+258:                        return False
+260:        return True
+262:    def check_pattern_anomaly(self, agent_id: str) -> bool:
+264:            return True
+267:            return True
+272:            return False
+273:        return True
+275:    def validate_write(
+279:            return False, f"Velocity exceeded: agent {agent_id} wrote {self.velocity_threshold}+ entries in {self.window_seconds}s"
+281:            return False, f"Contradiction detected: low-trust agent {agent_id} (trust={agent_trust:.2f}) contradicts high-trust memory"
+283:            return False, f"Pattern anomaly: agent {agent_id} shows duplicate injection behavior"
+284:        return True, "OK"
+
+
+════════════════════════════════════════════════════════════════
+FILE: src/nexus_os/vault/trust.py (178 lines — signatures + key logic)
+════════════════════════════════════════════════════════════════
+1:"""
+7:Prior: PRIOR_SUCCESS=10, PRIOR_FAILURE=2 → 83% base success rate.
+14:"""
+16:import logging
+17:from typing import Dict, Optional
+19:from nexus_os.db.manager import DatabaseManager
+24:class TrustScorer:
+25:    """
+39:    """
+45:    def __init__(self, db: DatabaseManager):
+54:    def close(self):
+55:        """Release the database connection held by this scorer."""
+60:    def get_score(self, agent_id: str) -> float:
+61:        """
+69:        """
+76:            # No data — return prior-only estimate
+79:            return score
+89:        return score
+91:    def _ensure_agent_registered(self, agent_id: str) -> None:
+92:        """Ensure the agent exists in agent_registry (FK prerequisite for agent_reputation)."""
+99:    def record_success(self, agent_id: str) -> None:
+100:        """
+108:        """
+121:    def record_failure(self, agent_id: str) -> None:
+122:        """
+130:        """
+143:    def get_stats(self, agent_id: str) -> Dict:
+144:        """
+152:                  Unknown agents return {successes: 0, failures: 0, score: prior_rate, total: 0}
+153:        """
+162:            return {
+173:        return {
+
+
