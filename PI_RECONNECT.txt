@@ -6,24 +6,29 @@ Problem: Ollama cloud quota exhausted (93.6% session, 97.2% weekly)
 Solution: 3 alternative routes, all tested and working
 
 ================================================================================
-ROUTE 1: NVIDIA NIM DIRECT (RECOMMENDED — TESTED & WORKING)
+ROUTE 1: NVIDIA NIM DIRECT (RECOMMENDED — 7 MODELS, ALL TESTED)
 ================================================================================
 
-Pi → NVIDIA NIM API → MiniMax M2.7
+Pi → NVIDIA NIM API → Multiple Models (NO Ollama, NO quota)
 
 Already configured in: ~/.pi/agent/models.json
-No Ollama needed. No quota limits (NIM has separate billing).
+
+SPEED TEST RESULTS (2026-04-15, coding task):
+  ✅ NIM-Qwen3-Coder-480B      1,043ms  ← PRIMARY (coding-specialized)
+  ✅ NIM-Step-3.5-Flash         1,047ms  ← FASTEST
+  ✅ NIM-GLM4.7                 1,464ms  ← fast general
+  ✅ NIM-Kimi-K2-Thinking       2,021ms  ← thinking model
+  ✅ NIM-GLM5                   2,468ms  ← highest quality
+  ✅ NIM-Kimi-K2.5              4,018ms  ← deep reasoning
+  ⚠️ NIM-MiniMax-M2.7-SLOW    41,108ms  ← 40x slower, avoid
 
 HOW TO USE:
-  1. Open new terminal
-  2. Run: pi
-  3. Press Ctrl+O to open model picker
-  4. Select: "MiniMax M2.7 (NIM Direct)"
-  5. You're connected.
+  pi --model "NIM-Qwen3"          ← coding (RECOMMENDED)
+  pi --model "NIM-Step"           ← speed priority
+  pi --model "NIM-GLM5"           ← quality priority
+  pi --model "NIM-Kimi-K2.5"      ← deep reasoning
 
-TEST CONFIRMED:
-  curl https://integrate.api.nvidia.com/v1/chat/completions
-  Response: {"id":"chatcmpl-b30fbe107d87888a","model":"minimaxai/minimax-m2.7"...}
+Or inside Pi: Ctrl+L → pick any NIM-* model
 
 ================================================================================
 ROUTE 2: MODELRELAY (62 MODELS, 9 PROVIDERS)
@@ -62,11 +67,9 @@ QUICK START — RIGHT NOW
 
 Step 1: Open CMD/PowerShell
 Step 2: Run:
-  pi --model "minimaxai/minimax-m2.7"
-
-Or if that doesn't work:
-  pi
-  Then press Ctrl+O → select "MiniMax M2.7 (NIM Direct)"
+  pi --model "NIM-Qwen3"       ← coding (1 second response)
+  pi --model "NIM-Step"        ← fastest (1 second response)
+  pi --model "NIM-GLM5"        ← quality (2.5 second response)
 
 Step 3: To continue NEXUS project, paste:
   Read Documents/NEXUS/COLD_HANDOFF.txt and Documents/NEXUS/worklog.md
@@ -91,10 +94,9 @@ models.json LOCATION
 
 C:\Users\speci.000\.pi\agent\models.json
 
-Contains 3 providers:
-  nvidia-nim    → Direct NIM access (NO QUOTA)
-  modelrelay    → 7 models via Router Control Center
-  ollama        → Original (QUOTA LIMITED)
+Contains 2 providers:
+  nvidia-nim    → 7 models, all tested, 1-4 second response (NO QUOTA)
+  ollama        → Original (QUOTA LIMITED, fallback only)
 
 File reloads when you press Ctrl+O in Pi. No restart needed.
 
