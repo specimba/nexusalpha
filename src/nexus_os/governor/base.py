@@ -60,6 +60,7 @@ class NexusGovernor:
         kaiju: Optional[KaijuAuthorizer] = None,
         compliance_engine=None,
         enable_cva: bool = True,
+        token_guard=None,
     ):
         """
         Initialize the governor.
@@ -69,11 +70,16 @@ class NexusGovernor:
             kaiju: KaijuAuthorizer instance. Created with defaults if None.
             compliance_engine: Optional ComplianceEngine for post-auth rule checks.
             enable_cva: Whether to run CVA trait verification (default True).
+            token_guard: Optional TokenGuard instance for budget enforcement.
         """
+        from nexus_os.monitoring.token_guard import TokenGuard
         self.db = db
         self.kaiju = kaiju or KaijuAuthorizer()
         self.compliance_engine = compliance_engine
         self._cva_verifier = _CVAVerifier() if enable_cva else None
+        self.token_guard = token_guard or TokenGuard()
+        self._budget_warning_threshold = 0.75   # 75% → warn via VAP context
+        self._budget_hardstop_threshold = 0.95  # 95% → DENY
 
     def check_access(
         self,
@@ -112,6 +118,15 @@ class NexusGovernor:
             AuthResult with decision (ALLOW/DENY/HOLD), reason, and trace_id.
         """
         ctx = context or {}
+
+        # ── Step 0: Token budget check (pre-KAIJU) ─────────────
+        budget_ok, budget_reason = self._check_token_budget(
+            agent_id, action, ctx
+        )
+        if not budget_ok:
+            result = AuthResult(Decision.DENY, budget_reason, trace_id)
+            self._audit_log(agent_id, action, result, project_id)
+            return result
 
         # ── Step 1: KAIJU 4-variable authorization ──────────────
         try:
@@ -191,6 +206,51 @@ class NexusGovernor:
         )
         self._audit_log(agent_id, action, result, project_id)
         return result
+
+    # ── Token Budget Guard ─────────────────────────────────────
+
+    def _check_token_budget(self, agent_id: str, action: str, ctx: Dict[str, Any]):
+        """Check token budget before authorization.
+
+        Returns (allowed: bool, reason: str).
+        Non-blocking: if token_guard fails, logs and returns (True, 'budget_check_skipped').
+
+        Hard stop: 95%+ usage → DENY.
+        Warning:  75-95% usage → warn in context (VAP).
+        """
+        try:
+            remaining = self.token_guard.remaining(agent_id)
+            budget = self.token_guard._budgets.get(self.token_guard._get_budget_key(agent_id))
+            if budget is None or budget.total == 0:
+                return True, "budget_check_skipped"
+
+            usage_pct = budget.used / budget.total
+
+            # Insert usage into VAP context for audit trail
+            ctx["_budget_usage_pct"] = round(usage_pct * 100, 1)
+            ctx["_budget_remaining"] = remaining
+
+            # Hard stop: 95%+ → DENY
+            if usage_pct >= self._budget_hardstop_threshold:
+                return False, (
+                    f"Token budget hard stop: {budget.used}/{budget.total} "
+                    f"({usage_pct*100:.0f}% used). Contact SPECI to replenish."
+                )
+
+            # Warning: 75-95% → allow but log via ctx
+            if usage_pct >= self._budget_warning_threshold:
+                ctx["_budget_warning"] = True
+                logger.warning(
+                    "Governor budget warning: agent=%s usage=%.0f%% remaining=%d",
+                    agent_id, usage_pct * 100, remaining
+                )
+
+            return True, "budget_ok"
+
+        except Exception:
+            # Non-blocking — never fail a request due to budget check
+            logger.warning("Governor token budget check failed — allowing request")
+            return True, "budget_check_skipped"
 
     def _audit_log(
         self, agent_id: str, action: str, result: AuthResult, project_id: str
