@@ -1,14 +1,35 @@
+﻿# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-pytest-cache-files-*/
-venv/
-*.db
-*.db-wal
-*.db-shm
-*.xml
-*.log
-.pytest_cache/
-*.egg-info/
-dist/
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*
