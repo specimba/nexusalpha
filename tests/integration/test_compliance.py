@@ -19,14 +19,23 @@ from nexus_os.governor.compliance import (
 @pytest.fixture
 def db():
     db_path = "test_compliance.db"
-    db = DatabaseManager(db_path)
+    from nexus_os.db.manager import DBConfig
+    config = DBConfig(db_path=db_path, passphrase="test", encrypted=False)
+    db = DatabaseManager(config)
+    db.setup_schema()
     yield db
+    # Proper cleanup
     db.close_all()
     import time
     time.sleep(0.1)
-    if os.path.exists(db_path):
-        os.remove(db_path)
-
+    # Windows file locking: retry removal
+    for _ in range(5):
+        try:
+            if os.path.exists(db_path):
+                os.remove(db_path)
+            break
+        except PermissionError:
+            time.sleep(0.2)
 
 @pytest.fixture
 def engine(db):

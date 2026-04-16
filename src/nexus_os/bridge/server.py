@@ -1,5 +1,5 @@
-"""
-bridge/server.py — Nexus OS A2A Bridge Server
+﻿"""
+bridge/server.py â€” Nexus OS A2A Bridge Server
 
 Production-hardened FastAPI endpoint for agent-to-agent communication.
 Implements JSON-RPC 2.0 over HTTP with:
@@ -11,11 +11,11 @@ Implements JSON-RPC 2.0 over HTTP with:
   5. Comprehensive error handling
 
 Endpoints:
-  POST /tasks/submit  — Submit task for execution
-  POST /tasks/status  — Query task status
-  POST /vault/read    — Query Vault memory
-  POST /vault/write   — Write to Vault memory
-  POST /              — JSON-RPC 2.0 router (dispatches to above)
+  POST /tasks/submit  â€” Submit task for execution
+  POST /tasks/status  â€” Query task status
+  POST /vault/read    â€” Query Vault memory
+  POST /vault/write   â€” Write to Vault memory
+  POST /              â€” JSON-RPC 2.0 router (dispatches to above)
 """
 
 import json
@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 logger = logging.getLogger(__name__)
 
 
-# ── Exceptions ──────────────────────────────────────────────────
+# â”€â”€ Exceptions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class BridgeError(Exception):
     """Base exception for Bridge errors."""
@@ -60,7 +60,7 @@ class ParseError(BridgeError):
         super().__init__(32700, message, http_status=400)
 
 
-# ── Request Models ──────────────────────────────────────────────
+# â”€â”€ Request Models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @dataclass
 class BridgeRequest:
@@ -76,13 +76,15 @@ class BridgeRequest:
     kaiju: Dict[str, str] = field(default_factory=dict)
 
 
-# ── JSON-RPC Response Builder ──────────────────────────────────
+# â”€â”€ JSON-RPC Response Builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-def jsonrpc_result(result: Any, trace_id: Optional[str] = None) -> Dict[str, Any]:
+def jsonrpc_result(result: Any, trace_id: Optional[str] = None, input_tokens: int = 0, output_tokens: int = 0) -> Dict[str, Any]:
     return {
         "jsonrpc": "2.0",
         "result": result,
         "trace_id": trace_id,
+        "x-nexus-input-tokens": input_tokens,
+        "x-nexus-output-tokens": output_tokens,
     }
 
 def jsonrpc_error(code: int, message: str, trace_id: Optional[str] = None, data: Any = None) -> Dict[str, Any]:
@@ -97,7 +99,7 @@ def jsonrpc_error(code: int, message: str, trace_id: Optional[str] = None, data:
     }
 
 
-# ── Bridge Server ──────────────────────────────────────────────
+# â”€â”€ Bridge Server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class BridgeServer:
     """
@@ -126,7 +128,7 @@ class BridgeServer:
         self.token_guard = token_guard or TokenGuard()
         self._task_results: Dict[str, Any] = {}
 
-    # ── Token Guard Helpers ────────────────────────────────────
+    # â”€â”€ Token Guard Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _parse_input_tokens(self, headers, payload) -> int:
         """Extract input token count. Header > payload > fallback(0)."""
@@ -144,7 +146,7 @@ class BridgeServer:
         return 0
 
     def _track_tokens(self, agent_id, project_id, operation, input_tokens, output_tokens):
-        """Track tokens via TokenGuard. Non-blocking — never breaks requests."""
+        """Track tokens via TokenGuard. Non-blocking â€” never breaks requests."""
         if input_tokens <= 0 and output_tokens <= 0:
             return None
         try:
@@ -163,13 +165,13 @@ class BridgeServer:
                 "budget_remaining": self.token_guard.remaining(agent_id),
             }
         except Exception:
-            # Non-blocking — log but never fail a request
+            # Non-blocking â€” log but never fail a request
             import logging
             logging.getLogger(__name__).warning("TokenGuard tracking failed")
             return {"input": input_tokens, "output": output_tokens, "total": input_tokens + output_tokens}
 
 
-    # ── Authentication ─────────────────────────────────────────
+    # â”€â”€ Authentication â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _authenticate(self, request: BridgeRequest):
         """Validate HMAC-SHA256 signature. Raises AuthError on failure."""
@@ -189,12 +191,12 @@ class BridgeServer:
         if not verify_signature(secret, request.trace_id, request.raw_payload, request.signature):
             raise AuthError("Invalid signature")
 
-    # ── Authorization ──────────────────────────────────────────
+    # â”€â”€ Authorization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _authorize(self, request: BridgeRequest):
         """Run KAIJU 4-variable authorization. Raises ForbiddenError or HeldError."""
         if self.governor is None:
-            return  # No governor — skip authz (dev mode)
+            return  # No governor â€” skip authz (dev mode)
 
         from nexus_os.governor.kaiju_auth import Decision
 
@@ -230,7 +232,7 @@ class BridgeServer:
         }
         return action_map.get(method, "read")
 
-    # ── Request Parsing ────────────────────────────────────────
+    # â”€â”€ Request Parsing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def parse_request(
         self,
@@ -274,7 +276,7 @@ class BridgeServer:
             kaiju=kaiju if isinstance(kaiju, dict) else {},
         )
 
-    # ── Handler Dispatch ───────────────────────────────────────
+    # â”€â”€ Handler Dispatch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def handle_request(
         self,
@@ -303,7 +305,7 @@ class BridgeServer:
                     data="Only POST is supported"
                 )
 
-            # Parse request — method read from JSON payload['method']
+            # Parse request â€” method read from JSON payload['method']
             req = self.parse_request(body, headers)
 
             # Track tokens (before dispatch if input_tokens known)
@@ -503,7 +505,7 @@ class BridgeServer:
         return {"record_id": f"rec-{uuid.uuid4().hex[:8]}", "status": "written"}
 
 
-# ── FastAPI Integration ────────────────────────────────────────
+# â”€â”€ FastAPI Integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def create_app(bridge: Optional[BridgeServer] = None) -> "FastAPI":
     """
@@ -611,3 +613,4 @@ def create_app(bridge: Optional[BridgeServer] = None) -> "FastAPI":
         return {"status": "ok", "service": "nexus-bridge", "version": "1.0.0"}
 
     return app
+

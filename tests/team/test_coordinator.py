@@ -536,9 +536,9 @@ class TestWorkerProfile:
             agent_dir=agent_dir,
             specializations=["code"],
         )
-        assert str(profile.pending_queue).endswith("tasks/pending")
-        assert str(profile.done_queue).endswith("tasks/done")
-        assert str(profile.failed_queue).endswith("tasks/failed")
+        assert profile.pending_queue.parts[-2:] == ("tasks", "pending")  # Windows-safe
+        assert profile.done_queue.parts[-2:] == ("tasks", "done")  # Windows-safe
+        assert profile.failed_queue.parts[-2:] == ("tasks", "failed")  # Windows-safe
 
     def test_worker_profile_default_stats(self):
         """Default stats should all be zero."""
