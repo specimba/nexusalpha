@@ -577,16 +577,34 @@ def create_app(bridge: Optional[BridgeServer] = None) -> "FastAPI":
     @app.post("/vault/write")
     async def vault_write(request: Request):
         body = await request.body()
-        headers = {k.lower(): v for k, v in request.headers.items()}
-        status_code, response = server.handle_vault_write(body, headers)
-        return JSONResponse(content=response, status_code=status_code)
+        req_headers = {k.lower(): v for k, v in request.headers.items()}
+        agent_id = req_headers.get("x-nexus-agent-id", "unknown")
+        input_tokens = len(body) // 4
+        status_code, response = server.handle_vault_write(body, req_headers)
+        output_tokens = len(str(response).encode()) // 4
+        server.token_guard.track(agent_id, input_tokens + output_tokens,
+                                  operation="memory_query",
+                                  input_tokens=input_tokens,
+                                  output_tokens=output_tokens)
+        return JSONResponse(content=response, status_code=status_code,
+                           headers={"X-Nexus-Input-Tokens": str(input_tokens),
+                                   "X-Nexus-Output-Tokens": str(output_tokens)})
 
     @app.post("/")
     async def jsonrpc_router(request: Request):
         body = await request.body()
-        headers = {k.lower(): v for k, v in request.headers.items()}
-        status_code, response = server.handle_request("POST", body, headers)
-        return JSONResponse(content=response, status_code=status_code)
+        req_headers = {k.lower(): v for k, v in request.headers.items()}
+        agent_id = req_headers.get("x-nexus-agent-id", "unknown")
+        input_tokens = len(body) // 4
+        status_code, response = server.handle_request("POST", body, req_headers)
+        output_tokens = len(str(response).encode()) // 4
+        server.token_guard.track(agent_id, input_tokens + output_tokens,
+                                  operation="model_inference",
+                                  input_tokens=input_tokens,
+                                  output_tokens=output_tokens)
+        return JSONResponse(content=response, status_code=status_code,
+                           headers={"X-Nexus-Input-Tokens": str(input_tokens),
+                                   "X-Nexus-Output-Tokens": str(output_tokens)})
 
     @app.get("/health")
     async def health():

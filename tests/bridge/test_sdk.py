@@ -137,7 +137,7 @@ class TestNexusClient:
         headers = client._build_headers("p1", "t1", "{}")
         assert "X-Nexus-Lineage-ID" not in headers
 
-    def test_circuit_breaker_integration():
+    def test_circuit_breaker_integration(self):
         breaker = CircuitBreaker(failure_threshold=1)
         assert breaker.state == CircuitState.CLOSED
         breaker.record_failure()
