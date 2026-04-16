@@ -1,0 +1,60 @@
+# HEARTBEAT.md — Nexus OS Research & Monitoring
+
+## Research Sweep (run every 10 minutes max while active, rotate topics)
+
+- **Cadence rule**: never remain idle/waiting more than 10 minutes if pending Nexus work, monitoring, or research checks to run.
+- If no high-value action exists, perform a lightweight check (alerts/dependency/releases) before returning quiet status.
+
+### 🔬 Priority Research Queries
+Search these via web_search and save finds to memory/nexus/research-YYYY-MM-DD.md:
+
+1. **ASI04 / Supply Chain AI** — `site:arxiv.org OR site:owasp.org "supply chain" "AI agent" OR "LLM" 2024 OR 2025`
+2. **ASI02 / Tool Misuse** — `"tool misuse" "LLM agent" detection defense 2025`
+3. **A2A Protocol** — `"agent to agent" OR "A2A protocol" AI standard 2025`
+4. **Memory Poisoning** — `"memory poisoning" "AI agent" defense detection`
+5. **Multi-agent trust** — `"multi-agent" "trust scoring" OR "Bayesian trust" agent system`
+6. **OWASP ASI updates** — check https://owasp.org/www-project-agentic-ai/ for new releases
+
+### 📰 Tech News
+- HN top posts: search `site:news.ycombinator.com agent OS OR multi-agent OR LLM governance`
+- X/Twitter: search `A2A agents`, `multi-agent OS`, `LLM orchestration` (requires xurl)
+- Reddit: `site:reddit.com/r/MachineLearning OR r/LocalLLaMA agent framework 2025`
+
+### 🔧 Dependency / Competitor Watch
+Check for new releases/breaking changes:
+- `mem0ai` — https://github.com/mem0ai/mem0/releases
+- `AutoGen` — new agent patterns
+- `LangGraph` — DAG/state machine updates
+- `CrewAI` — trust/governance features
+- `Google A2A` — protocol spec updates
+- `Anthropic MCP` — tool use spec updates
+
+---
+
+## Alert Conditions (ping speci immediately)
+
+- New OWASP ASI publication or major update
+- Google A2A or Anthropic MCP protocol breaking change
+- Critical CVE in mem0ai, FastAPI, or SQLite
+- Major paper on agent supply chain attacks or memory poisoning
+
+---
+
+## Memory Write Target
+
+Save all finds to: `memory/nexus/research-YYYY-MM-DD.md`
+Format per entry:
+```
+### [SOURCE] Title
+- Relevance: [ASI04 | ASI02 | A2A | trust | memory | general]
+- Key insight: one sentence
+- Link: URL
+- Action: [none | read-later | implement | alert-speci]
+```
+
+---
+
+## Suppress if
+
+- Already checked same topic within last 4 hours
+- Time is 23:00–07:00 UTC and nothing is P0-critical
